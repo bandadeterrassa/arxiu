@@ -1256,7 +1256,7 @@ function archApply(d){
 }
 
 /* partitura original (comprada): Sí / No; es pot deixar sense marcar */
-const ORIGINAL = {si:'Sí, és original (comprada)', no:'No, és una còpia'};
+const ORIGINAL = {si:'Sí, comprada', no:'No'};
 function originalHtml(id, val){
   return `<div class="field" id="${id}"><label>Partitura original <span class="opt">opcional</span></label>
     <div class="chips">${Object.entries(ORIGINAL).map(([k,l])=>`<button type="button" class="chip ${val===(k==='si')?'on':''}" data-orig="${k}">${l}</button>`).join('')}</div></div>`;
@@ -1268,7 +1268,7 @@ function bindOriginal(box, draft){
     box.querySelectorAll('[data-orig]').forEach(x=> x.classList.toggle('on', draft.original===(x.dataset.orig==='si')));
   }));
 }
-function originalText(p){ return p.original===true ? 'Sí, comprada' : p.original===false ? 'No, és una còpia' : '—'; }
+function originalText(p){ return p.original===true ? 'Sí, comprada' : p.original===false ? 'No' : '—'; }
 
 /* ================= EDITAR OBRA EXISTENT ================= */
 function openEditPiece(id){
@@ -1371,7 +1371,7 @@ function openEditPiece(id){
 /* ================= REGISTRAR ================= */
 function renderRegistrar(){
   const root = document.getElementById('registrarForm');
-  const draft = { nom:'', autor:'', arranjador:'', estil:'', original:null, projecteIds:[], general:null, estatParts:null, gPlaces:[], pPlaces:[], llocs:[], missing:{totes:false, sel:[], altres:'', touched:false}, instrExterns:[], comentaris:'', registradaPer:'' };
+  const draft = { nom:'', autor:'', arranjador:'', estil:'', original:null, projecteIds:[], general:null, estatParts:null, gPlaces:[], pPlaces:[], llocs:[], missing:{totes:false, sel:[], altres:'', touched:false}, instrExterns:[], comentaris:'' };
 
   root.innerHTML = `
     <div class="block">
@@ -1392,12 +1392,7 @@ function renderRegistrar(){
       <h3>Estat de l'arxiu</h3>
       ${archHtml('f', draft, false)}
       <div class="field"><label>Instruments fora de la plantilla habitual <span class="opt">opcional</span></label><div id="ms_instr"></div></div>
-      <div class="note info" id="f_preview" style="margin-top:10px"></div>
-    </div>
-
-    <div class="block">
-      <h3>Registrat per</h3>
-      <div class="field"><label>El teu nom <span class="opt">opcional, per si Junta ho ha de consultar</span></label><input class="input" id="in_registrador" placeholder="Nom i cognom"></div>
+      <div class="note info hidden" id="f_preview" style="margin-top:10px"></div>
     </div>
 
     <div class="block">
@@ -1412,10 +1407,9 @@ function renderRegistrar(){
   `;
 
   function updatePreview(){
-    if(!draft.general || !draft.estatParts){
-      document.getElementById('f_preview').innerHTML = `Omple els dos camps anteriors per veure l'estat resultant.`;
-      return;
-    }
+    const box = document.getElementById('f_preview');
+    box.classList.toggle('hidden', !draft.general || !draft.estatParts);
+    if(!draft.general || !draft.estatParts) return;
     const tmp = {general:draft.general, estatParts:draft.estatParts, ...(missingFields(draft)||{}), ...archApply(draft),
       calRevisioManual:false, composer:draft.autor, arranger:draft.arranjador, autoriaConflicte:false,
       pendentAcceptacio: STATE.role!=='gestio'};
@@ -1437,7 +1431,6 @@ function renderRegistrar(){
   bindArch(root, 'f', draft, updatePreview);
   makeMultiSelect(document.getElementById('ms_instr'), {items:STATE.catalogs.instrumentsExterns, values:[], placeholder:'p. ex. Cor, Piano', onChange:v=>draft.instrExterns=v});
 
-  document.getElementById('in_registrador').addEventListener('input', e=>draft.registradaPer=e.target.value.trim());
   document.getElementById('in_nom').addEventListener('input', e=>{ draft.nom=e.target.value; document.getElementById('f_nom').classList.remove('err'); });
   document.getElementById('in_comentaris').addEventListener('input', e=>draft.comentaris=e.target.value);
   updatePreview();
@@ -1482,7 +1475,7 @@ function renderRegistrar(){
       calRevisioManual: false, autoriaConflicte: false,
       fontsPaper: false, origenManual: true,
       pendentAcceptacio: STATE.role!=='gestio',
-      registradaPer: draft.registradaPer, dataRegistre: new Date().toLocaleDateString('ca-ES', {day:'numeric',month:'long',year:'numeric'}),
+      dataRegistre: new Date().toLocaleDateString('ca-ES', {day:'numeric',month:'long',year:'numeric'}),
     };
     STATE.pieces.push(piece);
     persist();
