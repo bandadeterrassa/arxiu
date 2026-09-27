@@ -249,6 +249,10 @@ h3.sec:first-child{margin-top:12px}
 .note.bad{background:var(--bad-bg);color:var(--bad-fg)}
 .note.info{background:var(--info-bg);color:var(--info)}
 .note+.note{margin-top:8px}
+.statgrid2+.note{margin-top:12px}
+.note b{display:block;margin-bottom:4px}
+.note ul{margin:0;padding-left:18px}
+.note.plain{background:var(--surface2);color:var(--ink2)}
 .obsnote{background:var(--surface2);border-radius:12px;padding:10px 12px;font-size:13.5px;color:var(--ink2);line-height:1.45;white-space:pre-wrap}
 .projrow{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}
 .projrow:last-child{border-bottom:0}
@@ -507,27 +511,32 @@ function obraState(p){
   const extra = (G==='falta' && P==='?') ? ESTATS['verificar-parts'].label
               : (P==='falta' && G==='?') ? ESTATS['verificar-general'].label : '';
 
-  const reasons = [];
-  if(p.nomesFisicPendent && (G==='?' || P==='?')) reasons.push('Només la tenim registrada a l\'inventari en paper. Cal anar a l\'arxiu a comprovar què hi ha.');
-  else {
-    if(P==='?') reasons.push('No s\'ha comprovat si les parts de la banda són completes.');
-    if(G==='?') reasons.push('No s\'ha comprovat si hi ha la partitura general.');
-  }
-  if(p.autoriaConflicte) reasons.push('El compositor o l\'arranjador no coincideix entre les diverses còpies d\'aquesta obra — cal confirmar quin és el correcte.');
-  if(p.arranjadorRevisar) reasons.push('El nom de l\'arranjador no s\'ha pogut normalitzar automàticament — cal revisar-lo.');
-  if(p.pendentAcceptacio) reasons.push('Registrada per '+(p.registradaPer||'un músic')+(p.dataRegistre? ' el '+p.dataRegistre : '')+' — pendent que Junta l\'accepti.');
-  if(p.calRevisioManual) reasons.push('Marcada manualment per revisar.');
-  if(p.notaPaper && p.notaPaper.length) reasons.push('Hi ha una nota de l\'inventari en paper pendent de revisar: «'+p.notaPaper.join('; ')+'».');
-  if(p.revisioNota && p.revisioNota.length) reasons.push(...p.revisioNota);
-  if(!p.composer && !p.arranger) reasons.push('No consta ni el compositor ni l\'arranjador.');
-  else if(!p.composer) reasons.push('No consta el compositor.');
-  if(sev==='forgivable') reasons.push('Falten '+(p.partsNoDetectades||[]).length+' parts detectades automàticament — es dona per pràcticament completa.');
-
-  return {key, ...ESTATS[key], G, P, extra, detail: P==='falta' ? detailParts(p) : '', reasons};
+  return {key, ...ESTATS[key], G, P, sev, extra, detail: P==='falta' ? detailParts(p) : ''};
 }
 function stateText(st){ return st.label + (st.extra ? ' · '+st.extra : ''); }
-function needsReview(p){ return !!(p.calRevisioManual || (p.notaPaper&&p.notaPaper.length) || p.autoriaConflicte); }
-function reviewReasons(p){ return obraState(p).reasons; }
+/* ---------- notes de la fitxa ----------
+   Tres blocs amb regles fixes. No es repeteix res que ja digui una etiqueta
+   (estat, sense verificar, parts que falten, ubicació, compositor buit).
+   · Cal revisar       — incidències que requereixen feina; activen l'etiqueta i surten a «Per revisar».
+   · Sobre la partitura — descripció del material (quin tipus de general hi ha, què conté la carpeta…).
+   · A tenir en compte  — informació que no surt enlloc més.
+   Les notes internes de la importació no es mostren. */
+const NOTE_RULES = [  // s'aplica la primera que coincideix; si cap coincideix → «Sobre la partitura»
+  {re:/^Unificada amb|^segons inventari\.?$/i, to:'ocult'},
+  {re:/\.rar\b|\bzip\b|descomprimir|cal revisar/i, to:'revisar'},
+];
+function classifyNote(n){ const r = NOTE_RULES.find(r=>r.re.test(n)); return r ? r.to : 'partitura'; }
+function obraNotes(p){
+  const out = {revisar:[], partitura:[], compte:[]};
+  if(p.autoriaConflicte) out.revisar.push('El compositor o l\'arranjador no coincideix entre les diverses còpies — cal confirmar quin és el correcte.');
+  if(p.arranjadorRevisar) out.revisar.push('El nom de l\'arranjador no s\'ha pogut normalitzar — cal revisar com s\'escriu.');
+  if(p.notaPaper && p.notaPaper.length) out.revisar.push('Nota de l\'inventari en paper: «'+p.notaPaper.join('; ')+'».');
+  (p.revisioNota||[]).forEach(n=>{ const c = classifyNote(n); if(c!=='ocult') out[c].push(n); });
+  if(p.pendentAcceptacio) out.compte.push('Registrada per '+(p.registradaPer||'un músic')+(p.dataRegistre? ' el '+p.dataRegistre : '')+' — pendent que Junta l\'accepti.');
+  if(partsSeverity(p)==='forgivable') out.compte.push('L\'escaneig automàtic no ha trobat: '+(p.partsNoDetectades||[]).join(', ')+'. Es dona per completa perquè són poques.');
+  return out;
+}
+function needsReview(p){ return obraNotes(p).revisar.length>0; }
 function isDigital(p){ return !!p.escanejada || (p.fileCount||0)>0; }
 function isFisic(p){ return !!p.enPaper || (p.ubicacioFisica&&p.ubicacioFisica.length>0); }
 /* on és cada cosa: la general i les parts, cadascuna Al Box i/o En físic */
@@ -564,6 +573,10 @@ function placePillsHtml(p){
   if(f) out.push(`En físic · ${(p.ubicacioFisica||[]).join(', ') || 'lloc sense indicar'}`);
   return out.length ? `<div class="tagrow">${out.map(x=>`<span class="placepill">${esc(x)}</span>`).join('')}</div>` : '<span class="hint" style="margin:0">No consta enlloc</span>';
 }
+function notesHtml(n){
+  const block = (cls, title, items)=> items.length ? `<div class="note ${cls}"><b>${title}</b><ul>${items.map(r=>`<li>${esc(r)}</li>`).join('')}</ul></div>` : '';
+  return block('warn', 'Cal revisar', n.revisar) + block('plain', 'Sobre la partitura', n.partitura) + block('info', 'A tenir en compte', n.compte);
+}
 /* targeta d'obra (biblioteca i feina pendent) */
 const ICO_CHEVRON = '<svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 function obraCardHtml(p, opts={}){
@@ -575,7 +588,7 @@ function obraCardHtml(p, opts={}){
       ${authors?`<p class="authors">${esc(authors)}</p>`:''}
       ${tagsHtml(p, st)}
       ${locLineHtml(p)}
-      ${opts.reasons && st.reasons.length ? `<ul class="reasons">${st.reasons.map(r=>`<li>${esc(r)}</li>`).join('')}</ul>` : ''}
+      ${opts.reasons ? `<ul class="reasons">${obraNotes(p).revisar.map(r=>`<li>${esc(r)}</li>`).join('')}</ul>` : ''}
     </div>
     ${opts.accept ? `<div class="acceptbtns">
         <button class="btn primary btn-sm" data-accept="${p.id}">Accepta</button>
@@ -766,7 +779,7 @@ function openProjecteSheet(pid){
 /* Per revisar: cada grup és una llista de tasques. Per afegir-ne un, n'hi ha prou amb una línia nova. */
 const TASQUES = [
   {key:'acceptar',   title:'Registres per acceptar',  desc:'Obres registrades per músics que Junta ha d\'acceptar.', test:p=>p.pendentAcceptacio, accept:true},
-  {key:'revisar',    title:'Cal revisar',             desc:'Incidències concretes: notes de l\'inventari, autoria dubtosa o marcades a mà.', test:p=>needsReview(p) && !p.pendentAcceptacio, reasons:true},
+  {key:'revisar',    title:'Cal revisar',             desc:'Incidències concretes: notes de l\'inventari, autoria dubtosa, noms per normalitzar o fitxers per obrir.', test:p=>needsReview(p) && !p.pendentAcceptacio, reasons:true},
   {key:'falten',     title:'Falten parts',            desc:'No es poden tocar fins que es completin.', test:p=>facets(p).P==='falta'},
   {key:'general',    title:'Falta la partitura general', desc:'El director no té la general.', test:p=>facets(p).G==='falta'},
   {key:'vparts',     title:'Parts sense verificar',   desc:'Cal comprovar a l\'arxiu quines parts hi ha. Agrupades per on es troben.', test:p=>facets(p).P==='?', byPlace:true},
@@ -969,12 +982,10 @@ function openDetail(id){
         <dl class="kvgrid statgrid2">
           <dt>Estat</dt><dd><span class="tagpill ${st.cls}"><span class="tdot"></span>${esc(st.label)}</span>${needsReview(p)?' <span class="tagpill warn">Cal revisar</span>':''}</dd>
           <dt>General</dt><dd><span class="tagpill ${FACETA.general[st.G].cls}">${esc(FACETA.general[st.G].label)}</span>${st.G!=='falta' && placesOf(p).g.length ? `<span class="placenote">${esc(placesText(placesOf(p).g))}</span>` : ''}</dd>
-          <dt>Parts</dt><dd><span class="tagpill ${FACETA.parts[st.P].cls}">${esc(FACETA.parts[st.P].label)}</span>${placesOf(p).p.length ? `<span class="placenote">${esc(placesText(placesOf(p).p))}</span>` : ''}</dd>
+          <dt>Parts</dt><dd><span class="tagpill ${FACETA.parts[st.P].cls}">${esc(FACETA.parts[st.P].label)}${st.detail?' · '+esc(st.detail):''}</span>${placesOf(p).p.length ? `<span class="placenote">${esc(placesText(placesOf(p).p))}</span>` : ''}</dd>
           <dt>On es troba</dt><dd>${placePillsHtml(p)}</dd>
         </dl>
-        ${st.detail?`<div class="note bad" style="margin-top:10px"><b>Falten:</b> ${esc(st.detail)}</div>`:''}
-        ${p.notaPaper&&p.notaPaper.length? `<div class="note warn">${p.notaPaper.map(esc).join('<br>')}</div>`:''}
-        ${st.reasons&&st.reasons.length ? `<div class="note ${needsReview(p)?'warn':'info'}"><b>${needsReview(p)?'Cal revisar:':'A tenir en compte:'}</b><ul style="margin:6px 0 0;padding-left:16px">${st.reasons.map(r=>`<li>${esc(r)}</li>`).join('')}</ul></div>` : ''}
+        ${notesHtml(obraNotes(p))}
         ${p.specials&&p.specials.length? `<div class="chipsw" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">${p.specials.map(x=>`<span class="icchip sp">${esc(x)}</span>`).join('')}</div>` : ''}
       </div>
 
