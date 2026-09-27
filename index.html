@@ -356,7 +356,7 @@ h3.sec:first-child{margin-top:12px}
   <div class="segctl" id="subviewCtl">
     <button data-sub="biblioteca" class="on">Biblioteca</button>
     <button data-sub="projectes">Projectes</button>
-    <button data-sub="pendents">Feina pendent</button>
+    <button data-sub="pendents">Per revisar</button>
   </div>
 
   <div id="subBiblioteca">
@@ -537,13 +537,14 @@ function placesOf(p){
 }
 const PLACE_LABEL = {box:'Al Box', fisic:'En físic'};
 function placesText(arr){ return arr.map((x,i)=> i ? PLACE_LABEL[x].toLowerCase() : PLACE_LABEL[x]).join(' i '); }
-/* línia d'ubicació de la targeta: només quan l'obra és en físic */
+/* línia d'ubicació de la targeta: només quan alguna cosa és només en físic
+   (si és al Box, primer es busca allà) */
 function locLineHtml(p){
   if(!isFisic(p)) return '';
-  const lloc = (p.ubicacioFisica||[]).join(', ') || 'lloc sense indicar';
-  const bits = [isDigital(p) ? 'En físic' : 'Només en físic', lloc];
-  if(isDigital(p) && p.generalNomesFisic) bits.push('general només en paper');
-  if(isDigital(p) && p.partsNomesFisic) bits.push('parts només en paper');
+  const what = !isDigital(p) ? ['Només en físic']
+    : [p.generalNomesFisic && 'General només en físic', p.partsNomesFisic && 'Parts només en físic'].filter(Boolean);
+  if(!what.length) return '';
+  const bits = [...what, (p.ubicacioFisica||[]).join(', ') || 'lloc sense indicar'];
   return `<p class="locline">${esc(bits.join(' · '))}</p>`;
 }
 
@@ -762,7 +763,7 @@ function openProjecteSheet(pid){
   render();
 }
 
-/* Feina pendent: cada grup és una llista de tasques. Per afegir-ne un, n'hi ha prou amb una línia nova. */
+/* Per revisar: cada grup és una llista de tasques. Per afegir-ne un, n'hi ha prou amb una línia nova. */
 const TASQUES = [
   {key:'acceptar',   title:'Registres per acceptar',  desc:'Obres registrades per músics que Junta ha d\'acceptar.', test:p=>p.pendentAcceptacio, accept:true},
   {key:'revisar',    title:'Cal revisar',             desc:'Incidències concretes: notes de l\'inventari, autoria dubtosa o marcades a mà.', test:p=>needsReview(p) && !p.pendentAcceptacio, reasons:true},
