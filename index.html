@@ -573,6 +573,7 @@ function placePillsHtml(p){
   const out = [];
   if(d) out.push(`Al Box${n?` · ${n} fitxer${n===1?'':'s'}`:''}`);
   if(f) out.push(`En físic · ${(p.ubicacioFisica||[]).join(', ') || 'lloc sense indicar'}`);
+  if(d && f){ if(p.generalNomesFisic) out.push('General només en físic'); if(p.partsNomesFisic) out.push('Parts només en físic'); }
   return out.length ? `<div class="tagrow">${out.map(x=>`<span class="placepill">${esc(x)}</span>`).join('')}</div>` : '<span class="hint" style="margin:0">No consta enlloc</span>';
 }
 function notesHtml(n){
@@ -983,9 +984,8 @@ function openDetail(id){
       <div class="box">
         <h4>Estat de l'arxiu</h4>
         <dl class="kvgrid statgrid2">
-          <dt>Estat</dt><dd><span class="tagpill ${st.cls}"><span class="tdot"></span>${esc(st.label)}</span>${st.extra?` <span class="tagpill warn"><span class="tdot"></span>${esc(st.extra)}</span>`:''}${needsReview(p)?' <span class="tagpill warn">Cal revisar</span>':''}</dd>
-          <dt>General</dt><dd><span class="tagpill ${FACETA.general[st.G].cls}">${esc(FACETA.general[st.G].label)}</span>${st.G!=='falta' && placesOf(p).g.length ? `<span class="placenote">${esc(placesText(placesOf(p).g))}</span>` : ''}</dd>
-          <dt>Parts</dt><dd><span class="tagpill ${FACETA.parts[st.P].cls}">${esc(FACETA.parts[st.P].label)}${st.detail?' · '+esc(st.detail):''}</span>${placesOf(p).p.length ? `<span class="placenote">${esc(placesText(placesOf(p).p))}</span>` : ''}</dd>
+          <dt>General</dt><dd><span class="tagpill ${FACETA.general[st.G].cls}">${esc(FACETA.general[st.G].label)}</span></dd>
+          <dt>Parts</dt><dd><span class="tagpill ${FACETA.parts[st.P].cls}">${esc(FACETA.parts[st.P].label)}${st.detail?' · '+esc(st.detail):''}</span></dd>
           <dt>On es troba</dt><dd>${placePillsHtml(p)}</dd>
         </dl>
         ${notesHtml(obraNotes(p))}
