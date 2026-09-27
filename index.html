@@ -992,11 +992,13 @@ function openDetail(id){
         ${p.specials&&p.specials.length? `<div class="chipsw" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">${p.specials.map(x=>`<span class="icchip sp">${esc(x)}</span>`).join('')}</div>` : ''}
       </div>
 
-      <div class="box">
-        <h4>Projectes${aparicions.length?` <span class="cnt">(${aparicions.length})</span>`:''}</h4>
-        ${aparicions.length ? aparicions.map(a=>{ const pr=projById(a.projecteId); const link=pr&&pr.link?pr.link:''; return `<div class="copyrow"><div><div style="font-weight:650;font-size:14.5px">${esc(pr?pr.name:a.projecte)}</div><div class="hint">${(pr?pr.year:a.any)||'—'}</div></div>${link?`<a href="${esc(link)}" target="_blank" rel="noopener" class="iconbtn" title="Obre a Box">↗</a>`:''}</div>`; }).join('')
-          : `<p class="hint">Aquesta obra no té cap projecte associat — forma part de l'arxiu igualment.</p>`}
-      </div>
+      ${aparicions.length ? `<div class="box">
+        <h4>Projectes <span class="cnt">(${aparicions.length})</span></h4>
+        <div class="list">${aparicions.map(a=>{ const pr=projById(a.projecteId); return `<button class="projrow2 projlink" ${pr?`data-goproj="${pr.id}"`:'disabled'}>
+          <span class="main"><span class="title" style="display:block;font-size:15px">${esc(pr?pr.name:a.projecte)}</span><span class="authors" style="display:block">${(pr?pr.year:a.any)||'Sense any'}</span></span>
+          ${pr?ICO_CHEVRON:''}
+        </button>`; }).join('')}</div>
+      </div>` : ''}
 
       ${p.obs? `<div class="box"><h4>Comentaris</h4><div style="font-size:14.5px;color:var(--ink2);overflow-wrap:anywhere">${esc(p.obs)}</div></div>` : ''}
 
@@ -1017,6 +1019,7 @@ function openDetail(id){
   document.body.appendChild(bg); document.body.classList.add('locked');
   function close(){ document.body.removeChild(bg); document.body.classList.remove('locked'); }
   bg.querySelector('#dClose').addEventListener('click', close);
+  bg.querySelectorAll('[data-goproj]').forEach(b=> b.addEventListener('click', ()=>{ close(); openProjecteSheet(b.dataset.goproj); }));
   bg.addEventListener('click', e=>{ if(e.target===bg) close(); });
   const editBtn = bg.querySelector('#dEdit'); if(editBtn) editBtn.addEventListener('click', ()=>{ close(); openEditPiece(p.id); });
   const acceptBtn = bg.querySelector('#dAccept'); if(acceptBtn) acceptBtn.addEventListener('click', ()=>{ p.pendentAcceptacio=false; persist(); close(); refreshViews(); });
