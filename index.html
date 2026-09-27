@@ -90,8 +90,14 @@ main{max-width:680px;margin:0 auto;padding:8px 16px calc(var(--nav-h) + 40px + e
 .minitag.warn{background:var(--gold-bg);color:var(--gold-ink)}
 .minitag.gray{background:var(--gray-bg);color:var(--muted)}
 .minitag.ok{background:var(--ok-bg);color:var(--ok-fg)}
-.placepill,.minitag.place{display:inline-flex;align-items:center;gap:5px;border-radius:999px;font-weight:600;background:var(--accent-soft);color:var(--accent)}
+.placepill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;font-weight:600;background:var(--accent-soft);color:var(--accent)}
 .placepill{min-height:26px;padding:0 11px;font-size:12.5px}
+.locline{font-size:12.5px;color:var(--muted);margin:7px 0 0}
+.placenote{font-size:12.5px;color:var(--muted);align-self:center}
+.archwhere{display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px;margin-top:10px;padding:10px 12px;border-radius:var(--radius);background:var(--surface2)}
+.archwhere .archq{font-size:12.5px;font-weight:600;color:var(--ink2)}
+.archwhere .chip{min-height:38px;padding:0 14px;font-size:13px}
+.archfield.err .archwhere{box-shadow:inset 0 0 0 1px var(--bad)}
 .reasons{margin:8px 0 0;padding-left:16px;font-size:12.5px;color:var(--gold-ink);line-height:1.5}
 .acceptbtns{display:flex;flex-direction:column;gap:6px;flex:none}
 .btn-sm{min-height:36px;padding:0 14px;font-size:13.5px}
@@ -460,23 +466,22 @@ function partsSeverity(p){
 /* ---------- estats de l'obra ----------
    Cada obra té dues facetes: la partitura general (G) i les parts de la banda (P).
    Cada faceta pot ser: 'ok' (la tenim), 'falta' o '?' (no ho sabem, «No ho sé»).
-   Capa 1 — estat principal (una sola etiqueta): combina G i P. El vermell (el que falta) mana sobre el gris.
-   Capa 2 — etiquetes secundàries: la faceta desconeguda quan l'estat és vermell, «Cal revisar»
-            i «només en físic».
-   Capa 3 — on es troba (fitxa): En Box / En físic.
+   Capa 1 — estat principal (una sola etiqueta): combina G i P. El vermell (el que falta) mana sobre el groc (sense verificar).
+   Capa 2 — etiquetes secundàries: la faceta desconeguda quan l'estat és vermell i «Cal revisar».
+   Ubicació — a la targeta, una línia petita només quan és en físic; a la fitxa, Al Box / En físic.
    Per canviar un nom o un color, només cal tocar aquestes taules. */
 const ESTATS = {
   'complet':           {label:'Completa',                cls:'ok'},
   'falta-general':     {label:'Falta general',           cls:'bad'},
   'falten':            {label:'Falten parts',            cls:'bad'},
   'falta-tot':         {label:'Falta general i parts',   cls:'bad'},
-  'verificar':         {label:'Sense verificar',         cls:'gray'},
-  'verificar-general': {label:'General sense verificar', cls:'gray'},
-  'verificar-parts':   {label:'Parts sense verificar',   cls:'gray'},
+  'verificar':         {label:'Sense verificar',         cls:'warn'},
+  'verificar-general': {label:'General sense verificar', cls:'warn'},
+  'verificar-parts':   {label:'Parts sense verificar',   cls:'warn'},
 };
 const FACETA = {  // com es mostra cada faceta a la fitxa i als filtres
-  general: {ok:{label:'Sí', cls:'ok'},        falta:{label:'Falta', cls:'bad'},  '?':{label:'Sense verificar', cls:'gray'}},
-  parts:   {ok:{label:'Completes', cls:'ok'}, falta:{label:'Falten', cls:'bad'}, '?':{label:'Sense verificar', cls:'gray'}},
+  general: {ok:{label:'Sí', cls:'ok'},        falta:{label:'Falta', cls:'bad'},  '?':{label:'Sense verificar', cls:'warn'}},
+  parts:   {ok:{label:'Completes', cls:'ok'}, falta:{label:'Falten', cls:'bad'}, '?':{label:'Sense verificar', cls:'warn'}},
 };
 function facets(p){
   const sev = partsSeverity(p);
@@ -525,30 +530,37 @@ function needsReview(p){ return !!(p.calRevisioManual || (p.notaPaper&&p.notaPap
 function reviewReasons(p){ return obraState(p).reasons; }
 function isDigital(p){ return !!p.escanejada || (p.fileCount||0)>0; }
 function isFisic(p){ return !!p.enPaper || (p.ubicacioFisica&&p.ubicacioFisica.length>0); }
-/* etiquetes de disponibilitat en físic (capa 2) */
-function fisicTags(p){
-  const d = isDigital(p), f = isFisic(p);
-  if(f && !d) return ['Només disponible en físic'];
-  if(f && d) return [p.generalNomesFisic ? 'General només en físic' : '', p.partsNomesFisic ? 'Parts només en físic' : ''].filter(Boolean);
-  return [];
+/* on és cada cosa: la general i les parts, cadascuna Al Box i/o En físic */
+function placesOf(p){
+  const base = [isDigital(p)&&'box', isFisic(p)&&'fisic'].filter(Boolean);
+  return { g: p.generalNomesFisic ? ['fisic'] : base, p: p.partsNomesFisic ? ['fisic'] : base };
+}
+const PLACE_LABEL = {box:'Al Box', fisic:'En físic'};
+function placesText(arr){ return arr.map((x,i)=> i ? PLACE_LABEL[x].toLowerCase() : PLACE_LABEL[x]).join(' i '); }
+/* línia d'ubicació de la targeta: només quan l'obra és en físic */
+function locLineHtml(p){
+  if(!isFisic(p)) return '';
+  const lloc = (p.ubicacioFisica||[]).join(', ') || 'lloc sense indicar';
+  const bits = [isDigital(p) ? 'En físic' : 'Només en físic', lloc];
+  if(isDigital(p) && p.generalNomesFisic) bits.push('general només en paper');
+  if(isDigital(p) && p.partsNomesFisic) bits.push('parts només en paper');
+  return `<p class="locline">${esc(bits.join(' · '))}</p>`;
 }
 
 /* etiquetes d'una obra: capa 1 + capa 2 */
 function tagsHtml(p, st){
   st = st || obraState(p);
   const t = [`<span class="statusline ${st.cls}"><span class="dot"></span>${esc(st.label)}${st.detail?' · '+esc(st.detail):''}</span>`];
-  if(st.extra) t.push(`<span class="minitag gray">${esc(st.extra)}</span>`);
+  if(st.extra) t.push(`<span class="minitag warn">${esc(st.extra)}</span>`);
   if(needsReview(p)) t.push(`<span class="minitag warn">Cal revisar</span>`);
-  fisicTags(p).forEach(x=> t.push(`<span class="minitag place">${esc(x)}</span>`));
   return `<div class="tagrow">${t.join('')}</div>`;
 }
-/* capa 3 — on es troba: només es mostra on hi és, sempre amb el mateix estil */
+/* on es troba (fitxa): només on hi és, sempre amb el mateix estil */
 function placePillsHtml(p){
   const d = isDigital(p), f = isFisic(p), n = p.fileCount||0;
   const out = [];
-  if(d) out.push(`En Box${n?` · ${n} fitxer${n===1?'':'s'}`:''}`);
+  if(d) out.push(`Al Box${n?` · ${n} fitxer${n===1?'':'s'}`:''}`);
   if(f) out.push(`En físic · ${(p.ubicacioFisica||[]).join(', ') || 'lloc sense indicar'}`);
-  if(d && f){ if(p.generalNomesFisic) out.push('General només en físic'); if(p.partsNomesFisic) out.push('Parts només en físic'); }
   return out.length ? `<div class="tagrow">${out.map(x=>`<span class="placepill">${esc(x)}</span>`).join('')}</div>` : '<span class="hint" style="margin:0">No consta enlloc</span>';
 }
 /* targeta d'obra (biblioteca i feina pendent) */
@@ -561,6 +573,7 @@ function obraCardHtml(p, opts={}){
       <div class="titlerow"><p class="title">${esc(p.title)}</p>${p.estil?`<span class="estilchip">${esc(p.estil)}</span>`:''}</div>
       ${authors?`<p class="authors">${esc(authors)}</p>`:''}
       ${tagsHtml(p, st)}
+      ${locLineHtml(p)}
       ${opts.reasons && st.reasons.length ? `<ul class="reasons">${st.reasons.map(r=>`<li>${esc(r)}</li>`).join('')}</ul>` : ''}
     </div>
     ${opts.accept ? `<div class="acceptbtns">
@@ -871,7 +884,7 @@ function openFilters(){
       <div class="chips" id="fEstat">${Object.entries(FACETA.parts).map(([k,e])=>chipHtml(e.label, f.estat===k,'estat',k)).join('')}</div>
 
       <h3 class="sec">On es troba</h3>
-      <div class="chips" id="fUbi">${chipHtml('En Box', f.ubicacio==='digital','ubicacio','digital')}${chipHtml('En físic', f.ubicacio==='fisic','ubicacio','fisic')}${chipHtml('Només en físic', f.ubicacio==='nomesfisic','ubicacio','nomesfisic')}</div>
+      <div class="chips" id="fUbi">${chipHtml('Al Box', f.ubicacio==='digital','ubicacio','digital')}${chipHtml('En físic', f.ubicacio==='fisic','ubicacio','fisic')}${chipHtml('Només en físic', f.ubicacio==='nomesfisic','ubicacio','nomesfisic')}</div>
       <div class="chips" id="fLloc" style="margin-top:8px">${(STATE.catalogs.ubicacions||[]).map(u=>chipHtml(u, f.lloc===u,'lloc',u)).join('')}</div>
 
       <h3 class="sec">Instrumentació externa</h3>
@@ -954,8 +967,8 @@ function openDetail(id){
         <h4>Estat de l'arxiu</h4>
         <dl class="kvgrid statgrid2">
           <dt>Estat</dt><dd><span class="tagpill ${st.cls}"><span class="tdot"></span>${esc(st.label)}</span>${needsReview(p)?' <span class="tagpill warn">Cal revisar</span>':''}</dd>
-          <dt>General</dt><dd><span class="tagpill ${FACETA.general[st.G].cls}">${esc(FACETA.general[st.G].label)}</span></dd>
-          <dt>Parts</dt><dd><span class="tagpill ${FACETA.parts[st.P].cls}">${esc(FACETA.parts[st.P].label)}</span></dd>
+          <dt>General</dt><dd><span class="tagpill ${FACETA.general[st.G].cls}">${esc(FACETA.general[st.G].label)}</span>${st.G!=='falta' && placesOf(p).g.length ? `<span class="placenote">${esc(placesText(placesOf(p).g))}</span>` : ''}</dd>
+          <dt>Parts</dt><dd><span class="tagpill ${FACETA.parts[st.P].cls}">${esc(FACETA.parts[st.P].label)}</span>${placesOf(p).p.length ? `<span class="placenote">${esc(placesText(placesOf(p).p))}</span>` : ''}</dd>
           <dt>On es troba</dt><dd>${placePillsHtml(p)}</dd>
         </dl>
         ${st.detail?`<div class="note bad" style="margin-top:10px"><b>Falten:</b> ${esc(st.detail)}</div>`:''}
@@ -1149,17 +1162,80 @@ function bindMissing(box, m, onChange){
   box.querySelector('[data-altres]').addEventListener('input', e=>{ m.altres = e.target.value; m.touched = true; onChange(); });
 }
 
-/* quan és en Box i en físic: la general o les parts poden ser només en paper */
-function partFisHtml(id, draft){
-  const both = draft.ubicDigital && draft.ubicFisic;
-  return `<div class="field partfis ${both?'':'hidden'}" id="${id}"><label>Hi ha alguna cosa que només sigui en paper?</label>
-    <label class="checkline"><input type="checkbox" data-pf="gnf" ${draft.gnf?'checked':''}><span>La partitura general només és en físic</span></label>
-    <label class="checkline"><input type="checkbox" data-pf="pnf" ${draft.pnf?'checked':''}><span>Les parts només són en físic</span></label></div>`;
+/* Estat de l'arxiu (formularis): per a la general i per a les parts, primer si hi són i després on són.
+   Amb una sola ubicació física a Configuració no cal triar-la; se n'assigna automàticament. */
+function archInit(piece){
+  const pl = placesOf(piece);
+  return { gPlaces: pl.g.slice(), pPlaces: pl.p.slice(), llocs: (piece.ubicacioFisica||[]).slice() };
 }
-function bindPartFis(box, draft){
-  box.querySelectorAll('[data-pf]').forEach(c=> c.addEventListener('change', ()=>{ draft[c.dataset.pf] = c.checked; }));
+function archHtml(pre, d, allowUnknown){
+  const gOpts = [['si','Sí'],['no','No']].concat(allowUnknown ? [['desconegut','No ho sé']] : []);
+  const pOpts = [['Completa','Sí, completes'],['Falten parts','No, en falten']].concat(allowUnknown ? [['Per revisar','No ho sé']] : []);
+  const where = (key, arr, q, show)=> `<div class="archwhere ${show?'':'hidden'}"><span class="archq">${q}</span>
+      <div class="chips">${Object.entries(PLACE_LABEL).map(([k,l])=>`<button type="button" class="chip ${arr.includes(k)?'on':''}" data-${key}="${k}">${l}</button>`).join('')}</div></div>`;
+  const multi = (STATE.catalogs.ubicacions||[]).length > 1;
+  return `
+    <div class="field archfield" id="${pre}_general">
+      <label>Partitura general <span class="req">*</span></label>
+      <div class="chips">${gOpts.map(([k,l])=>`<button type="button" class="chip ${d.general===k?'on':''}" data-g="${k}">${l}</button>`).join('')}</div>
+      ${where('gp', d.gPlaces, 'On és?', d.general && d.general!=='no')}
+      <div class="errtext">Indica si hi ha la partitura general i on és.</div>
+    </div>
+    <div class="field archfield" id="${pre}_parts">
+      <label>Parts de la banda <span class="req">*</span></label>
+      <div class="chips">${pOpts.map(([k,l])=>`<button type="button" class="chip ${d.estatParts===k?'on':''}" data-p="${k}">${l}</button>`).join('')}</div>
+      ${where('pp', d.pPlaces, 'On són?', !!d.estatParts)}
+      ${missingHtml(pre+'_missing', d.missing, d.estatParts!=='Falten parts')}
+      <div class="errtext">Indica com estan les parts i on són.</div>
+    </div>
+    ${multi ? llocChipsHtml(pre+'_llocs', d.llocs, true) : ''}`;
 }
-function syncPartFis(box, draft){ box.classList.toggle('hidden', !(draft.ubicDigital && draft.ubicFisic)); }
+function bindArch(root, pre, d, onChange){
+  const gBox = root.querySelector('#'+pre+'_general'), pBox = root.querySelector('#'+pre+'_parts');
+  const llocs = root.querySelector('#'+pre+'_llocs');
+  const sync = ()=>{
+    gBox.querySelector('.archwhere').classList.toggle('hidden', !d.general || d.general==='no');
+    pBox.querySelector('.archwhere').classList.toggle('hidden', !d.estatParts);
+    root.querySelector('#'+pre+'_missing').classList.toggle('hidden', d.estatParts!=='Falten parts');
+    if(llocs) llocs.classList.toggle('hidden', !archApply(d).enPaper);
+    onChange();
+  };
+  const single = (box, attr, key)=> box.querySelectorAll(`[data-${attr}]`).forEach(b=> b.addEventListener('click', ()=>{
+    d[key] = b.dataset[attr];
+    box.querySelectorAll(`[data-${attr}]`).forEach(x=> x.classList.toggle('on', x===b));
+    box.classList.remove('err'); sync();
+  }));
+  const multiPick = (box, attr, key)=> box.querySelectorAll(`[data-${attr}]`).forEach(b=> b.addEventListener('click', ()=>{
+    const v = b.dataset[attr];
+    d[key] = d[key].includes(v) ? d[key].filter(x=>x!==v) : [...d[key], v];
+    b.classList.toggle('on', d[key].includes(v));
+    box.classList.remove('err'); sync();
+  }));
+  single(gBox, 'g', 'general'); multiPick(gBox, 'gp', 'gPlaces');
+  single(pBox, 'p', 'estatParts'); multiPick(pBox, 'pp', 'pPlaces');
+  bindMissing(root.querySelector('#'+pre+'_missing'), d.missing, onChange);
+  if(llocs) bindLlocChips(llocs, d);
+  if(llocs) llocs.classList.toggle('hidden', !archApply(d).enPaper);
+}
+function archValidate(root, pre, d){
+  const gOk = !!d.general && (d.general==='no' || d.gPlaces.length>0);
+  const pOk = !!d.estatParts && d.pPlaces.length>0;
+  root.querySelector('#'+pre+'_general').classList.toggle('err', !gOk);
+  root.querySelector('#'+pre+'_parts').classList.toggle('err', !pOk);
+  return gOk && pOk;
+}
+/* camps d'ubicació que resulten del formulari */
+function archApply(d){
+  const g = d.general && d.general!=='no' ? d.gPlaces : [], pp = d.pPlaces;
+  const box = g.includes('box') || pp.includes('box'), fis = g.includes('fisic') || pp.includes('fisic');
+  const cat = STATE.catalogs.ubicacions||[];
+  const llocs = !fis ? [] : cat.length===1 ? [cat[0]] : (d.llocs.length ? d.llocs : cat.slice(0,1));
+  return {
+    escanejada: box, enPaper: fis, ubicacioFisica: llocs,
+    generalNomesFisic: box && fis && g.length===1 && g[0]==='fisic',
+    partsNomesFisic: box && fis && pp.length===1 && pp[0]==='fisic',
+  };
+}
 
 /* ================= EDITAR OBRA EXISTENT ================= */
 function openEditPiece(id){
@@ -1169,9 +1245,9 @@ function openEditPiece(id){
     nom: piece.title, autor: piece.composer||'', arranjador: piece.arranger||'', estil: piece.estil||'',
     projecteIds: (piece.aparicions||[]).map(a=>a.projecteId).filter(Boolean),
     general: piece.general||'desconegut', estatParts: piece.estatParts==='No és a Box' ? 'Per revisar' : (piece.estatParts||'Per revisar'),
-    ubicFisic: isFisic(piece), llocs:(piece.ubicacioFisica||[]).slice(), ubicDigital: isDigital(piece), gnf: !!piece.generalNomesFisic, pnf: !!piece.partsNomesFisic,
+    ...archInit(piece),
     missing: missingInit(piece), instrExterns: piece.specials||[],
-    calRevisio: !!piece.calRevisioManual, comentaris: piece.obs||''
+    comentaris: piece.obs||''
   };
   const bg = document.createElement('div'); bg.className='sheet-bg';
   bg.innerHTML = `<div class="sheet">
@@ -1187,26 +1263,9 @@ function openEditPiece(id){
         <div class="field"><label>Projectes <span class="opt">opcional — pot ser-hi en diversos</span></label><div id="ems_projecte"></div></div>
       </div>
       <h3 class="sec">Estat de l'arxiu</h3>
-      <div class="field">
-        <label>Partitura general <span class="req">*</span></label>
-        <div class="chips" id="ef_general">${[['si','Sí'],['no','No'],['desconegut','No ho sé']].map(([k,l])=>`<button type="button" class="chip ${draft.general===k?'on':''}" data-general="${k}">${l}</button>`).join('')}</div>
-      </div>
-      <div class="field">
-        <label>Parts de la banda <span class="req">*</span></label>
-        <div class="chips" id="ef_parts">${[['Completa','Sí, completes'],['Falten parts','No, en falten'],['Per revisar','No ho sé']].map(([k,l])=>`<button type="button" class="chip ${draft.estatParts===k?'on':''}" data-parts="${k}">${l}</button>`).join('')}</div>
-        ${missingHtml('ef_missing', draft.missing, draft.estatParts!=='Falten parts')}
-      </div>
+      ${archHtml('ef', draft, true)}
       <div class="field"><label>Instruments fora de la plantilla habitual <span class="opt">opcional</span></label><div id="ems_instr"></div></div>
       <div class="note info" id="ef_preview" style="margin-top:10px"></div>
-
-      <h3 class="sec">On es troba</h3>
-      <label class="checkline"><input type="checkbox" id="eck_digital" ${draft.ubicDigital?'checked':''}><span>En Box</span></label>
-      <label class="checkline"><input type="checkbox" id="eck_fisic" ${draft.ubicFisic?'checked':''}><span>En físic</span></label>
-      ${llocChipsHtml('ef_llocs', draft.llocs, !draft.ubicFisic)}
-      ${partFisHtml('ef_partfis', draft)}
-
-      <h3 class="sec">Revisió</h3>
-      <label class="checkline"><input type="checkbox" id="eck_revisio" ${draft.calRevisio?'checked':''}><span>Marca-la manualment com a "Cal revisar"</span></label>
 
       <h3 class="sec">Comentaris</h3>
       <textarea class="textarea" id="ein_comentaris">${esc(draft.comentaris)}</textarea>
@@ -1218,7 +1277,7 @@ function openEditPiece(id){
 
   function updatePreview(){
     const tmp = {...piece, general:draft.general, estatParts:draft.estatParts, ...(missingFields(draft)||{}),
-      calRevisioManual:draft.calRevisio, composer:draft.autor, arranger:draft.arranjador};
+      ...archApply(draft), calRevisioManual:false, composer:draft.autor, arranger:draft.arranjador};
     const st = obraState(tmp);
     bg.querySelector('#ef_preview').innerHTML = `<b>Estat resultant:</b> ${esc(stateText(st))}${needsReview(tmp)?' · Cal revisar':''}`;
   }
@@ -1232,23 +1291,8 @@ function openEditPiece(id){
   makeMultiSelect(bg.querySelector('#ems_projecte'), {items:projItems, values:curProjLabels, placeholder:'Cerca un projecte', allowCreate:false, onChange:v=>{
     draft.projecteIds = v.map(label=>{ const found = STATE.catalogs.projectes.find(pp=> projLabelOf(pp)===label); return found? found.id : null; }).filter(Boolean);
   }});
-  bg.querySelectorAll('#ef_general [data-general]').forEach(b=>{
-    b.addEventListener('click', ()=>{ bg.querySelectorAll('#ef_general [data-general]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); draft.general=b.dataset.general; updatePreview(); });
-  });
-  bg.querySelectorAll('#ef_parts [data-parts]').forEach(b=>{
-    b.addEventListener('click', ()=>{
-      bg.querySelectorAll('#ef_parts [data-parts]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); draft.estatParts=b.dataset.parts;
-      bg.querySelector('#ef_missing').classList.toggle('hidden', draft.estatParts!=='Falten parts');
-      updatePreview();
-    });
-  });
+  bindArch(bg, 'ef', draft, updatePreview);
   makeMultiSelect(bg.querySelector('#ems_instr'), {items:STATE.catalogs.instrumentsExterns, values:draft.instrExterns.slice(), placeholder:'p. ex. Cor, Piano', onChange:v=>draft.instrExterns=v});
-  bg.querySelector('#eck_fisic').addEventListener('change', e=>{ draft.ubicFisic=e.target.checked; bg.querySelector('#ef_llocs').classList.toggle('hidden', !draft.ubicFisic); syncPartFis(bg.querySelector('#ef_partfis'), draft); });
-  bindPartFis(bg.querySelector('#ef_partfis'), draft);
-  bindLlocChips(bg.querySelector('#ef_llocs'), draft);
-  bindMissing(bg.querySelector('#ef_missing'), draft.missing, updatePreview);
-  bg.querySelector('#eck_digital').addEventListener('change', e=>{ draft.ubicDigital=e.target.checked; syncPartFis(bg.querySelector('#ef_partfis'), draft); });
-  bg.querySelector('#eck_revisio').addEventListener('change', e=>{draft.calRevisio=e.target.checked; updatePreview();});
   bg.querySelector('#ein_nom').addEventListener('input', e=>{ draft.nom=e.target.value; bg.querySelector('#ef_nom').classList.remove('err'); });
   bg.querySelector('#ein_comentaris').addEventListener('input', e=>draft.comentaris=e.target.value);
   updatePreview();
@@ -1260,7 +1304,8 @@ function openEditPiece(id){
     let ok = true;
     if(!draft.nom.trim()){ bg.querySelector('#ef_nom').classList.add('err'); ok=false; }
     if(!draft.autor.trim()){ bg.querySelector('#ef_autor').classList.add('err'); ok=false; }
-    if(!ok) return;
+    if(!archValidate(bg, 'ef', draft)) ok=false;
+    if(!ok){ const e = bg.querySelector('.err'); if(e) e.scrollIntoView({behavior:'smooth', block:'center'}); return; }
     if(draft.autor && !STATE.catalogs.autors.includes(draft.autor)) STATE.catalogs.autors.push(draft.autor);
     if(draft.arranjador && !STATE.catalogs.arranjadors.includes(draft.arranjador)) STATE.catalogs.arranjadors.push(draft.arranjador);
     if(draft.estil && !STATE.catalogs.estils.includes(draft.estil)) STATE.catalogs.estils.push(draft.estil);
@@ -1280,9 +1325,8 @@ function openEditPiece(id){
       obs: draft.comentaris.trim(), aparicions: newAparicions,
       estil: draft.estil.trim(), general, estatParts,
       specials: draft.instrExterns, ...(missingFields(draft)||{}),
-      enPaper: draft.ubicFisic, escanejada: draft.ubicDigital, ubicacioFisica: draft.ubicFisic ? draft.llocs : [],
-      generalNomesFisic: draft.ubicDigital && draft.ubicFisic && draft.gnf, partsNomesFisic: draft.ubicDigital && draft.ubicFisic && draft.pnf,
-      calRevisioManual: draft.calRevisio,
+      ...archApply(draft),
+      calRevisioManual: false,
       nomesFisicPendent: !!piece.nomesFisicPendent && estatParts==='Per revisar',
     });
     persist(); refreshViews(); close();
@@ -1292,7 +1336,7 @@ function openEditPiece(id){
 /* ================= REGISTRAR ================= */
 function renderRegistrar(){
   const root = document.getElementById('registrarForm');
-  const draft = { nom:'', autor:'', arranjador:'', estil:'', projecteIds:[], general:null, estatParts:null, ubicFisic:false, ubicDigital:false, gnf:false, pnf:false, llocs:[], missing:{totes:false, sel:[], altres:'', touched:false}, instrExterns:[], comentaris:'', registradaPer:'' };
+  const draft = { nom:'', autor:'', arranjador:'', estil:'', projecteIds:[], general:null, estatParts:null, gPlaces:[], pPlaces:[], llocs:[], missing:{totes:false, sel:[], altres:'', touched:false}, instrExterns:[], comentaris:'', registradaPer:'' };
 
   root.innerHTML = `
     <div class="block">
@@ -1310,28 +1354,9 @@ function renderRegistrar(){
 
     <div class="block">
       <h3>Estat de l'arxiu</h3>
-      <div class="field" id="f_general">
-        <label>Partitura general <span class="req">*</span></label>
-        <div class="chips" id="f_general_chips">${[['si','Sí'],['no','No'],['desconegut','No ho sé']].map(([k,l])=>`<button type="button" class="chip" data-general="${k}">${l}</button>`).join('')}</div>
-        <div class="errtext">Cal indicar si té partitura general.</div>
-      </div>
-      <div class="field" id="f_parts">
-        <label>Parts de la banda <span class="req">*</span></label>
-        <div class="chips" id="f_parts_chips">${[['Completa','Sí, completes'],['Falten parts','No, en falten'],['Per revisar','No ho sé']].map(([k,l])=>`<button type="button" class="chip" data-parts="${k}">${l}</button>`).join('')}</div>
-        ${missingHtml('f_missing', draft.missing, true)}
-        <div class="errtext">Cal indicar l'estat de les parts.</div>
-      </div>
+      ${archHtml('f', draft, false)}
       <div class="field"><label>Instruments fora de la plantilla habitual <span class="opt">opcional</span></label><div id="ms_instr"></div></div>
       <div class="note info" id="f_preview" style="margin-top:10px"></div>
-    </div>
-
-    <div class="block" id="f_ubicacio_block">
-      <h3>On es troba <span class="req">*</span></h3>
-      <label class="checkline"><input type="checkbox" id="ck_digital"><span>En Box</span></label>
-      <label class="checkline"><input type="checkbox" id="ck_fisic"><span>En físic</span></label>
-      ${llocChipsHtml('f_llocs', [], true)}
-      ${partFisHtml('f_partfis', draft)}
-      <div class="errtext" id="f_ubicacio_err">Cal marcar almenys una ubicació.</div>
     </div>
 
     <div class="block">
@@ -1355,7 +1380,7 @@ function renderRegistrar(){
       document.getElementById('f_preview').innerHTML = `Omple els dos camps anteriors per veure l'estat resultant.`;
       return;
     }
-    const tmp = {general:draft.general, estatParts:draft.estatParts, ...(missingFields(draft)||{}),
+    const tmp = {general:draft.general, estatParts:draft.estatParts, ...(missingFields(draft)||{}), ...archApply(draft),
       calRevisioManual:false, composer:draft.autor, arranger:draft.arranjador, autoriaConflicte:false,
       pendentAcceptacio: STATE.role!=='gestio'};
     const st = obraState(tmp);
@@ -1372,31 +1397,9 @@ function renderRegistrar(){
     draft.projecteIds = v.map(label=>{ const found = STATE.catalogs.projectes.find(p=> projLabelOf(p)===label); return found? found.id : null; }).filter(Boolean);
   }});
 
-  document.getElementById('f_general').querySelectorAll('[data-general]').forEach(b=>{
-    b.addEventListener('click', ()=>{
-      document.getElementById('f_general').querySelectorAll('[data-general]').forEach(x=>x.classList.remove('on'));
-      b.classList.add('on'); draft.general=b.dataset.general; document.getElementById('f_general').classList.remove('err'); updatePreview();
-    });
-  });
-  document.getElementById('f_parts').querySelectorAll('[data-parts]').forEach(b=>{
-    b.addEventListener('click', ()=>{
-      document.getElementById('f_parts').querySelectorAll('[data-parts]').forEach(x=>x.classList.remove('on'));
-      b.classList.add('on'); draft.estatParts=b.dataset.parts; document.getElementById('f_parts').classList.remove('err');
-      document.getElementById('f_missing').classList.toggle('hidden', draft.estatParts!=='Falten parts');
-      updatePreview();
-    });
-  });
+  bindArch(root, 'f', draft, updatePreview);
   makeMultiSelect(document.getElementById('ms_instr'), {items:STATE.catalogs.instrumentsExterns, values:[], placeholder:'p. ex. Cor, Piano', onChange:v=>draft.instrExterns=v});
 
-  function validateUbicacio(){
-    syncPartFis(document.getElementById('f_partfis'), draft);
-    document.getElementById('f_ubicacio_block').classList.toggle('err', !(draft.ubicFisic||draft.ubicDigital));
-  }
-  document.getElementById('ck_fisic').addEventListener('change', e=>{ draft.ubicFisic=e.target.checked; document.getElementById('f_llocs').classList.toggle('hidden', !draft.ubicFisic); validateUbicacio(); });
-  bindLlocChips(document.getElementById('f_llocs'), draft);
-  bindPartFis(document.getElementById('f_partfis'), draft);
-  bindMissing(document.getElementById('f_missing'), draft.missing, updatePreview);
-  document.getElementById('ck_digital').addEventListener('change', e=>{ draft.ubicDigital=e.target.checked; validateUbicacio(); });
   document.getElementById('in_registrador').addEventListener('input', e=>draft.registradaPer=e.target.value.trim());
   document.getElementById('in_nom').addEventListener('input', e=>{ draft.nom=e.target.value; document.getElementById('f_nom').classList.remove('err'); });
   document.getElementById('in_comentaris').addEventListener('input', e=>draft.comentaris=e.target.value);
@@ -1408,10 +1411,8 @@ function renderRegistrar(){
     let ok = true;
     if(!draft.nom.trim()){ document.getElementById('f_nom').classList.add('err'); ok=false; }
     if(!draft.autor.trim()){ document.getElementById('f_autor').classList.add('err'); ok=false; }
-    if(!draft.general){ document.getElementById('f_general').classList.add('err'); ok=false; }
-    if(!draft.estatParts){ document.getElementById('f_parts').classList.add('err'); ok=false; }
-    if(!draft.ubicFisic && !draft.ubicDigital){ document.getElementById('f_ubicacio_block').classList.add('err'); ok=false; }
-    if(!ok) return;
+    if(!archValidate(root, 'f', draft)) ok=false;
+    if(!ok){ const e = root.querySelector('.err'); if(e) e.scrollIntoView({behavior:'smooth', block:'center'}); return; }
 
     if(draft.autor && !STATE.catalogs.autors.includes(draft.autor)) STATE.catalogs.autors.push(draft.autor);
     if(draft.arranjador && !STATE.catalogs.arranjadors.includes(draft.arranjador)) STATE.catalogs.arranjadors.push(draft.arranjador);
@@ -1439,9 +1440,7 @@ function renderRegistrar(){
       specials: draft.instrExterns,
       partsNoDetectades: [], faltenInventari: [], totesFaltenParts: false,
       ...(missingFields(draft)||{}),
-      ubicacioFisica: draft.ubicFisic ? draft.llocs : [],
-      enPaper: draft.ubicFisic, escanejada: draft.ubicDigital,
-      generalNomesFisic: draft.ubicDigital && draft.ubicFisic && draft.gnf, partsNomesFisic: draft.ubicDigital && draft.ubicFisic && draft.pnf,
+      ...archApply(draft),
       calRevisioManual: false, autoriaConflicte: false,
       fontsPaper: false, origenManual: true,
       pendentAcceptacio: STATE.role!=='gestio',
