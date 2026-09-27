@@ -90,9 +90,8 @@ main{max-width:680px;margin:0 auto;padding:8px 16px calc(var(--nav-h) + 40px + e
 .minitag.warn{background:var(--gold-bg);color:var(--gold-ink)}
 .minitag.gray{background:var(--gray-bg);color:var(--muted)}
 .minitag.ok{background:var(--ok-bg);color:var(--ok-fg)}
-.placepill{display:inline-flex;align-items:center;gap:5px;min-height:26px;padding:0 11px;border-radius:999px;font-size:12.5px;font-weight:600;border:1px dashed var(--line-strong);color:var(--muted);text-decoration:line-through;text-decoration-color:color-mix(in srgb, var(--muted) 60%, transparent)}
-.placepill svg{flex:none}
-.placepill.on{border:1px solid transparent;background:var(--accent-soft);color:var(--accent);text-decoration:none}
+.placepill,.minitag.place{display:inline-flex;align-items:center;gap:5px;border-radius:999px;font-weight:600;background:var(--accent-soft);color:var(--accent)}
+.placepill{min-height:26px;padding:0 11px;font-size:12.5px}
 .reasons{margin:8px 0 0;padding-left:16px;font-size:12.5px;color:var(--gold-ink);line-height:1.5}
 .acceptbtns{display:flex;flex-direction:column;gap:6px;flex:none}
 .btn-sm{min-height:36px;padding:0 14px;font-size:13.5px}
@@ -459,30 +458,56 @@ function partsSeverity(p){
   return 'severe'; // "Falten parts" sense cap detall concret — es tracta amb cautela
 }
 /* ---------- estats de l'obra ----------
-   L'estat principal respon a «la podem tocar?» (les parts de la banda).
-   La partitura general i «Cal revisar» són marques secundàries.
-   Per canviar un nom o un color, només cal tocar aquestes dues taules. */
+   Cada obra té dues facetes: la partitura general (G) i les parts de la banda (P).
+   Cada faceta pot ser: 'ok' (la tenim), 'falta' o '?' (no ho sabem, «No ho sé»).
+   Capa 1 — estat principal (una sola etiqueta): combina G i P. El vermell (el que falta) mana sobre el gris.
+   Capa 2 — etiquetes secundàries: la faceta desconeguda quan l'estat és vermell, «Cal revisar»
+            i «només en físic».
+   Capa 3 — on es troba (fitxa): En Box / En físic.
+   Per canviar un nom o un color, només cal tocar aquestes taules. */
 const ESTATS = {
-  complet:   {label:'Completa',        cls:'ok'},
-  falten:    {label:'Falten parts',    cls:'bad'},
-  verificar: {label:'Sense verificar', cls:'gray'},
+  'complet':           {label:'Completa',                cls:'ok'},
+  'falta-general':     {label:'Falta general',           cls:'bad'},
+  'falten':            {label:'Falten parts',            cls:'bad'},
+  'falta-tot':         {label:'Falta general i parts',   cls:'bad'},
+  'verificar':         {label:'Sense verificar',         cls:'gray'},
+  'verificar-general': {label:'General sense verificar', cls:'gray'},
+  'verificar-parts':   {label:'Parts sense verificar',   cls:'gray'},
 };
-const GENERAL = {
-  si:         {label:'Amb general',         short:'Sí',        cls:'ok'},
-  no:         {label:'Sense general',       short:'No',        cls:'warn'},
-  desconegut: {label:'General desconeguda', short:'No se sap', cls:'gray'},
+const FACETA = {  // com es mostra cada faceta a la fitxa i als filtres
+  general: {ok:{label:'Sí', cls:'ok'},        falta:{label:'Falta', cls:'bad'},  '?':{label:'Sense verificar', cls:'gray'}},
+  parts:   {ok:{label:'Completes', cls:'ok'}, falta:{label:'Falten', cls:'bad'}, '?':{label:'Sense verificar', cls:'gray'}},
 };
+function facets(p){
+  const sev = partsSeverity(p);
+  return {
+    G: p.general==='si' ? 'ok' : p.general==='no' ? 'falta' : '?',
+    P: (p.estatParts==='Completa' || sev==='forgivable') ? 'ok' : sev==='severe' ? 'falta' : '?',
+    sev,
+  };
+}
+function stateKey(G, P){
+  if(G==='falta' && P==='falta') return 'falta-tot';
+  if(G==='falta') return 'falta-general';
+  if(P==='falta') return 'falten';
+  if(G==='?' && P==='?') return 'verificar';
+  if(G==='?') return 'verificar-general';
+  if(P==='?') return 'verificar-parts';
+  return 'complet';
+}
 function obraState(p){
-  const severity = partsSeverity(p);
-  let key;
-  if(p.estatParts==='Completa' || severity==='forgivable') key = 'complet';
-  else if(severity==='severe') key = 'falten';
-  else key = 'verificar';
+  const {G, P, sev} = facets(p);
+  const key = stateKey(G, P);
+  // quan l'estat és vermell, la faceta desconeguda passa a la capa 2
+  const extra = (G==='falta' && P==='?') ? ESTATS['verificar-parts'].label
+              : (P==='falta' && G==='?') ? ESTATS['verificar-general'].label : '';
 
   const reasons = [];
-  if(key==='verificar') reasons.push(p.nomesFisicPendent
-    ? 'Només la tenim registrada a l\'inventari en paper: no sabem si hi ha la partitura general ni quines parts hi ha. Cal anar a l\'arxiu a comprovar-ho.'
-    : 'No s\'ha comprovat si les parts de la banda són completes.');
+  if(p.nomesFisicPendent && (G==='?' || P==='?')) reasons.push('Només la tenim registrada a l\'inventari en paper. Cal anar a l\'arxiu a comprovar què hi ha.');
+  else {
+    if(P==='?') reasons.push('No s\'ha comprovat si les parts de la banda són completes.');
+    if(G==='?') reasons.push('No s\'ha comprovat si hi ha la partitura general.');
+  }
   if(p.autoriaConflicte) reasons.push('El compositor o l\'arranjador no coincideix entre les diverses còpies d\'aquesta obra — cal confirmar quin és el correcte.');
   if(p.arranjadorRevisar) reasons.push('El nom de l\'arranjador no s\'ha pogut normalitzar automàticament — cal revisar-lo.');
   if(p.pendentAcceptacio) reasons.push('Registrada per '+(p.registradaPer||'un músic')+(p.dataRegistre? ' el '+p.dataRegistre : '')+' — pendent que Junta l\'accepti.');
@@ -491,33 +516,40 @@ function obraState(p){
   if(p.revisioNota && p.revisioNota.length) reasons.push(...p.revisioNota);
   if(!p.composer && !p.arranger) reasons.push('No consta ni el compositor ni l\'arranjador.');
   else if(!p.composer) reasons.push('No consta el compositor.');
-  if(severity==='forgivable') reasons.push('Falten '+(p.partsNoDetectades||[]).length+' parts detectades automàticament — es dona per pràcticament completa.');
+  if(sev==='forgivable') reasons.push('Falten '+(p.partsNoDetectades||[]).length+' parts detectades automàticament — es dona per pràcticament completa.');
 
-  return {key, ...ESTATS[key], detail: key==='falten' ? detailParts(p) : '', reasons};
+  return {key, ...ESTATS[key], G, P, extra, detail: P==='falta' ? detailParts(p) : '', reasons};
 }
-function generalInfo(p){ return GENERAL[p.general] || GENERAL.desconegut; }
+function stateText(st){ return st.label + (st.extra ? ' · '+st.extra : ''); }
 function needsReview(p){ return !!(p.calRevisioManual || (p.notaPaper&&p.notaPaper.length) || p.autoriaConflicte); }
 function reviewReasons(p){ return obraState(p).reasons; }
 function isDigital(p){ return !!p.escanejada || (p.fileCount||0)>0; }
 function isFisic(p){ return !!p.enPaper || (p.ubicacioFisica&&p.ubicacioFisica.length>0); }
+/* etiquetes de disponibilitat en físic (capa 2) */
+function fisicTags(p){
+  const d = isDigital(p), f = isFisic(p);
+  if(f && !d) return ['Només disponible en físic'];
+  if(f && d) return [p.generalNomesFisic ? 'General només en físic' : '', p.partsNomesFisic ? 'Parts només en físic' : ''].filter(Boolean);
+  return [];
+}
 
-/* etiquetes d'una obra: estat principal + marques secundàries */
+/* etiquetes d'una obra: capa 1 + capa 2 */
 function tagsHtml(p, st){
   st = st || obraState(p);
   const t = [`<span class="statusline ${st.cls}"><span class="dot"></span>${esc(st.label)}${st.detail?' · '+esc(st.detail):''}</span>`];
-  if(p.general==='no' || (p.general!=='si' && st.key!=='verificar')){ const g = generalInfo(p); t.push(`<span class="minitag ${g.cls}">${esc(g.label)}</span>`); }
+  if(st.extra) t.push(`<span class="minitag gray">${esc(st.extra)}</span>`);
   if(needsReview(p)) t.push(`<span class="minitag warn">Cal revisar</span>`);
+  fisicTags(p).forEach(x=> t.push(`<span class="minitag place">${esc(x)}</span>`));
   return `<div class="tagrow">${t.join('')}</div>`;
 }
-/* On es troba: dues píndoles, digital i físic */
-const ICO_CHECK = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+/* capa 3 — on es troba: només es mostra on hi és, sempre amb el mateix estil */
 function placePillsHtml(p){
   const d = isDigital(p), f = isFisic(p), n = p.fileCount||0;
-  const llocs = (p.ubicacioFisica||[]).join(', ');
-  return `<div class="tagrow">
-    <span class="placepill ${d?'on':''}">${d?ICO_CHECK:''}En digital${d&&n?` · ${n} fitxer${n===1?'':'s'}`:''}</span>
-    <span class="placepill ${f?'on':''}">${f?ICO_CHECK:''}En físic${f?' · '+esc(llocs||'lloc sense indicar'):''}</span>
-  </div>`;
+  const out = [];
+  if(d) out.push(`En Box${n?` · ${n} fitxer${n===1?'':'s'}`:''}`);
+  if(f) out.push(`En físic · ${(p.ubicacioFisica||[]).join(', ') || 'lloc sense indicar'}`);
+  if(d && f){ if(p.generalNomesFisic) out.push('General només en físic'); if(p.partsNomesFisic) out.push('Parts només en físic'); }
+  return out.length ? `<div class="tagrow">${out.map(x=>`<span class="placepill">${esc(x)}</span>`).join('')}</div>` : '<span class="hint" style="margin:0">No consta enlloc</span>';
 }
 /* targeta d'obra (biblioteca i feina pendent) */
 const ICO_CHEVRON = '<svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -619,8 +651,8 @@ document.querySelectorAll('#subviewCtl button[data-sub]').forEach(b=>{
 function obresDe(projecteId){ return STATE.pieces.filter(p=> (p.aparicions||[]).some(a=>a.projecteId===projecteId)); }
 function projStats(pid){
   const list = obresDe(pid);
-  const s = {n:list.length, complet:0, falten:0, verificar:0, senseGeneral:0};
-  list.forEach(p=>{ s[obraState(p).key]++; if(p.general==='no') s.senseGeneral++; });
+  const s = {n:list.length, complet:0, falta:0, verificar:0};
+  list.forEach(p=>{ const c = obraState(p).cls; if(c==='ok') s.complet++; else if(c==='bad') s.falta++; else s.verificar++; });
   return s;
 }
 
@@ -642,7 +674,7 @@ function renderProjectesView(){
       const s = projStats(pr.id);
       const bits = [];
       if(s.complet) bits.push(s.complet+' completes');
-      if(s.falten) bits.push(s.falten+' amb parts que falten');
+      if(s.falta) bits.push(s.falta+' amb mancances');
       if(s.verificar) bits.push(s.verificar+' sense verificar');
       return `<button class="projrow2" data-pid="${pr.id}">
         <div class="main">
@@ -717,6 +749,17 @@ function openProjecteSheet(pid){
   render();
 }
 
+/* Feina pendent: cada grup és una llista de tasques. Per afegir-ne un, n'hi ha prou amb una línia nova. */
+const TASQUES = [
+  {key:'acceptar',   title:'Registres per acceptar',  desc:'Obres registrades per músics que Junta ha d\'acceptar.', test:p=>p.pendentAcceptacio, accept:true},
+  {key:'revisar',    title:'Cal revisar',             desc:'Incidències concretes: notes de l\'inventari, autoria dubtosa o marcades a mà.', test:p=>needsReview(p) && !p.pendentAcceptacio, reasons:true},
+  {key:'falten',     title:'Falten parts',            desc:'No es poden tocar fins que es completin.', test:p=>facets(p).P==='falta'},
+  {key:'general',    title:'Falta la partitura general', desc:'El director no té la general.', test:p=>facets(p).G==='falta'},
+  {key:'vparts',     title:'Parts sense verificar',   desc:'Cal comprovar a l\'arxiu quines parts hi ha. Agrupades per on es troben.', test:p=>facets(p).P==='?', byPlace:true},
+  {key:'vgeneral',   title:'General sense verificar', desc:'Cal comprovar si hi ha la partitura general. Agrupades per on es troben.', test:p=>facets(p).G==='?', byPlace:true},
+  {key:'compositor', title:'Sense compositor',        desc:'Falta el nom del compositor.', test:p=>!p.composer},
+];
+STATE.openTask = null;
 function renderPendentsView(){
   const root = document.getElementById('subPendents');
   const canEdit = STATE.role==='gestio';
@@ -782,9 +825,10 @@ function matches(p){
     if(!hay.includes(q)) return false;
   }
   if(f.estil && p.estil!==f.estil) return false;
-  if(f.estat && obraState(p).key!==f.estat) return false;
-  if(f.general && p.general!==f.general) return false;
+  if(f.estat && facets(p).P!==f.estat) return false;
+  if(f.general && facets(p).G!==f.general) return false;
   if(f.ubicacio==='fisic' && !isFisic(p)) return false;
+  if(f.ubicacio==='nomesfisic' && !(isFisic(p) && !isDigital(p))) return false;
   if(f.ubicacio==='digital' && !isDigital(p)) return false;
   if(f.lloc && !(p.ubicacioFisica||[]).includes(f.lloc)) return false;
   if(f.instrExtern && !(p.specials||[]).includes(f.instrExtern)) return false;
@@ -820,14 +864,14 @@ function openFilters(){
       <h3 class="sec" style="margin-top:14px">Estil</h3>
       <div class="chips" id="fEstil">${estilOpts.length? estilOpts.map(e=>chipHtml(e,f.estil===e,'estil')).join('') : '<span class="hint">Encara no hi ha estils registrats.</span>'}</div>
 
-      <h3 class="sec">Parts de la banda</h3>
-      <div class="chips" id="fEstat">${Object.entries(ESTATS).map(([k,e])=>chipHtml(e.label, f.estat===k,'estat',k)).join('')}</div>
-
       <h3 class="sec">Partitura general</h3>
-      <div class="chips" id="fGeneral">${Object.entries(GENERAL).map(([k,g])=>chipHtml(g.short, f.general===k,'general',k)).join('')}</div>
+      <div class="chips" id="fGeneral">${Object.entries(FACETA.general).map(([k,g])=>chipHtml(g.label, f.general===k,'general',k)).join('')}</div>
+
+      <h3 class="sec">Parts de la banda</h3>
+      <div class="chips" id="fEstat">${Object.entries(FACETA.parts).map(([k,e])=>chipHtml(e.label, f.estat===k,'estat',k)).join('')}</div>
 
       <h3 class="sec">On es troba</h3>
-      <div class="chips" id="fUbi">${chipHtml('En digital', f.ubicacio==='digital','ubicacio','digital')}${chipHtml('En físic', f.ubicacio==='fisic','ubicacio','fisic')}</div>
+      <div class="chips" id="fUbi">${chipHtml('En Box', f.ubicacio==='digital','ubicacio','digital')}${chipHtml('En físic', f.ubicacio==='fisic','ubicacio','fisic')}${chipHtml('Només en físic', f.ubicacio==='nomesfisic','ubicacio','nomesfisic')}</div>
       <div class="chips" id="fLloc" style="margin-top:8px">${(STATE.catalogs.ubicacions||[]).map(u=>chipHtml(u, f.lloc===u,'lloc',u)).join('')}</div>
 
       <h3 class="sec">Instrumentació externa</h3>
@@ -883,7 +927,6 @@ function openDetail(id){
   const p = STATE.pieces.find(x=>x.id===id);
   if(!p) return;
   const st = obraState(p);
-  const g = generalInfo(p);
   const aparicions = (p.aparicions||[]).slice().sort((a,b)=>(b.any||0)-(a.any||0));
   const canEdit = STATE.role==='gestio';
 
@@ -910,8 +953,9 @@ function openDetail(id){
       <div class="box">
         <h4>Estat de l'arxiu</h4>
         <dl class="kvgrid statgrid2">
-          <dt>Parts</dt><dd><span class="tagpill ${st.cls}"><span class="tdot"></span>${esc(st.label)}</span>${needsReview(p)?' <span class="tagpill warn">Cal revisar</span>':''}</dd>
-          <dt>General</dt><dd><span class="tagpill ${g.cls}">${esc(g.short)}</span></dd>
+          <dt>Estat</dt><dd><span class="tagpill ${st.cls}"><span class="tdot"></span>${esc(st.label)}</span>${needsReview(p)?' <span class="tagpill warn">Cal revisar</span>':''}</dd>
+          <dt>General</dt><dd><span class="tagpill ${FACETA.general[st.G].cls}">${esc(FACETA.general[st.G].label)}</span></dd>
+          <dt>Parts</dt><dd><span class="tagpill ${FACETA.parts[st.P].cls}">${esc(FACETA.parts[st.P].label)}</span></dd>
           <dt>On es troba</dt><dd>${placePillsHtml(p)}</dd>
         </dl>
         ${st.detail?`<div class="note bad" style="margin-top:10px"><b>Falten:</b> ${esc(st.detail)}</div>`:''}
@@ -1105,6 +1149,18 @@ function bindMissing(box, m, onChange){
   box.querySelector('[data-altres]').addEventListener('input', e=>{ m.altres = e.target.value; m.touched = true; onChange(); });
 }
 
+/* quan és en Box i en físic: la general o les parts poden ser només en paper */
+function partFisHtml(id, draft){
+  const both = draft.ubicDigital && draft.ubicFisic;
+  return `<div class="field partfis ${both?'':'hidden'}" id="${id}"><label>Hi ha alguna cosa que només sigui en paper?</label>
+    <label class="checkline"><input type="checkbox" data-pf="gnf" ${draft.gnf?'checked':''}><span>La partitura general només és en físic</span></label>
+    <label class="checkline"><input type="checkbox" data-pf="pnf" ${draft.pnf?'checked':''}><span>Les parts només són en físic</span></label></div>`;
+}
+function bindPartFis(box, draft){
+  box.querySelectorAll('[data-pf]').forEach(c=> c.addEventListener('change', ()=>{ draft[c.dataset.pf] = c.checked; }));
+}
+function syncPartFis(box, draft){ box.classList.toggle('hidden', !(draft.ubicDigital && draft.ubicFisic)); }
+
 /* ================= EDITAR OBRA EXISTENT ================= */
 function openEditPiece(id){
   const piece = STATE.pieces.find(x=>x.id===id);
@@ -1113,7 +1169,7 @@ function openEditPiece(id){
     nom: piece.title, autor: piece.composer||'', arranjador: piece.arranger||'', estil: piece.estil||'',
     projecteIds: (piece.aparicions||[]).map(a=>a.projecteId).filter(Boolean),
     general: piece.general||'desconegut', estatParts: piece.estatParts==='No és a Box' ? 'Per revisar' : (piece.estatParts||'Per revisar'),
-    ubicFisic: isFisic(piece), llocs:(piece.ubicacioFisica||[]).slice(), ubicDigital: isDigital(piece),
+    ubicFisic: isFisic(piece), llocs:(piece.ubicacioFisica||[]).slice(), ubicDigital: isDigital(piece), gnf: !!piece.generalNomesFisic, pnf: !!piece.partsNomesFisic,
     missing: missingInit(piece), instrExterns: piece.specials||[],
     calRevisio: !!piece.calRevisioManual, comentaris: piece.obs||''
   };
@@ -1144,9 +1200,10 @@ function openEditPiece(id){
       <div class="note info" id="ef_preview" style="margin-top:10px"></div>
 
       <h3 class="sec">On es troba</h3>
-      <label class="checkline"><input type="checkbox" id="eck_digital" ${draft.ubicDigital?'checked':''}><span>En digital (al Box)</span></label>
+      <label class="checkline"><input type="checkbox" id="eck_digital" ${draft.ubicDigital?'checked':''}><span>En Box</span></label>
       <label class="checkline"><input type="checkbox" id="eck_fisic" ${draft.ubicFisic?'checked':''}><span>En físic</span></label>
       ${llocChipsHtml('ef_llocs', draft.llocs, !draft.ubicFisic)}
+      ${partFisHtml('ef_partfis', draft)}
 
       <h3 class="sec">Revisió</h3>
       <label class="checkline"><input type="checkbox" id="eck_revisio" ${draft.calRevisio?'checked':''}><span>Marca-la manualment com a "Cal revisar"</span></label>
@@ -1163,7 +1220,7 @@ function openEditPiece(id){
     const tmp = {...piece, general:draft.general, estatParts:draft.estatParts, ...(missingFields(draft)||{}),
       calRevisioManual:draft.calRevisio, composer:draft.autor, arranger:draft.arranjador};
     const st = obraState(tmp);
-    bg.querySelector('#ef_preview').innerHTML = `<b>Estat resultant:</b> ${esc(st.label)} · ${esc(generalInfo(tmp).label)}${needsReview(tmp)?' · Cal revisar':''}`;
+    bg.querySelector('#ef_preview').innerHTML = `<b>Estat resultant:</b> ${esc(stateText(st))}${needsReview(tmp)?' · Cal revisar':''}`;
   }
 
   makeCombobox(bg.querySelector('#ecb_autor'), {items:STATE.catalogs.autors, value:draft.autor, placeholder:'Cerca o afegeix un autor', onChange:v=>{draft.autor=v; updatePreview();}});
@@ -1186,10 +1243,11 @@ function openEditPiece(id){
     });
   });
   makeMultiSelect(bg.querySelector('#ems_instr'), {items:STATE.catalogs.instrumentsExterns, values:draft.instrExterns.slice(), placeholder:'p. ex. Cor, Piano', onChange:v=>draft.instrExterns=v});
-  bg.querySelector('#eck_fisic').addEventListener('change', e=>{ draft.ubicFisic=e.target.checked; bg.querySelector('#ef_llocs').classList.toggle('hidden', !draft.ubicFisic); });
+  bg.querySelector('#eck_fisic').addEventListener('change', e=>{ draft.ubicFisic=e.target.checked; bg.querySelector('#ef_llocs').classList.toggle('hidden', !draft.ubicFisic); syncPartFis(bg.querySelector('#ef_partfis'), draft); });
+  bindPartFis(bg.querySelector('#ef_partfis'), draft);
   bindLlocChips(bg.querySelector('#ef_llocs'), draft);
   bindMissing(bg.querySelector('#ef_missing'), draft.missing, updatePreview);
-  bg.querySelector('#eck_digital').addEventListener('change', e=>draft.ubicDigital=e.target.checked);
+  bg.querySelector('#eck_digital').addEventListener('change', e=>{ draft.ubicDigital=e.target.checked; syncPartFis(bg.querySelector('#ef_partfis'), draft); });
   bg.querySelector('#eck_revisio').addEventListener('change', e=>{draft.calRevisio=e.target.checked; updatePreview();});
   bg.querySelector('#ein_nom').addEventListener('input', e=>{ draft.nom=e.target.value; bg.querySelector('#ef_nom').classList.remove('err'); });
   bg.querySelector('#ein_comentaris').addEventListener('input', e=>draft.comentaris=e.target.value);
@@ -1223,6 +1281,7 @@ function openEditPiece(id){
       estil: draft.estil.trim(), general, estatParts,
       specials: draft.instrExterns, ...(missingFields(draft)||{}),
       enPaper: draft.ubicFisic, escanejada: draft.ubicDigital, ubicacioFisica: draft.ubicFisic ? draft.llocs : [],
+      generalNomesFisic: draft.ubicDigital && draft.ubicFisic && draft.gnf, partsNomesFisic: draft.ubicDigital && draft.ubicFisic && draft.pnf,
       calRevisioManual: draft.calRevisio,
       nomesFisicPendent: !!piece.nomesFisicPendent && estatParts==='Per revisar',
     });
@@ -1233,7 +1292,7 @@ function openEditPiece(id){
 /* ================= REGISTRAR ================= */
 function renderRegistrar(){
   const root = document.getElementById('registrarForm');
-  const draft = { nom:'', autor:'', arranjador:'', estil:'', projecteIds:[], general:null, estatParts:null, ubicFisic:false, ubicDigital:false, llocs:[], missing:{totes:false, sel:[], altres:'', touched:false}, instrExterns:[], comentaris:'', registradaPer:'' };
+  const draft = { nom:'', autor:'', arranjador:'', estil:'', projecteIds:[], general:null, estatParts:null, ubicFisic:false, ubicDigital:false, gnf:false, pnf:false, llocs:[], missing:{totes:false, sel:[], altres:'', touched:false}, instrExterns:[], comentaris:'', registradaPer:'' };
 
   root.innerHTML = `
     <div class="block">
@@ -1268,9 +1327,10 @@ function renderRegistrar(){
 
     <div class="block" id="f_ubicacio_block">
       <h3>On es troba <span class="req">*</span></h3>
-      <label class="checkline"><input type="checkbox" id="ck_digital"><span>En digital (al Box)</span></label>
+      <label class="checkline"><input type="checkbox" id="ck_digital"><span>En Box</span></label>
       <label class="checkline"><input type="checkbox" id="ck_fisic"><span>En físic</span></label>
       ${llocChipsHtml('f_llocs', [], true)}
+      ${partFisHtml('f_partfis', draft)}
       <div class="errtext" id="f_ubicacio_err">Cal marcar almenys una ubicació.</div>
     </div>
 
@@ -1299,7 +1359,7 @@ function renderRegistrar(){
       calRevisioManual:false, composer:draft.autor, arranger:draft.arranjador, autoriaConflicte:false,
       pendentAcceptacio: STATE.role!=='gestio'};
     const st = obraState(tmp);
-    document.getElementById('f_preview').innerHTML = `<b>Estat resultant:</b> ${esc(st.label)} · ${esc(generalInfo(tmp).label)}`;
+    document.getElementById('f_preview').innerHTML = `<b>Estat resultant:</b> ${esc(stateText(st))}`;
   }
 
   makeCombobox(document.getElementById('cb_autor'), {items:STATE.catalogs.autors, placeholder:'Cerca o afegeix un compositor', onChange:v=>{draft.autor=v; updatePreview();}});
@@ -1329,10 +1389,12 @@ function renderRegistrar(){
   makeMultiSelect(document.getElementById('ms_instr'), {items:STATE.catalogs.instrumentsExterns, values:[], placeholder:'p. ex. Cor, Piano', onChange:v=>draft.instrExterns=v});
 
   function validateUbicacio(){
+    syncPartFis(document.getElementById('f_partfis'), draft);
     document.getElementById('f_ubicacio_block').classList.toggle('err', !(draft.ubicFisic||draft.ubicDigital));
   }
   document.getElementById('ck_fisic').addEventListener('change', e=>{ draft.ubicFisic=e.target.checked; document.getElementById('f_llocs').classList.toggle('hidden', !draft.ubicFisic); validateUbicacio(); });
   bindLlocChips(document.getElementById('f_llocs'), draft);
+  bindPartFis(document.getElementById('f_partfis'), draft);
   bindMissing(document.getElementById('f_missing'), draft.missing, updatePreview);
   document.getElementById('ck_digital').addEventListener('change', e=>{ draft.ubicDigital=e.target.checked; validateUbicacio(); });
   document.getElementById('in_registrador').addEventListener('input', e=>draft.registradaPer=e.target.value.trim());
@@ -1379,6 +1441,7 @@ function renderRegistrar(){
       ...(missingFields(draft)||{}),
       ubicacioFisica: draft.ubicFisic ? draft.llocs : [],
       enPaper: draft.ubicFisic, escanejada: draft.ubicDigital,
+      generalNomesFisic: draft.ubicDigital && draft.ubicFisic && draft.gnf, partsNomesFisic: draft.ubicDigital && draft.ubicFisic && draft.pnf,
       calRevisioManual: false, autoriaConflicte: false,
       fontsPaper: false, origenManual: true,
       pendentAcceptacio: STATE.role!=='gestio',
