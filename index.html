@@ -987,9 +987,9 @@ function openDetail(id){
           <dt>General</dt><dd><span class="tagpill ${FACETA.general[st.G].cls}">${esc(FACETA.general[st.G].label)}</span></dd>
           <dt>Parts</dt><dd><span class="tagpill ${FACETA.parts[st.P].cls}">${esc(FACETA.parts[st.P].label)}${st.detail?' · '+esc(st.detail):''}</span></dd>
           <dt>On es troba</dt><dd>${placePillsHtml(p)}</dd>
+          ${p.specials&&p.specials.length ? `<dt>Instruments addicionals</dt><dd><div class="tagrow">${p.specials.map(x=>`<span class="tagpill">${esc(x)}</span>`).join('')}</div></dd>` : ''}
         </dl>
         ${notesHtml(obraNotes(p))}
-        ${p.specials&&p.specials.length? `<div class="chipsw" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">${p.specials.map(x=>`<span class="icchip sp">${esc(x)}</span>`).join('')}</div>` : ''}
       </div>
 
       ${aparicions.length ? `<div class="box">
