@@ -1599,7 +1599,7 @@ function editCatalogValue(listKey, cur, done){
       if(idx>-1) STATE.catalogs[listKey][idx] = val;
       const n = unifyRename(listKey, cur, val);
       persist();
-      if(n>0) showSavePill(`Unificat a ${n} obra${n===1?'':'s'}`);
+      if(n>0) showSavePill(`Unificat a ${n} ${n===1?'obra':'obres'}`);
     }
     close(); done();
   });
@@ -1625,7 +1625,7 @@ function renderCfgBody(key, body){
     const rows = all.filter(r=> !q || norm(r.name).includes(q));
     listEl.innerHTML = rows.length ? rows.map(r=>{ const n = usageCount(key, r.id); return `
       <div class="cfgrow">
-        <div class="cfgname"><div class="nm">${esc(r.name)}</div><div class="meta">${r.meta?esc(String(r.meta))+' · ':''}${n} obra${n===1?'':'s'}</div></div>
+        <div class="cfgname"><div class="nm">${esc(r.name)}</div><div class="meta">${r.meta?esc(String(r.meta))+' · ':''}${n} ${n===1?'obra':'obres'}</div></div>
         <div class="cfgacts">
           <button class="iconbtn" data-edit="${esc(r.id)}" aria-label="Edita">${ICO_EDIT}</button>
           <button class="iconbtn danger" data-del="${esc(r.id)}" aria-label="Elimina">${ICO_DEL}</button>
@@ -1637,7 +1637,7 @@ function renderCfgBody(key, body){
     }));
     listEl.querySelectorAll('[data-del]').forEach(b=> b.addEventListener('click', ()=>{
       const id = b.dataset.del, n = usageCount(key, id);
-      if(n && !confirm(`S'utilitza a ${n} obra${n===1?'':'s'}. Si l'elimines de la llista, aquestes obres el conservaran. Vols continuar?`)) return;
+      if(n && !confirm(`S'utilitza a ${n} ${n===1?'obra':'obres'}. Si l'elimines de la llista, aquestes obres el conservaran. Vols continuar?`)) return;
       if(isProj) STATE.catalogs.projectes = STATE.catalogs.projectes.filter(p=>p.id!==id);
       else STATE.catalogs[key] = STATE.catalogs[key].filter(v=>v!==id);
       persist(); renderConfig();
