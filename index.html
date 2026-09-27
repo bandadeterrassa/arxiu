@@ -315,6 +315,7 @@ h3.sec:first-child{margin-top:12px}
 .btn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 18px;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);border-radius:var(--radius-pill);font-weight:600;font-size:15px;letter-spacing:-.006em;transition:transform .2s var(--ease-spring),opacity .12s,box-shadow .2s}
 .btn:active{transform:scale(.955);opacity:.9}
 .btn.primary{background:linear-gradient(180deg, hsl(var(--accent-h) var(--accent-s) calc(var(--accent-l) + 4%)), var(--accent));border-color:var(--accent);color:var(--accent-ink);box-shadow:var(--shadow-sm), 0 8px 20px hsl(var(--accent-h) var(--accent-s) var(--accent-l) / .32)}
+.btn.pill-dark{flex:none;display:inline-flex;background:var(--ink);border-color:var(--ink);color:var(--bg);margin:2px 0 6px}
 .btn.ghost{background:transparent;border-color:transparent;color:var(--accent)}
 
 /* configuració */
@@ -436,7 +437,7 @@ const STATE = {
   catalogs: Object.assign({ubicacions:[]}, RAW.catalogs),
   role: 'gestio', // 'musica' | 'gestio' — demo-only toggle until real accounts exist
   screen: 'consultar',
-  filters: { q:'', estil:null, projecte:null, any:null, estat:null, general:null, ubicacio:null, lloc:null, instrExtern:null },
+  filters: { q:'', estil:null, projecte:null, any:null, estat:null, general:null, ubicacio:null, lloc:null, original:null, instrExtern:null },
 };
 
 function norm(s){ return (s||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
@@ -471,7 +472,8 @@ function partsSeverity(p){
    Cada obra té dues facetes: la partitura general (G) i les parts de la banda (P).
    Cada faceta pot ser: 'ok' (la tenim), 'falta' o '?' (no ho sabem, «No ho sé»).
    Capa 1 — estat principal (una sola etiqueta): combina G i P. El vermell (el que falta) mana sobre el groc (sense verificar).
-   Capa 2 — etiquetes secundàries: la faceta desconeguda quan l'estat és vermell i «Cal revisar».
+   Si l'estat és vermell i l'altra faceta és «No ho sé», se'n mostra una segona etiqueta del mateix nivell (groga).
+   Capa 2 — etiqueta secundària: «Cal revisar».
    Ubicació — a la targeta, una línia petita només quan és en físic; a la fitxa, Al Box / En físic.
    Per canviar un nom o un color, només cal tocar aquestes taules. */
 const ESTATS = {
@@ -561,7 +563,7 @@ function locLineHtml(p){
 function tagsHtml(p, st){
   st = st || obraState(p);
   const t = [`<span class="statusline ${st.cls}"><span class="dot"></span>${esc(st.label)}${st.detail?' · '+esc(st.detail):''}</span>`];
-  if(st.extra) t.push(`<span class="minitag warn">${esc(st.extra)}</span>`);
+  if(st.extra) t.push(`<span class="statusline warn"><span class="dot"></span>${esc(st.extra)}</span>`);
   if(needsReview(p)) t.push(`<span class="minitag warn">Cal revisar</span>`);
   return `<div class="tagrow">${t.join('')}</div>`;
 }
@@ -696,17 +698,13 @@ function renderProjectesView(){
       <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       <input class="pqInput" id="pqInput" type="text" placeholder="Cerca un projecte…" value="${esc(STATE.pq)}">
     </div>
-    ${STATE.role==='gestio' ? `<button class="addbtn" id="newProj" style="margin-bottom:14px">+ Nou projecte</button>` : ''}
+    ${STATE.role==='gestio' ? `<button class="btn pill-dark" id="newProj">+ Nou projecte</button>` : ''}
     ${keys.map(k=>`<h3 class="sec">${esc(String(k))}</h3><div class="list">${byYear[k].slice().sort((a,b)=>a.name.localeCompare(b.name,'ca')).map(pr=>{
       const s = projStats(pr.id);
-      const bits = [];
-      if(s.complet) bits.push(s.complet+' completes');
-      if(s.falta) bits.push(s.falta+' amb mancances');
-      if(s.verificar) bits.push(s.verificar+' sense verificar');
       return `<button class="projrow2" data-pid="${pr.id}">
         <div class="main">
           <div class="title" style="font-size:15.5px">${esc(pr.name)}</div>
-          <p class="authors">${s.n} partitur${s.n===1?'a':'es'}${bits.length?' · '+esc(bits.join(', ')):''}</p>
+          <p class="authors">${s.n} partitur${s.n===1?'a':'es'}</p>
         </div>
         <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>`;
@@ -858,6 +856,7 @@ function matches(p){
   if(f.ubicacio==='nomesfisic' && !(isFisic(p) && !isDigital(p))) return false;
   if(f.ubicacio==='digital' && !isDigital(p)) return false;
   if(f.lloc && !(p.ubicacioFisica||[]).includes(f.lloc)) return false;
+  if(f.original && p.original!==(f.original==='si')) return false;
   if(f.instrExtern && !(p.specials||[]).includes(f.instrExtern)) return false;
   return true;
 }
@@ -901,6 +900,9 @@ function openFilters(){
       <div class="chips" id="fUbi">${chipHtml('Al Box', f.ubicacio==='digital','ubicacio','digital')}${chipHtml('En físic', f.ubicacio==='fisic','ubicacio','fisic')}${chipHtml('Només en físic', f.ubicacio==='nomesfisic','ubicacio','nomesfisic')}</div>
       <div class="chips" id="fLloc" style="margin-top:8px">${(STATE.catalogs.ubicacions||[]).map(u=>chipHtml(u, f.lloc===u,'lloc',u)).join('')}</div>
 
+      <h3 class="sec">Partitura original</h3>
+      <div class="chips" id="fOriginal">${chipHtml('Originals', f.original==='si','original','si')}${chipHtml('Còpies', f.original==='no','original','no')}</div>
+
       <h3 class="sec">Instrumentació externa</h3>
       <div class="chips" id="fInstr">${STATE.catalogs.instrumentsExterns.map(i=>chipHtml(i, f.instrExtern===i,'instrExtern',i)).join('')}</div>
     </div>
@@ -926,7 +928,7 @@ function openFilters(){
   bg.querySelector('#fClose').addEventListener('click', close);
   bg.addEventListener('click', e=>{ if(e.target===bg) close(); });
   bg.querySelector('#fReset').addEventListener('click', ()=>{
-    STATE.filters = {q:STATE.filters.q, estil:null, projecte:null, any:null, estat:null, general:null, ubicacio:null, lloc:null, instrExtern:null};
+    STATE.filters = {q:STATE.filters.q, estil:null, projecte:null, any:null, estat:null, general:null, ubicacio:null, lloc:null, original:null, instrExtern:null};
     renderList(); close();
   });
   bg.querySelector('#fApply').addEventListener('click', ()=>{
@@ -974,13 +976,14 @@ function openDetail(id){
           <dt>Compositor</dt><dd>${p.composer?esc(p.composer):'—'}</dd>
           <dt>Arranjador</dt><dd>${p.arranger?esc(p.arranger):'—'}</dd>
           <dt>Estil</dt><dd>${p.estil?esc(p.estil):'—'}</dd>
+          <dt>Original</dt><dd>${esc(originalText(p))}</dd>
         </dl>
       </div>
 
       <div class="box">
         <h4>Estat de l'arxiu</h4>
         <dl class="kvgrid statgrid2">
-          <dt>Estat</dt><dd><span class="tagpill ${st.cls}"><span class="tdot"></span>${esc(st.label)}</span>${needsReview(p)?' <span class="tagpill warn">Cal revisar</span>':''}</dd>
+          <dt>Estat</dt><dd><span class="tagpill ${st.cls}"><span class="tdot"></span>${esc(st.label)}</span>${st.extra?` <span class="tagpill warn"><span class="tdot"></span>${esc(st.extra)}</span>`:''}${needsReview(p)?' <span class="tagpill warn">Cal revisar</span>':''}</dd>
           <dt>General</dt><dd><span class="tagpill ${FACETA.general[st.G].cls}">${esc(FACETA.general[st.G].label)}</span>${st.G!=='falta' && placesOf(p).g.length ? `<span class="placenote">${esc(placesText(placesOf(p).g))}</span>` : ''}</dd>
           <dt>Parts</dt><dd><span class="tagpill ${FACETA.parts[st.P].cls}">${esc(FACETA.parts[st.P].label)}${st.detail?' · '+esc(st.detail):''}</span>${placesOf(p).p.length ? `<span class="placenote">${esc(placesText(placesOf(p).p))}</span>` : ''}</dd>
           <dt>On es troba</dt><dd>${placePillsHtml(p)}</dd>
@@ -1249,6 +1252,21 @@ function archApply(d){
   };
 }
 
+/* partitura original (comprada): Sí / No; es pot deixar sense marcar */
+const ORIGINAL = {si:'Sí, és original (comprada)', no:'No, és una còpia'};
+function originalHtml(id, val){
+  return `<div class="field" id="${id}"><label>Partitura original <span class="opt">opcional</span></label>
+    <div class="chips">${Object.entries(ORIGINAL).map(([k,l])=>`<button type="button" class="chip ${val===(k==='si')?'on':''}" data-orig="${k}">${l}</button>`).join('')}</div></div>`;
+}
+function bindOriginal(box, draft){
+  box.querySelectorAll('[data-orig]').forEach(b=> b.addEventListener('click', ()=>{
+    const v = b.dataset.orig==='si';
+    draft.original = draft.original===v ? null : v;
+    box.querySelectorAll('[data-orig]').forEach(x=> x.classList.toggle('on', draft.original===(x.dataset.orig==='si')));
+  }));
+}
+function originalText(p){ return p.original===true ? 'Sí, comprada' : p.original===false ? 'No, és una còpia' : '—'; }
+
 /* ================= EDITAR OBRA EXISTENT ================= */
 function openEditPiece(id){
   const piece = STATE.pieces.find(x=>x.id===id);
@@ -1259,7 +1277,7 @@ function openEditPiece(id){
     general: piece.general||'desconegut', estatParts: piece.estatParts==='No és a Box' ? 'Per revisar' : (piece.estatParts||'Per revisar'),
     ...archInit(piece),
     missing: missingInit(piece), instrExterns: piece.specials||[],
-    comentaris: piece.obs||''
+    comentaris: piece.obs||'', original: typeof piece.original==='boolean' ? piece.original : null
   };
   const bg = document.createElement('div'); bg.className='sheet-bg';
   bg.innerHTML = `<div class="sheet">
@@ -1272,6 +1290,7 @@ function openEditPiece(id){
         <div class="field" id="ef_autor"><label>Compositor <span class="req">*</span></label><div id="ecb_autor"></div><div class="errtext">Cal indicar el compositor.</div></div>
         <div class="field"><label>Arranjador <span class="opt">opcional</span></label><div id="ecb_arranjador"></div></div>
         <div class="field"><label>Estil <span class="opt">opcional</span></label><div id="ecb_estil"></div></div>
+        ${originalHtml('ef_original', draft.original)}
         <div class="field"><label>Projectes <span class="opt">opcional — pot ser-hi en diversos</span></label><div id="ems_projecte"></div></div>
       </div>
       <h3 class="sec">Estat de l'arxiu</h3>
@@ -1297,6 +1316,7 @@ function openEditPiece(id){
   makeCombobox(bg.querySelector('#ecb_autor'), {items:STATE.catalogs.autors, value:draft.autor, placeholder:'Cerca o afegeix un autor', onChange:v=>{draft.autor=v; updatePreview();}});
   makeCombobox(bg.querySelector('#ecb_arranjador'), {items:STATE.catalogs.arranjadors, value:draft.arranjador, placeholder:'Cerca o afegeix un arranjador', onChange:v=>{draft.arranjador=v; updatePreview();}});
   makeCombobox(bg.querySelector('#ecb_estil'), {items:STATE.catalogs.estils, value:draft.estil, placeholder:'Cerca o afegeix un estil', onChange:v=>draft.estil=v});
+  bindOriginal(bg.querySelector('#ef_original'), draft);
   const projLabelOf = pp=> pp.name+(pp.year?' ('+pp.year+')':'');
   const projItems = STATE.catalogs.projectes.slice().sort((a,b)=>(b.year||0)-(a.year||0)).map(projLabelOf);
   const curProjLabels = draft.projecteIds.map(pid=>{ const pp=STATE.catalogs.projectes.find(x=>x.id===pid); return pp?projLabelOf(pp):null; }).filter(Boolean);
@@ -1334,7 +1354,7 @@ function openEditPiece(id){
 
     Object.assign(piece, {
       title: draft.nom.trim(), composer: draft.autor.trim(), arranger: draft.arranjador.trim(),
-      obs: draft.comentaris.trim(), aparicions: newAparicions,
+      obs: draft.comentaris.trim(), aparicions: newAparicions, original: draft.original,
       estil: draft.estil.trim(), general, estatParts,
       specials: draft.instrExterns, ...(missingFields(draft)||{}),
       ...archApply(draft),
@@ -1348,7 +1368,7 @@ function openEditPiece(id){
 /* ================= REGISTRAR ================= */
 function renderRegistrar(){
   const root = document.getElementById('registrarForm');
-  const draft = { nom:'', autor:'', arranjador:'', estil:'', projecteIds:[], general:null, estatParts:null, gPlaces:[], pPlaces:[], llocs:[], missing:{totes:false, sel:[], altres:'', touched:false}, instrExterns:[], comentaris:'', registradaPer:'' };
+  const draft = { nom:'', autor:'', arranjador:'', estil:'', original:null, projecteIds:[], general:null, estatParts:null, gPlaces:[], pPlaces:[], llocs:[], missing:{totes:false, sel:[], altres:'', touched:false}, instrExterns:[], comentaris:'', registradaPer:'' };
 
   root.innerHTML = `
     <div class="block">
@@ -1357,6 +1377,7 @@ function renderRegistrar(){
       <div class="field" id="f_autor"><label>Compositor <span class="req">*</span></label><div id="cb_autor"></div><div class="errtext">Cal indicar el compositor.</div></div>
       <div class="field"><label>Arranjador <span class="opt">opcional</span></label><div id="cb_arranjador"></div></div>
       <div class="field"><label>Estil <span class="opt">opcional</span></label><div id="cb_estil"></div></div>
+      ${originalHtml('f_original', null)}
     </div>
 
     <div class="block">
@@ -1402,6 +1423,7 @@ function renderRegistrar(){
   makeCombobox(document.getElementById('cb_autor'), {items:STATE.catalogs.autors, placeholder:'Cerca o afegeix un compositor', onChange:v=>{draft.autor=v; updatePreview();}});
   makeCombobox(document.getElementById('cb_arranjador'), {items:STATE.catalogs.arranjadors, placeholder:'Cerca o afegeix un arranjador', onChange:v=>{draft.arranjador=v; updatePreview();}});
   makeCombobox(document.getElementById('cb_estil'), {items:STATE.catalogs.estils, placeholder:'Cerca o afegeix un estil', onChange:v=>draft.estil=v});
+  bindOriginal(document.getElementById('f_original'), draft);
 
   const projLabelOf = p=> p.name+(p.year?' ('+p.year+')':'');
   const projItems = STATE.catalogs.projectes.slice().sort((a,b)=>(b.year||0)-(a.year||0)).map(projLabelOf);
@@ -1443,6 +1465,7 @@ function renderRegistrar(){
       composer: draft.autor.trim(),
       arranger: draft.arranjador.trim(),
       obs: draft.comentaris.trim(),
+      original: draft.original,
       aparicions: aparicions,
       estil: draft.estil.trim(),
       fileCount: 0,
