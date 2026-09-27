@@ -416,9 +416,9 @@ function partsSeverity(p){
 }
 function obraState(p){
   if(p.nomesFisicPendent){
-    const reasons = ['Només consta a l\'inventari físic — cal anar a comprovar-ho a l\'arxiu en paper.'];
+    const reasons = ['Només la tenim registrada a l\'inventari en paper: no sabem si hi ha la partitura general ni quines parts hi ha. Cal anar a l\'arxiu a comprovar-ho.'];
     if(p.revisioNota && p.revisioNota.length) reasons.push(...p.revisioNota);
-    return {key:'fisic', label:'Només en físic', cls:'gray', reasons};
+    return {key:'fisic', label:'Sense verificar', cls:'gray', reasons};
   }
   const ep = p.estatParts, g = p.general;
   const knownGeneral = g!=='desconegut';
@@ -720,7 +720,7 @@ function renderList(){
         <div class="titlerow"><p class="title">${esc(p.title)}</p>${p.estil?`<span class="estilchip">${esc(p.estil)}</span>`:''}</div>
         ${authors?`<p class="authors">${esc(authors)}</p>`:''}
         ${st?`<p class="statusline ${st.cls}"><span class="dot"></span>${esc(st.label)}${st.detail?' · '+esc(st.detail):''}</p>`:''}
-        ${(loc==='Físic' && st.key!=='fisic')?`<p class="locline">Només en físic</p>`:''}
+        ${(loc==='Físic' && st.key!=='fisic')?`<p class="locline">Sense digitalitzar</p>`:''}
       </div>
       <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>`;
@@ -743,7 +743,7 @@ function openFilters(){
 
       <h3 class="sec">Estat de l'arxiu</h3>
       <div class="chips" id="fEstat">
-        ${[['complet','Complet'],['falten','Falten parts'],['falta-general','Falta general'],['falten-tot','Falta general i parts'],['revisar','Cal revisar'],['fisic','Només en físic'],['incomplet','Informació incompleta']].map(([k,l])=>chipHtml(l, f.estat===k,'estat',k)).join('')}
+        ${[['complet','Complet'],['falten','Falten parts'],['falta-general','Falta general'],['falten-tot','Falta general i parts'],['revisar','Cal revisar'],['fisic','Sense verificar'],['incomplet','Informació incompleta']].map(([k,l])=>chipHtml(l, f.estat===k,'estat',k)).join('')}
       </div>
 
       <h3 class="sec">Ubicació</h3>
