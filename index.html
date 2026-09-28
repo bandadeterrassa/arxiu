@@ -653,9 +653,9 @@ function tagsHtml(p, st){
 }
 /* on es troba (fitxa): només on hi és, sempre amb el mateix estil */
 function placePillsHtml(p){
-  const d = isDigital(p), f = isFisic(p), n = p.fileCount||0;
+  const d = isDigital(p), f = isFisic(p);
   const out = [];
-  if(d) out.push(`Al Box${n?` · ${n} fitxer${n===1?'':'s'}`:''}`);
+  if(d) out.push('Al Box');
   if(f) out.push(`En físic · ${(p.ubicacioFisica||[]).join(', ') || 'lloc sense indicar'}`);
   if(d && f){ if(p.generalNomesFisic) out.push('General només en físic'); if(p.partsNomesFisic) out.push('Parts només en físic'); }
   return out.length ? `<div class="tagrow">${out.map(x=>`<span class="placepill">${esc(x)}</span>`).join('')}</div>` : '<span class="hint" style="margin:0">No consta enlloc</span>';
