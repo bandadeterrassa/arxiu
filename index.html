@@ -521,11 +521,10 @@ function obraState(p){
 }
 function stateText(st){ return st.label + (st.extra ? ' · '+st.extra : ''); }
 /* ---------- notes de la fitxa ----------
-   Tres blocs amb regles fixes. No es repeteix res que ja digui una etiqueta
-   (estat, sense verificar, parts que falten, ubicació, compositor buit).
+   Tres blocs amb regles fixes.
    · Cal revisar       — incidències que requereixen feina; activen l'etiqueta i surten a «Per revisar».
    · Sobre la partitura — descripció del material (quin tipus de general hi ha, què conté la carpeta…).
-   · A tenir en compte  — informació que no surt enlloc més.
+   · A tenir en compte  — informació de servei: què falta comprovar, registres pendents, autoria buida.
    Les notes internes de la importació no es mostren. */
 const NOTE_RULES = [  // s'aplica la primera que coincideix; si cap coincideix → «Sobre la partitura»
   {re:/^Unificada amb|^segons inventari\.?$/i, to:'ocult'},
@@ -534,14 +533,26 @@ const NOTE_RULES = [  // s'aplica la primera que coincideix; si cap coincideix �
 function classifyNote(n){ const r = NOTE_RULES.find(r=>r.re.test(n)); return r ? r.to : 'partitura'; }
 function obraNotes(p){
   const out = {revisar:[], partitura:[], compte:[]};
-  if(p.autoriaConflicte) out.revisar.push('El compositor o l\'arranjador no coincideix entre les diverses còpies — cal confirmar quin és el correcte.');
-  if(p.arranjadorRevisar) out.revisar.push('El nom de l\'arranjador no s\'ha pogut normalitzar — cal revisar com s\'escriu.');
-  if(p.notaPaper && p.notaPaper.length) out.revisar.push('Nota de l\'inventari en paper: «'+p.notaPaper.join('; ')+'».');
+  const {G, P} = facets(p);
+  // Cal revisar
+  if(p.autoriaConflicte) out.revisar.push('El compositor o l\'arranjador no coincideix entre les diverses còpies d\'aquesta obra — cal confirmar quin és el correcte.');
+  if(p.arranjadorRevisar) out.revisar.push('El nom de l\'arranjador no s\'ha pogut normalitzar.');
+  if(p.notaPaper && p.notaPaper.length) out.revisar.push('Hi ha una nota de l\'inventari en paper pendent de revisar: «'+p.notaPaper.join('; ')+'».');
+  // Sobre la partitura / notes de la importació
   (p.revisioNota||[]).forEach(n=>{ const c = classifyNote(n); if(c!=='ocult') out[c].push(n); });
-  if(p.pendentAcceptacio) out.compte.push('Registrada per '+(p.registradaPer||'un músic')+(p.dataRegistre? ' el '+p.dataRegistre : '')+' — pendent que Junta l\'accepti.');
-  if(partsSeverity(p)==='forgivable') out.compte.push('L\'escaneig automàtic no ha trobat: '+(p.partsNoDetectades||[]).join(', ')+'. Es dona per completa perquè són poques.');
+  // A tenir en compte
+  if(p.nomesFisicPendent && (G==='?' || P==='?')) out.compte.push('Només registrada a l\'inventari en paper. Cal comprovar l\'inventari físic.');
+  else {
+    if(P==='?') out.compte.push('No s\'ha comprovat si hi ha totes les parts.');
+    if(G==='?') out.compte.push('No s\'ha comprovat si hi ha la partitura general.');
+  }
+  if(p.pendentAcceptacio) out.compte.push('Registrada per '+(p.registradaPer||'un músic')+(p.dataRegistre? ' el '+p.dataRegistre : '')+' — pendent d\'aprovació.');
+  if(!p.composer && !p.arranger) out.compte.push('No consta ni el compositor ni l\'arranjador.');
+  else if(!p.composer) out.compte.push('No consta el compositor.');
   return out;
 }
+/* marca «Detecció per IA»: dades obtingudes automàticament (poden tenir errors) */
+function deteccioIA(p){ return !!p.origenIA || partsSeverity(p)==='forgivable'; }
 function needsReview(p){ return obraNotes(p).revisar.length>0; }
 function isDigital(p){ return !!p.escanejada || (p.fileCount||0)>0; }
 function isFisic(p){ return !!p.enPaper || (p.ubicacioFisica&&p.ubicacioFisica.length>0); }
@@ -1008,12 +1019,12 @@ function openDetail(id){
 
       ${p.obs? `<div class="box"><h4>Comentaris</h4><div style="font-size:14.5px;color:var(--ink2);overflow-wrap:anywhere">${esc(p.obs)}</div></div>` : ''}
 
-      ${!p.origenManual && (p.titolBox || p.origenIA) ? `<div class="box">
+      ${!p.origenManual && (p.titolBox || deteccioIA(p)) ? `<div class="box">
         <h4>Arxiu digital</h4>
         <dl class="kvgrid">
           ${p.titolBox?`<dt>Títol a Box</dt><dd>${esc(p.titolBox)}</dd>`:''}
         </dl>
-        ${p.origenIA?`<span class="tagpill" style="margin-top:10px;background:var(--info-bg);color:var(--info)">Analitzat amb IA</span>`:''}
+        ${deteccioIA(p)?`<span class="tagpill" style="margin-top:10px;background:var(--info-bg);color:var(--info)">Detecció per IA</span>`:''}
       </div>` : ''}
 
       ${canEdit ? `<div class="btnbar">
@@ -1317,7 +1328,7 @@ function openEditPiece(id){
 
   function updatePreview(){
     const tmp = {...piece, general:draft.general, estatParts:draft.estatParts, ...(missingFields(draft)||{}),
-      ...archApply(draft), calRevisioManual:false, composer:draft.autor, arranger:draft.arranjador};
+      ...archApply(draft), composer:draft.autor, arranger:draft.arranjador};
     const st = obraState(tmp);
     bg.querySelector('#ef_preview').innerHTML = `<b>Estat resultant:</b> ${esc(stateText(st))}${needsReview(tmp)?' · Cal revisar':''}`;
   }
@@ -1367,7 +1378,6 @@ function openEditPiece(id){
       estil: draft.estil.trim(), general, estatParts,
       specials: draft.instrExterns, ...(missingFields(draft)||{}),
       ...archApply(draft),
-      calRevisioManual: false,
       nomesFisicPendent: !!piece.nomesFisicPendent && estatParts==='Per revisar',
     });
     persist(); refreshViews(); close();
@@ -1417,7 +1427,7 @@ function renderRegistrar(){
     box.classList.toggle('hidden', !draft.general || !draft.estatParts);
     if(!draft.general || !draft.estatParts) return;
     const tmp = {general:draft.general, estatParts:draft.estatParts, ...(missingFields(draft)||{}), ...archApply(draft),
-      calRevisioManual:false, composer:draft.autor, arranger:draft.arranjador, autoriaConflicte:false,
+      composer:draft.autor, arranger:draft.arranjador, autoriaConflicte:false,
       pendentAcceptacio: STATE.role!=='gestio'};
     const st = obraState(tmp);
     document.getElementById('f_preview').innerHTML = `<b>Estat resultant:</b> ${esc(stateText(st))}`;
@@ -1478,7 +1488,7 @@ function renderRegistrar(){
       partsNoDetectades: [], faltenInventari: [], totesFaltenParts: false,
       ...(missingFields(draft)||{}),
       ...archApply(draft),
-      calRevisioManual: false, autoriaConflicte: false,
+      autoriaConflicte: false,
       fontsPaper: false, origenManual: true,
       pendentAcceptacio: STATE.role!=='gestio',
       dataRegistre: new Date().toLocaleDateString('ca-ES', {day:'numeric',month:'long',year:'numeric'}),
