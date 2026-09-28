@@ -49,8 +49,10 @@ a{color:inherit}
 .top{position:sticky;top:0;z-index:20;background:color-mix(in srgb, var(--bg) 88%, transparent);backdrop-filter:saturate(1.4) blur(16px);-webkit-backdrop-filter:saturate(1.4) blur(16px);padding-top:env(safe-area-inset-top,0px);border-bottom:1px solid transparent;transition:border-color .2s}
 .top-in{max-width:680px;margin:0 auto;display:flex;align-items:center;gap:9px;padding:14px 16px 10px}
 .logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(155deg, var(--brand-navy), hsl(var(--accent-h) var(--accent-s) 14%) 70%);display:grid;place-items:center;flex:none;box-shadow:var(--shadow-sm), 0 0 0 1px color-mix(in srgb, var(--line-strong) 70%, transparent)}
-.logo{overflow:hidden}
-.logo img,.logo-big img{display:block;width:100%;height:100%;object-fit:cover}
+/* logotip sense fons */
+.logo,.logo-big{background:none!important;box-shadow:none!important;border-radius:0!important;overflow:visible}
+.logo img,.logo-big img{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(16,21,31,.18))}
+.logo-big img{filter:drop-shadow(0 8px 18px rgba(16,21,31,.22))}
 .top h1{flex:1;min-width:0;font-size:clamp(16px,4.3vw,21px);font-weight:700;margin:0;letter-spacing:-.01em;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .top h1 small{display:block;overflow:hidden;text-overflow:ellipsis;font-size:12.5px;color:var(--muted);font-weight:400;letter-spacing:0;margin-top:1px}
 .top .sp{flex:0}
@@ -132,7 +134,6 @@ body.auth > .top, body.auth > main, body.auth > .nav, body.auth #azindex{display
 .login{min-height:100vh;min-height:100svh;display:grid;align-content:center;justify-items:center;gap:18px;padding:32px 0;text-align:center}
 .login form{display:grid;gap:12px;width:min(100%,340px);text-align:left}
 .logo-big{width:88px;height:88px;border-radius:26px;background:linear-gradient(155deg, var(--brand-navy), hsl(var(--accent-h) var(--accent-s) 14%) 65%);box-shadow:var(--shadow-lg), 0 0 0 1px color-mix(in srgb, var(--line-strong) 70%, transparent);display:grid;place-items:center}
-.logo-big{overflow:hidden}
 .login-h1{margin:0;font-weight:700;font-size:25px;line-height:1.12;letter-spacing:-.02em}
 .login .muted{color:var(--muted);font-size:14px}
 .login-foot{font-size:12.5px;color:var(--muted);max-width:34ch;margin:0}
@@ -420,7 +421,7 @@ h3.sec:first-child{margin-top:12px}
 
 <div class="top">
   <div class="top-in">
-    <div class="logo"><img src="apple-touch-icon.png" alt="Arxiu"></div>
+    <div class="logo"><img src="logo.png" alt="Arxiu"></div>
     <h1 id="topTitle">Arxiu<small>Banda de Terrassa</small></h1>
     <div class="sp"></div>
     <button class="icon-btn" id="helpBtn" aria-label="Com funciona l'arxiu"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.7 9.4a2.4 2.4 0 1 1 3.3 2.2c-.7.3-1 .8-1 1.6v.3M12 16.6v.2"/></svg></button>
@@ -820,7 +821,7 @@ function authScreen(){
   if(!el){ el = document.createElement('div'); el.id = 'loginScreen'; document.body.appendChild(el); }
   return el;
 }
-const AUTH_HEAD = `<div class="logo-big"><img src="apple-touch-icon.png" alt=""></div>
+const AUTH_HEAD = `<div class="logo-big"><img src="logo.png" alt=""></div>
     <div><h1 class="login-h1">Arxiu</h1><p class="muted" style="margin:4px 0 0">Banda de Terrassa</p></div>`;
 function showLoading(){
   authScreen().innerHTML = `<div class="login">${AUTH_HEAD}<p class="muted">Carregant l'arxiu…</p></div>`;
