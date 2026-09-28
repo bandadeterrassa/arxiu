@@ -85,6 +85,38 @@ main{max-width:680px;margin:0 auto;padding:8px 16px calc(var(--nav-h) + 40px + e
 .statusline.warn{background:var(--gold-bg);color:var(--gold-ink)}
 .statusline.bad{background:var(--bad-bg);color:var(--bad-fg)}
 .statusline.gray{background:var(--gray-bg);color:var(--muted)}
+.countline .sp{flex:1}
+.viewtoggle{display:flex;background:var(--surface);border:1px solid var(--line-strong);border-radius:999px;padding:2px}
+.viewtoggle button{border:0!important;background:transparent!important;min-height:36px!important;width:40px;padding:0!important;border-radius:999px!important;display:grid!important;place-items:center;color:var(--muted)!important}
+.viewtoggle button.on{background:var(--ink)!important;color:var(--bg)!important}
+.summary{margin:0 2px 12px}
+.sumbar{display:flex;gap:2px;height:6px;border-radius:999px;overflow:hidden;background:var(--surface2)}
+.sumbar span{display:block;height:100%}
+.sumbar .ok{background:var(--ok)} .sumbar .bad{background:var(--bad)} .sumbar .warn{background:var(--gold)}
+.sumchips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.sumchip{display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-height:52px;padding:8px 12px;border-radius:var(--radius);border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow-sm);font-size:12px;color:var(--muted);text-align:left;transition:background .15s,border-color .15s}
+.sumchip b{display:flex;align-items:center;gap:6px;font-size:18px;color:var(--ink);line-height:1.1}
+.sumchip.on b{color:var(--bg)}
+.sumchip i{width:8px;height:8px;border-radius:50%}
+.sumchip.ok i{background:var(--ok)} .sumchip.bad i{background:var(--bad)} .sumchip.warn i{background:var(--gold)}
+.sumchip b{font-variant-numeric:tabular-nums}
+.sumchip.on span{color:color-mix(in srgb, var(--bg) 80%, transparent)}
+.sumchip.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+/* vista compacta */
+.list.compact{gap:0}
+.list.compact h3.letter{margin:18px 4px 6px}
+.list.compact h3.letter:first-child{margin-top:4px}
+.crows{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm)}
+.crow{position:relative;display:flex;align-items:center;gap:10px;min-height:52px;padding:8px 12px 8px 18px;border-top:1px solid var(--line);cursor:pointer}
+.crow:first-child{border-top:0}
+.crow::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px}
+.crow.ok::before{background:var(--ok)} .crow.bad::before{background:var(--bad)} .crow.warn::before{background:var(--gold)}
+.crow:active{background:var(--surface2)}
+.ctext{flex:1;min-width:0;display:flex;flex-direction:column}
+.ctitle{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cwho{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cflag{width:20px;height:20px;border-radius:50%;background:var(--gold-bg);color:var(--gold-ink);font-weight:800;font-size:12px;display:grid;place-items:center;flex:none}
+.crow .chevron{color:var(--line-strong);flex:none}
 .tagrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
 .minitag{display:inline-flex;align-items:center;min-height:22px;padding:0 8px;border-radius:999px;font-size:11.5px;font-weight:600;background:var(--gray-bg);color:var(--ink2);white-space:nowrap}
 .minitag.warn{background:var(--gold-bg);color:var(--gold-ink)}
@@ -312,8 +344,8 @@ h3.sec:first-child{margin-top:12px}
 .combo-opt.create{color:var(--accent);font-weight:600}
 .combo-empty{padding:14px;color:var(--muted);font-size:13.5px;text-align:center}
 .selectedchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.selchip{display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:4px 5px 4px 11px;font-size:13px;font-weight:600}
-.selchip button{border:0;background:color-mix(in srgb, var(--accent) 12%, transparent);width:28px;height:28px;margin:-4px -2px -4px 0;border-radius:50%;display:grid;place-items:center;color:var(--accent);font-size:11px}
+.selchip{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:var(--accent-ink);border-radius:999px;padding:4px 5px 4px 12px;font-size:13px;font-weight:600}
+.selchip button{border:0;background:rgba(255,255,255,.18);width:28px;height:28px;margin:-4px -2px -4px 0;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:11px}
 
 .btnbar{display:flex;gap:8px;padding:14px 0 6px}
 .btn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 18px;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);border-radius:var(--radius-pill);font-weight:600;font-size:15px;letter-spacing:-.006em;transition:transform .2s var(--ease-spring),opacity .12s,box-shadow .2s}
@@ -371,10 +403,16 @@ h3.sec:first-child{margin-top:12px}
   <div id="subBiblioteca">
     <div class="search">
       <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      <input id="searchInput" type="text" placeholder="Cerca una obra o autor…" autocomplete="off">
+      <input id="searchInput" type="text" placeholder="Cerca per títol, autor, projecte, instrument…" autocomplete="off">
     </div>
+    <div class="summary" id="summary"></div>
     <div class="countline">
       <span id="resultCount"></span>
+      <span class="sp"></span>
+      <div class="viewtoggle" role="group" aria-label="Vista">
+        <button data-view="ampliada" aria-label="Vista ampliada"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="7" rx="2" stroke="currentColor" stroke-width="2"/><rect x="4" y="13" width="16" height="7" rx="2" stroke="currentColor" stroke-width="2"/></svg></button>
+        <button data-view="compacta" aria-label="Vista compacta"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </div>
       <button id="openFilters">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M7 12h10M10 18h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         Filtres<span class="fbadge hidden" id="filterCountBadge">0</span>
@@ -441,7 +479,8 @@ const STATE = {
   catalogs: Object.assign({ubicacions:[]}, RAW.catalogs),
   role: 'gestio', // 'musica' | 'gestio' — demo-only toggle until real accounts exist
   screen: 'consultar',
-  filters: { q:'', estil:null, projecte:null, any:null, estat:null, general:null, ubicacio:null, lloc:null, original:null, instrExtern:null },
+  filters: { q:'', estil:null, projecte:null, any:null, estat:null, general:null, ubicacio:null, lloc:null, original:null, instrExtern:null, color:null },
+  view: (()=>{ try{ return localStorage.getItem('arxiu.vista')==='compacta' ? 'compacta' : 'ampliada'; }catch(e){ return 'ampliada'; } })(),
 };
 
 function norm(s){ return (s||'').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
@@ -615,7 +654,7 @@ function obraCardHtml(p, opts={}){
   </div>`;
 }
 function bindCards(root){
-  root.querySelectorAll('.card[data-id]').forEach(c=>{
+  root.querySelectorAll('.card[data-id], .crow[data-id]').forEach(c=>{
     c.addEventListener('click', ()=> openObraSmart(c.dataset.id));
     c.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openObraSmart(c.dataset.id); } });
   });
@@ -796,10 +835,10 @@ function openProjecteSheet(pid){
 const TASQUES = [
   {key:'acceptar',   title:'Registres per acceptar',  desc:'Obres registrades per músics que Junta ha d\'acceptar.', test:p=>p.pendentAcceptacio, accept:true},
   {key:'revisar',    title:'Cal revisar',             desc:'Incidències concretes: notes de l\'inventari, autoria dubtosa, noms per normalitzar o fitxers per obrir.', test:p=>needsReview(p) && !p.pendentAcceptacio, reasons:true},
-  {key:'falten',     title:'Falten parts',            desc:'No es poden tocar fins que es completin.', test:p=>facets(p).P==='falta'},
-  {key:'general',    title:'Falta la partitura general', desc:'El director no té la general.', test:p=>facets(p).G==='falta'},
-  {key:'vparts',     title:'Parts sense verificar',   desc:'Cal comprovar a l\'arxiu quines parts hi ha. Agrupades per on es troben.', test:p=>facets(p).P==='?', byPlace:true},
-  {key:'vgeneral',   title:'General sense verificar', desc:'Cal comprovar si hi ha la partitura general. Agrupades per on es troben.', test:p=>facets(p).G==='?', byPlace:true},
+  {key:'falten',     title:'Falten parts',            desc:'No tots els instruments disposen de parts.', test:p=>facets(p).P==='falta'},
+  {key:'general',    title:'Falta la partitura general', desc:'No consta la partitura general.', test:p=>facets(p).G==='falta'},
+  {key:'vparts',     title:'Parts sense verificar',   desc:'Cal comprovar a l\'arxiu quines parts hi ha.', test:p=>facets(p).P==='?', byPlace:true},
+  {key:'vgeneral',   title:'General sense verificar', desc:'Cal comprovar a l\'arxiu si hi ha la partitura general.', test:p=>facets(p).G==='?', byPlace:true},
   {key:'compositor', title:'Sense compositor',        desc:'Falta el nom del compositor.', test:p=>!p.composer},
 ];
 STATE.openTask = null;
@@ -859,13 +898,25 @@ function projLabel(p){
   return n+' projectes';
 }
 
-function matches(p){
+/* text on es busca: totes les metadades de l'obra. Cada paraula de la cerca ha d'aparèixer en algun camp. */
+function searchText(p){
+  const st = obraState(p), n = obraNotes(p);
+  const fields = [
+    p.title, p.titolBox, p.composer, p.arranger, p.de, p.estil, p.obs,
+    ...(p.aparicions||[]).map(a=>{ const pr = projById(a.projecteId); return [pr?pr.name:a.projecte, pr?pr.year:a.any, a.seccio].join(' '); }),
+    ...(p.specials||[]), ...(p.partsDetectades||[]), ...(p.faltenInventari||[]), ...(p.partsNoDetectades||[]),
+    ...(p.ubicacioFisica||[]), isDigital(p)?'box digital':'', isFisic(p)?'fisic paper':'', (isFisic(p)&&!isDigital(p))?'nomes en fisic':'',
+    st.label, st.extra, needsReview(p)?'cal revisar':'', p.original===true?'original comprada':'',
+    ...n.revisar, ...n.partitura, ...(p.revisioNota||[]),
+  ];
+  return norm(fields.filter(Boolean).join(' · '));
+}
+function matches(p, ignoreColor){
   const f = STATE.filters;
+  if(f.color && !ignoreColor && obraState(p).cls!==f.color) return false;
   if(f.q){
-    const q = norm(f.q);
-    const projNames = (p.aparicions||[]).map(a=>a.projecte).join(' ');
-    const hay = norm([p.title,p.composer,p.arranger,projNames,p.estil].join(' '));
-    if(!hay.includes(q)) return false;
+    const hay = searchText(p);
+    if(!norm(f.q).split(/\s+/).filter(Boolean).every(w=> hay.includes(w))) return false;
   }
   if(f.estil && p.estil!==f.estil) return false;
   if(f.estat && facets(p).P!==f.estat) return false;
@@ -880,9 +931,10 @@ function matches(p){
 }
 
 function renderList(){
-  const filtered = STATE.pieces.filter(matches).sort((a,b)=>a.title.localeCompare(b.title,'ca'));
+  renderSummary();
+  const filtered = STATE.pieces.filter(p=>matches(p)).sort((a,b)=>a.title.localeCompare(b.title,'ca'));
   document.getElementById('resultCount').textContent = filtered.length===STATE.pieces.length ? `${filtered.length} obres` : `${filtered.length} de ${STATE.pieces.length} obres`;
-  const activeFilters = Object.entries(STATE.filters).filter(([k,v])=> k!=='q' && v).length;
+  const activeFilters = Object.entries(STATE.filters).filter(([k,v])=> k!=='q' && k!=='color' && v).length;
   const badge = document.getElementById('filterCountBadge');
   if(activeFilters>0){ badge.textContent = activeFilters; badge.classList.remove('hidden'); } else badge.classList.add('hidden');
 
@@ -891,9 +943,46 @@ function renderList(){
   if(filtered.length===0){ list.classList.add('hidden'); empty.classList.remove('hidden'); return; }
   list.classList.remove('hidden'); empty.classList.add('hidden');
 
-  list.innerHTML = filtered.map(p=>obraCardHtml(p)).join('');
+  list.classList.toggle('compact', STATE.view==='compacta');
+  list.innerHTML = STATE.view==='compacta' ? compactHtml(filtered) : filtered.map(p=>obraCardHtml(p)).join('');
   bindCards(list);
 }
+/* resum per colors: compta les obres de cada color i serveix de filtre ràpid */
+const COLORS = [['bad','Incompletes'],['warn','Per verificar'],['ok','Completes']];
+function renderSummary(){
+  const base = STATE.pieces.filter(p=> matches(p, true));
+  const c = {ok:0, bad:0, warn:0}; base.forEach(p=> c[obraState(p).cls]++);
+  const el = document.getElementById('summary');
+  el.innerHTML = `<div class="sumbar">${COLORS.map(([k])=> c[k] ? `<span class="${k}" style="flex:${c[k]}"></span>` : '').join('')}</div>
+    <div class="sumchips">${COLORS.map(([k,l])=>`<button class="sumchip ${k} ${STATE.filters.color===k?'on':''}" data-color="${k}" aria-pressed="${STATE.filters.color===k}"><b><i></i>${c[k]}</b><span>${l}</span></button>`).join('')}</div>`;
+  el.querySelectorAll('[data-color]').forEach(b=> b.addEventListener('click', ()=>{
+    STATE.filters.color = STATE.filters.color===b.dataset.color ? null : b.dataset.color; renderList();
+  }));
+}
+/* vista compacta: una fila per obra, agrupades per inicial; el color del marge és l'estat que predomina */
+function compactHtml(items){
+  let letter = null, out = '';
+  items.forEach(p=>{
+    const l = (norm(p.title).match(/[a-z0-9]/)||['#'])[0].toUpperCase();
+    const L = /[0-9]/.test(l) ? '#' : l;
+    if(L!==letter){ if(letter!==null) out += '</div>'; out += `<h3 class="sec letter">${L}</h3><div class="crows">`; letter = L; }
+    const st = obraState(p);
+    const who = p.composer || (p.arranger ? 'Arr. '+p.arranger : '');
+    out += `<div class="crow ${st.cls}" data-id="${p.id}" role="button" tabindex="0" title="${esc(stateText(st))}">
+      <span class="ctext"><span class="ctitle">${esc(p.title)}</span>${who?`<span class="cwho">${esc(who)}</span>`:''}</span>
+      ${needsReview(p)?'<span class="cflag" title="Cal revisar">!</span>':''}
+      ${ICO_CHEVRON}
+    </div>`;
+  });
+  return out + (letter!==null ? '</div>' : '');
+}
+function setView(v){
+  STATE.view = v;
+  try{ localStorage.setItem('arxiu.vista', v); }catch(e){}
+  document.querySelectorAll('[data-view]').forEach(b=> b.classList.toggle('on', b.dataset.view===v));
+  renderList();
+}
+document.querySelectorAll('[data-view]').forEach(b=> b.addEventListener('click', ()=> setView(b.dataset.view)));
 document.getElementById('searchInput').addEventListener('input', e=>{ STATE.filters.q = e.target.value; renderList(); });
 
 function openFilters(){
@@ -946,7 +1035,7 @@ function openFilters(){
   bg.querySelector('#fClose').addEventListener('click', close);
   bg.addEventListener('click', e=>{ if(e.target===bg) close(); });
   bg.querySelector('#fReset').addEventListener('click', ()=>{
-    STATE.filters = {q:STATE.filters.q, estil:null, projecte:null, any:null, estat:null, general:null, ubicacio:null, lloc:null, original:null, instrExtern:null};
+    STATE.filters = {q:STATE.filters.q, estil:null, projecte:null, any:null, estat:null, general:null, ubicacio:null, lloc:null, original:null, instrExtern:null, color:STATE.filters.color};
     renderList(); close();
   });
   bg.querySelector('#fApply').addEventListener('click', ()=>{
@@ -1703,6 +1792,7 @@ function editProjecte(id, done){
 }
 
 /* ================= INIT ================= */
+document.querySelectorAll('[data-view]').forEach(b=> b.classList.toggle('on', b.dataset.view===STATE.view));
 setRole('gestio');
 setScreen('consultar');
 renderList();
