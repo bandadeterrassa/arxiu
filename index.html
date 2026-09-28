@@ -750,7 +750,7 @@ function setRole(r){
   if(STATE.screen==='config' && r!=='gestio') setScreen('consultar');
   if(STATE.subview==='pendents' && r!=='gestio') document.querySelector('#subviewCtl [data-sub=biblioteca]').click();
 }
-function userLine(){ return STATE.user ? `${esc(STATE.user.name)} · ${ACCESS[STATE.role]}` : 'Banda de Terrassa'; }
+function userLine(){ return STATE.user ? esc(STATE.user.name) : 'Banda de Terrassa'; }
 function startSession(u){
   STATE.user = u;
   document.body.classList.remove('auth');
@@ -777,7 +777,7 @@ function showLogin(err){
       <label class="toggle-row"><span>Mantenir la sessió iniciada</span><span class="switch"><input type="checkbox" id="lg-keep" checked><span></span></span></label>
       <button class="btn primary" type="submit" style="width:100%">Entra</button>
     </form>
-    <p class="login-foot">Fes servir el mateix usuari que a l'app d'assistència.<br>Si no recordes les credencials, parla amb la junta.</p></div>`;
+    <p class="login-foot">Si no recordes les credencials,<br>parla amb la junta.</p></div>`;
   el.querySelector('#lg-eye').addEventListener('click', e=>{
     const b = e.currentTarget, i = el.querySelector('#lg-pass'), on = i.type==='password';
     i.type = on ? 'text' : 'password'; b.setAttribute('aria-pressed', on);
