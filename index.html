@@ -91,7 +91,10 @@ main{max-width:680px;margin:0 auto;padding:8px 16px calc(var(--nav-h) + 40px + e
 .viewtoggle button{border:0!important;background:transparent!important;min-height:36px!important;width:40px;padding:0!important;border-radius:999px!important;display:grid!important;place-items:center;color:var(--muted)!important}
 .viewtoggle button.on{background:var(--ink)!important;color:var(--bg)!important}
 /* vista compacta: llista agrupada a l'estil iOS */
-.list.compact{gap:0;padding-right:18px}
+.list#list{padding-right:18px;gap:0}
+.list > .cards{display:flex;flex-direction:column;gap:10px}
+.list#list h3.letter{margin:20px 16px 6px;font-size:13px;letter-spacing:.02em;text-transform:none;color:var(--muted);font-weight:600}
+.list#list h3.letter:first-child{margin-top:2px}
 .list.compact h3.letter{margin:20px 16px 6px;font-size:13px;letter-spacing:.02em;text-transform:none;color:var(--muted);font-weight:600}
 .list.compact h3.letter:first-child{margin-top:2px}
 .crows{background:var(--surface);border-radius:12px;overflow:hidden}
@@ -389,7 +392,7 @@ h3.sec:first-child{margin-top:12px}
 <div class="top">
   <div class="top-in">
     <div class="logo"><span>bt</span></div>
-    <h1 id="topTitle">Arxiu de la Banda<small>Banda de Terrassa</small></h1>
+    <h1 id="topTitle">Arxiu<small>Banda de Terrassa</small></h1>
     <div class="sp"></div>
     <button class="icon-btn" id="helpBtn" aria-label="Com funciona l'arxiu"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.7 9.4a2.4 2.4 0 1 1 3.3 2.2c-.7.3-1 .8-1 1.6v.3M12 16.6v.2"/></svg></button>
     <button class="roleswitch" id="roleSwitch">
@@ -715,7 +718,7 @@ function setScreen(s){
   document.getElementById('navConsultar').classList.toggle('on', s==='consultar');
   document.getElementById('navRegistrar').classList.toggle('on', s==='registrar');
   document.getElementById('navConfig').classList.toggle('on', s==='config');
-  document.getElementById('topTitle').innerHTML = s==='consultar' ? 'Arxiu de la Banda<small>Banda de Terrassa</small>'
+  document.getElementById('topTitle').innerHTML = s==='consultar' ? 'Arxiu<small>Banda de Terrassa</small>'
     : s==='registrar' ? 'Registrar obra<small>Banda de Terrassa</small>'
     : 'Configuració<small>Banda de Terrassa</small>';
   window.scrollTo(0,0);
@@ -949,17 +952,18 @@ function renderList(){
   list.classList.remove('hidden'); empty.classList.add('hidden');
 
   list.classList.toggle('compact', STATE.view==='compacta');
-  list.innerHTML = STATE.view==='compacta' ? compactHtml(filtered) : filtered.map(p=>obraCardHtml(p)).join('');
+  list.innerHTML = groupedHtml(filtered, STATE.view==='compacta');
   bindCards(list);
   renderAzIndex();
 }
-/* vista compacta: una fila per obra, agrupades per inicial; el color del marge és l'estat que predomina */
-function compactHtml(items){
+/* llista agrupada per inicial (les dues vistes). Compacta: una fila per obra; el color del marge és l'estat que predomina */
+function groupedHtml(items, compact){
   let letter = null, out = '';
   items.forEach(p=>{
     const l = (norm(p.title).match(/[a-z0-9]/)||['#'])[0].toUpperCase();
     const L = /[0-9]/.test(l) ? '#' : l;
-    if(L!==letter){ if(letter!==null) out += '</div>'; out += `<h3 class="sec letter" id="letter-${L}">${L}</h3><div class="crows">`; letter = L; }
+    if(L!==letter){ if(letter!==null) out += '</div>'; out += `<h3 class="sec letter" id="letter-${L}">${L}</h3><div class="${compact?'crows':'cards'}">`; letter = L; }
+    if(!compact){ out += obraCardHtml(p); return; }
     const st = obraState(p);
     const who = p.composer || (p.arranger ? 'Arr. '+p.arranger : '');
     out += `<div class="crow ${st.cls}" data-id="${p.id}" role="button" tabindex="0" title="${esc(stateText(st))}">
@@ -970,10 +974,10 @@ function compactHtml(items){
   });
   return out + (letter!==null ? '</div>' : '');
 }
-/* índex alfabètic lateral (vista compacta), com a Contactes d'iOS */
+/* índex alfabètic lateral, com a Contactes d'iOS */
 function renderAzIndex(){
   let el = document.getElementById('azindex');
-  const show = STATE.view==='compacta' && STATE.screen==='consultar' && STATE.subview!=='projectes' && STATE.subview!=='pendents';
+  const show = STATE.screen==='consultar' && STATE.subview!=='projectes' && STATE.subview!=='pendents';
   const letters = show ? [...document.querySelectorAll('#list h3.letter')].map(h=>h.textContent) : [];
   if(letters.length < 4){ if(el) el.remove(); return; }
   if(!el){ el = document.createElement('nav'); el.id = 'azindex'; el.className = 'azindex'; el.setAttribute('aria-label','Índex alfabètic'); document.body.appendChild(el); }
@@ -1837,7 +1841,7 @@ function openHelp(){
 
       <h3 class="help-h">Com consultar-ho</h3>
       <div class="help-row"><span>🔎</span><div><b>Cercador</b>Escriu qualsevol dada: títol, autor, projecte, any, instrument… Pots escriure diverses paraules, com «nadal 2023».</div></div>
-      <div class="help-row"><span>☰</span><div><b>Dues vistes</b>La vista ampliada mostra totes les etiquetes. La compacta mostra una línia per obra amb una marca de color a l'esquerra, i un índex de lletres a la dreta per saltar ràpid.</div></div>
+      <div class="help-row"><span>☰</span><div><b>Dues vistes</b>La vista ampliada mostra totes les etiquetes. La compacta mostra una línia per obra amb una marca de color a l'esquerra. En totes dues, l'índex de lletres de la dreta et porta directament a una lletra.</div></div>
       <div class="help-row"><span>🎼</span><div><b>Projectes</b>Cada concert o actuació amb el seu repertori. Des de la fitxa d'una obra pots anar als projectes on s'ha tocat.</div></div>
       ${gestio ? `
       <h3 class="help-h">Per a la gestió</h3>
