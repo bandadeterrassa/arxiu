@@ -93,19 +93,18 @@ main{max-width:680px;margin:0 auto;padding:8px 16px calc(var(--nav-h) + 40px + e
 .viewtoggle{display:flex;background:var(--surface);border:1px solid var(--line-strong);border-radius:999px;padding:2px}
 .viewtoggle button{border:0!important;background:transparent!important;min-height:36px!important;width:40px;padding:0!important;border-radius:999px!important;display:grid!important;place-items:center;color:var(--muted)!important}
 .viewtoggle button.on{background:var(--ink)!important;color:var(--bg)!important}
-/* vista compacta: llista agrupada a l'estil iOS */
+/* vista compacta: una targeta per obra amb el color de l'estat al marc */
 .list#list{padding-right:18px;gap:0}
 .list > .cards{display:flex;flex-direction:column;gap:10px}
 .list#list h3.letter{margin:20px 16px 6px;font-size:13px;letter-spacing:.02em;text-transform:none;color:var(--muted);font-weight:600}
 .list#list h3.letter:first-child{margin-top:2px}
 .list.compact h3.letter{margin:20px 16px 6px;font-size:13px;letter-spacing:.02em;text-transform:none;color:var(--muted);font-weight:600}
 .list.compact h3.letter:first-child{margin-top:2px}
-.crows{background:var(--surface);border-radius:12px;overflow:hidden}
-.crow{position:relative;display:flex;align-items:center;gap:12px;min-height:56px;padding:9px 12px 9px 26px;cursor:pointer;transition:background .15s}
-.crow + .crow::after{content:"";position:absolute;top:0;left:26px;right:0;height:1px;background:var(--line)}
-.crow::before{content:"";position:absolute;left:11px;top:12px;bottom:12px;width:4px;border-radius:4px}
-.crow.ok::before{background:var(--ok)} .crow.bad::before{background:var(--bad)} .crow.warn::before{background:var(--gold)}
-.crow:active{background:var(--surface2)}
+.crows{display:flex;flex-direction:column;gap:8px}
+/* cada obra és una targeta arrodonida; el color de l'estat forma part del marc (com les sessions del calendari de l'app d'assistència) */
+.crow{position:relative;display:flex;align-items:center;gap:12px;min-height:58px;padding:9px 14px 9px 14px;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-left:7px solid var(--line-strong);border-radius:var(--radius-l);box-shadow:var(--shadow-sm);overflow:hidden;transition:transform .18s var(--ease-spring),background .15s}
+.crow.ok{border-left-color:var(--ok)} .crow.bad{border-left-color:var(--bad)} .crow.warn{border-left-color:var(--gold)}
+.crow:active{background:var(--surface2);transform:scale(.985)}
 .ctext{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
 .ctitle{font-weight:500;font-size:16px;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cwho{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
