@@ -731,36 +731,98 @@ async function servidor(ruta, body){
 }
 const rpc = (fn, args)=> servidor('/rest/v1/rpc/'+fn, args);
 
-/* còpia del que hi ha al servidor, per enviar només el que ha canviat */
+/* ---------- desar i sincronitzar ----------
+   SNAP és la darrera versió coneguda del servidor. Només s'envia el que ha canviat respecte a SNAP,
+   juntament amb aquesta versió de base: el servidor combina els canvis camp per camp, de manera que
+   si algú altre ha editat la mateixa obra (o la mateixa llista) mentrestant, no se li trepitgen els canvis.
+   Les dades es tornen a demanar al servidor en tornar a l'app i cada minut, si no hi ha res obert ni pendent. */
 const SNAP = {obres: new Map(), cat: new Map()};
 function snapshot(){
   SNAP.obres = new Map(STATE.pieces.map(o=> [o.id, JSON.stringify(o)]));
   SNAP.cat = new Map(Object.entries(STATE.catalogs).map(([k,v])=> [k, JSON.stringify(v)]));
 }
 function pendingChanges(){
-  const obres = [], esborra = [], catalegs = {};
+  const obres = [], bases = {}, esborra = [], catalegs = {}, catalegsBase = {};
   const cur = new Map(STATE.pieces.map(o=> [o.id, JSON.stringify(o)]));
-  cur.forEach((j, id)=>{ if(SNAP.obres.get(id)!==j) obres.push(JSON.parse(j)); });
+  cur.forEach((j, id)=>{ const b = SNAP.obres.get(id); if(b!==j){ obres.push(JSON.parse(j)); bases[id] = b ? JSON.parse(b) : null; } });
   SNAP.obres.forEach((_, id)=>{ if(!cur.has(id)) esborra.push(id); });
-  Object.entries(STATE.catalogs).forEach(([k,v])=>{ if(SNAP.cat.get(k)!==JSON.stringify(v)) catalegs[k] = v; });
-  return (obres.length || esborra.length || Object.keys(catalegs).length) ? {obres, esborra, catalegs} : null;
+  Object.entries(STATE.catalogs).forEach(([k,v])=>{ const b = SNAP.cat.get(k); if(b!==JSON.stringify(v)){ catalegs[k] = JSON.parse(JSON.stringify(v)); catalegsBase[k] = b ? JSON.parse(b) : null; } });
+  return (obres.length || esborra.length || Object.keys(catalegs).length) ? {obres, bases, esborra, catalegs, catalegsBase} : null;
 }
-let saveTimer=null, saving=false;
-function persist(){
+const jstr = x => JSON.stringify(x);
+/* versió local = versió del servidor + el que s'ha tocat aquí després d'enviar */
+function rebaseObra(server, sent, local){
+  const out = {...server};
+  new Set([...Object.keys(sent), ...Object.keys(local)]).forEach(k=>{
+    if(jstr(local[k])!==jstr(sent[k])){ if(k in local) out[k] = local[k]; else delete out[k]; }
+  });
+  return out;
+}
+function rebaseLlista(server, sent, local){
+  const S = new Set(sent.map(jstr)), L = new Set(local.map(jstr));
+  const out = server.filter(x=> !(S.has(jstr(x)) && !L.has(jstr(x))));
+  const O = new Set(out.map(jstr));
+  local.forEach(x=>{ if(!S.has(jstr(x)) && !O.has(jstr(x))) out.push(x); });
+  return out;
+}
+function replaceInPlace(obj, data){ Object.keys(obj).forEach(k=> delete obj[k]); Object.assign(obj, data); }
+function applySaveResult(canvis, r){
+  r = r || {};
+  let canviat = false;
+  const sentObres = new Map(canvis.obres.map(o=> [o.id, o]));
+  const locals = new Map(STATE.pieces.map(o=> [o.id, o]));
+  (r.obres||[]).forEach(m=>{
+    SNAP.obres.set(m.id, jstr(m));
+    const loc = locals.get(m.id), sent = sentObres.get(m.id);
+    if(loc && sent){
+      const nou = rebaseObra(m, sent, loc);
+      if(jstr(nou)!==jstr(loc)){ replaceInPlace(loc, nou); canviat = true; }
+    }
+  });
+  canvis.esborra.forEach(id=> SNAP.obres.delete(id));
+  const perdudes = (r.perdudes||[]).map(id=>{
+    SNAP.obres.delete(id);
+    const loc = locals.get(id);
+    STATE.pieces = STATE.pieces.filter(x=> x.id!==id); canviat = true;
+    return loc ? loc.title : id;
+  });
+  Object.entries(r.catalegs||{}).forEach(([k, m])=>{
+    SNAP.cat.set(k, jstr(m));
+    const local = STATE.catalogs[k] || [], sent = canvis.catalegs[k] || local;
+    const nou = rebaseLlista(m, sent, local);
+    if(jstr(nou)!==jstr(local)){
+      const pool = new Map(local.map(x=> [jstr(x), x]));   // conserva els mateixos objectes (p. ex. un projecte obert)
+      STATE.catalogs[k] = nou.map(x=> pool.get(jstr(x)) || x); canviat = true;
+    }
+  });
+  if(canviat && !document.body.classList.contains('locked')){ refreshViews(); if(STATE.screen==='config') renderConfig(); }
+  const avisos = [];
+  if(perdudes.length) avisos.push(`Algú altre havia eliminat «${perdudes.join('», «')}»`);
+  if((r.conflictes||[]).length) avisos.push(`Algú altre també havia editat «${r.conflictes.map(c=>c.title).join('», «')}». S'han combinat els canvis`);
+  return avisos.join('. ');
+}
+let saveTimer=null, saving=false, retryDelay=0;
+function persist(delay){
   clearTimeout(saveTimer);
   saveTimer = setTimeout(async ()=>{
     if(saving){ persist(); return; }
     const canvis = pendingChanges(); if(!canvis || !STATE.session) return;
     saving = true;
     try{
-      await rpc('desa_canvis', {p_token: STATE.session.token, p: canvis});
-      snapshot(); showSavePill('Desat');
+      const r = await rpc('desa_canvis', {p_token: STATE.session.token, p: canvis});
+      const avis = applySaveResult(canvis, r);
+      showSavePill(avis || 'Desat'); retryDelay = 0;
     }catch(e){
       if(e.codi==='SESSIO'){ sessionExpired(); }
       else if(e.codi==='PERMIS'){ showSavePill('No tens permís per fer aquest canvi'); await loadData(); }
-      else showSavePill('No s\'ha pogut desar. Revisa la connexió.');
+      else {
+        retryDelay = Math.min(retryDelay ? retryDelay*2 : 3000, 30000);
+        showSavePill('Sense connexió. Els canvis es desaran quan torni.');
+        persist(retryDelay);
+      }
     }finally{ saving = false; }
-  }, 300);
+    if(!retryDelay && pendingChanges()) persist();   // canvis fets mentre es desava
+  }, delay==null ? 300 : delay);
 }
 async function loadData(){
   const d = await rpc('carrega', {p_token: STATE.session.token});
@@ -771,6 +833,36 @@ async function loadData(){
   if(STATE.screen==='config') renderConfig();
   return d.usuari;
 }
+/* torna a demanar les dades si no hi ha cap fitxa oberta ni canvis per desar */
+let refreshing = false;
+async function refreshFromServer(){
+  const ocupat = ()=> !STATE.session || saving || refreshing || !!pendingChanges() || document.body.classList.contains('locked') || document.body.classList.contains('auth');
+  if(ocupat()) return;
+  refreshing = true;
+  let d;
+  try{ d = await rpc('carrega', {p_token: STATE.session.token}); }
+  catch(e){ if(e.codi==='SESSIO') sessionExpired(); return; }
+  finally{ refreshing = false; }
+  if(ocupat()) return;
+  const catalogs = Object.assign({estils:[], autors:[], arranjadors:[], parts:[], instrumentsExterns:[], projectes:[], ubicacions:[]}, d.catalogs || {});
+  const pieces = d.pieces || [];
+  const igualObres = pieces.length===SNAP.obres.size && pieces.every(o=> SNAP.obres.get(o.id)===jstr(o));
+  const igualCat = Object.entries(catalogs).every(([k,v])=> SNAP.cat.get(k)===jstr(v));
+  if(d.usuari && STATE.user && ROLE_OF[d.usuari.rol] && ROLE_OF[d.usuari.rol]!==STATE.role) setRole(ROLE_OF[d.usuari.rol]);
+  if(igualObres && igualCat) return;
+  STATE.pieces = pieces; STATE.catalogs = catalogs;
+  snapshot();
+  refreshViews();
+  if(STATE.screen==='config' && !igualCat) renderConfig();
+}
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState==='visible') refreshFromServer();
+  else if(pendingChanges()) persist(0);   // en sortir de l'app, desa de seguida
+});
+setInterval(()=>{ if(document.visibilityState==='visible') refreshFromServer(); }, 60000);
+window.addEventListener('beforeunload', e=>{
+  if(STATE.session && (saving || pendingChanges())){ e.preventDefault(); e.returnValue = ''; }
+});
 function showSavePill(txt){
   const el = document.getElementById('savePill');
   el.textContent = txt;
@@ -1930,6 +2022,7 @@ function parseBackup(text){
 async function restoreBackup(file){
   let b;
   try{ b = parseBackup(await file.text()); }catch(e){ alert(e.message); return; }
+  await refreshFromServer();   // compara amb les dades més recents
   const cur = new Map(STATE.pieces.map(o=> [o.id, JSON.stringify(o)]));
   const nova = new Map(b.obres.map(o=> [o.id, JSON.stringify(o)]));
   let afegeix = 0, canvia = 0, esborra = 0;
@@ -1968,8 +2061,11 @@ async function restoreBackup(file){
     const canvis = pendingChanges();
     saving = true;
     try{
-      if(canvis) await rpc('desa_canvis', {p_token: STATE.session.token, p: canvis});
-      snapshot(); close(); refreshViews(); renderConfig();
+      if(canvis){
+        canvis.forca = true;   // la còpia substitueix el que hi hagi, també els canvis recents d'altres
+        applySaveResult(canvis, await rpc('desa_canvis', {p_token: STATE.session.token, p: canvis}));
+      }
+      close(); refreshViews(); renderConfig();
       showSavePill('Còpia restaurada');
     }catch(e){
       close();
