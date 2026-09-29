@@ -259,7 +259,7 @@ body.auth > .top, body.auth > main, body.auth > .nav, body.auth #azindex{display
 .tagpill{display:inline-flex;align-items:center;gap:6px;min-height:24px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:700;background:var(--gray-bg);color:var(--ink2);white-space:nowrap}
 .tagpill.ok{background:var(--ok-bg);color:var(--ok-fg)}
 .tagpill.bad{background:var(--bad-bg);color:var(--bad-fg)}
-.tagpill.ia{background:var(--info-bg);color:var(--info)}
+.aifoot{display:flex;align-items:center;justify-content:center;gap:6px;margin:4px 0 8px;font-size:12px;color:var(--muted)}
 .tagpill.warn{background:var(--gold-bg);color:var(--gold-ink)}
 .tagpill .tdot{width:6px;height:6px;border-radius:50%;background:currentColor}
 .famgrid{display:flex;flex-direction:column;gap:10px}
@@ -1317,7 +1317,7 @@ function openDetail(id){
         <h4>Estat de l'arxiu</h4>
         <dl class="kvgrid statgrid2">
           <dt>General</dt><dd><span class="tagpill ${FACETA.general[st.G].cls}">${esc(FACETA.general[st.G].label)}</span></dd>
-          <dt>Parts</dt><dd><span class="tagpill ${FACETA.parts[st.P].cls}">${esc(FACETA.parts[st.P].label)}${st.detail?' · '+esc(st.detail):''}</span>${deteccioIA(p)?'<span class="tagpill ia">Detecció per IA</span>':''}</dd>
+          <dt>Parts</dt><dd><span class="tagpill ${FACETA.parts[st.P].cls}">${esc(FACETA.parts[st.P].label)}${st.detail?' · '+esc(st.detail):''}</span></dd>
           <dt>On es troba</dt><dd>${placePillsHtml(p)}</dd>
           ${p.specials&&p.specials.length ? `<dt>Instruments addicionals</dt><dd><div class="tagrow">${p.specials.map(x=>`<span class="tagpill">${esc(x)}</span>`).join('')}</div></dd>` : ''}
         </dl>
@@ -1335,6 +1335,7 @@ function openDetail(id){
       ${p.obs? `<div class="box"><h4>Comentaris</h4><div style="font-size:14.5px;color:var(--ink2);overflow-wrap:anywhere">${esc(p.obs)}</div></div>` : ''}
 
 
+      ${deteccioIA(p) ? `<p class="aifoot"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>Fitxa creada amb detecció per IA</p>` : ''}
       ${canEdit ? `<div class="btnbar">
         ${p.pendentAcceptacio?'<button class="btn primary" id="dAccept" style="flex:1">Accepta el registre</button><button class="btn btn-danger-ghost" id="dReject" style="flex:1">Elimina</button>':''}
         <button class="btn ${p.pendentAcceptacio?'':'primary'}" id="dEdit" style="flex:1">Edita</button>
