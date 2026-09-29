@@ -260,6 +260,7 @@ body.auth > .top, body.auth > main, body.auth > .nav, body.auth #azindex{display
 .tagpill.ok{background:var(--ok-bg);color:var(--ok-fg)}
 .tagpill.bad{background:var(--bad-bg);color:var(--bad-fg)}
 .aifoot{display:flex;align-items:center;justify-content:center;gap:6px;margin:4px 0 8px;font-size:12px;color:var(--muted)}
+.tagpill.ia{background:var(--info-bg);color:var(--info)}
 .tagpill.warn{background:var(--gold-bg);color:var(--gold-ink)}
 .tagpill .tdot{width:6px;height:6px;border-radius:50%;background:currentColor}
 .famgrid{display:flex;flex-direction:column;gap:10px}
@@ -1335,7 +1336,7 @@ function openDetail(id){
       ${p.obs? `<div class="box"><h4>Comentaris</h4><div style="font-size:14.5px;color:var(--ink2);overflow-wrap:anywhere">${esc(p.obs)}</div></div>` : ''}
 
 
-      ${deteccioIA(p) ? `<p class="aifoot"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>Fitxa creada amb detecció per IA</p>` : ''}
+      ${deteccioIA(p) ? `<p class="aifoot"><span class="tagpill ia">Detecció per IA</span></p>` : ''}
       ${canEdit ? `<div class="btnbar">
         ${p.pendentAcceptacio?'<button class="btn primary" id="dAccept" style="flex:1">Accepta el registre</button><button class="btn btn-danger-ghost" id="dReject" style="flex:1">Elimina</button>':''}
         <button class="btn ${p.pendentAcceptacio?'':'primary'}" id="dEdit" style="flex:1">Edita</button>
