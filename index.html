@@ -415,6 +415,11 @@ h3.sec:first-child{margin-top:12px}
 .addbtn:active{background:var(--surface2)}
 .cfgempty{color:var(--muted);font-size:13.5px;padding:10px 0}
 .cfgnote{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.45}
+.exportbox{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:10px}
+.exportbox .btnrow{display:flex;gap:8px;flex-wrap:wrap}
+.exportbox .btnrow .btn{white-space:nowrap}
+.exportbox .btn{flex:1 1 200px}
+.exportbox p{font-size:12.5px;color:var(--muted);line-height:1.45;margin:0}
 
 @media (prefers-reduced-motion:reduce){ *,*::before,*::after{animation:none!important;transition:none!important} }
 </style>
@@ -1845,6 +1850,61 @@ function usageCount(key, v){
 }
 const ICO_EDIT = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const ICO_DEL = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+/* ---------- exportació ---------- */
+function downloadFile(name, text, type){
+  const url = URL.createObjectURL(new Blob([text], {type}));
+  const a = document.createElement('a'); a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=> URL.revokeObjectURL(url), 1000);
+}
+function exportDate(){ const d = new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function exportBackup(){
+  const data = { format:'arxiu-banda-terrassa', versio:1, exportat:new Date().toISOString(), exportatPer:STATE.user?STATE.user.name:'',
+    obres:STATE.pieces, catalegs:STATE.catalogs };
+  downloadFile(`arxiu-copia-${exportDate()}.json`, JSON.stringify(data, null, 2), 'application/json');
+  showSavePill(`Còpia de seguretat baixada (${STATE.pieces.length} obres)`);
+}
+const CSV_COLS = [
+  ['Títol', p=> p.title],
+  ['Compositor', p=> p.composer],
+  ['Arranjador', p=> p.arranger],
+  ['Estil', p=> p.estil],
+  ['Original', p=> p.original===true ? 'Sí, comprada' : p.original===false ? 'No' : ''],
+  ['Estat', p=> stateText(obraState(p))],
+  ['Partitura general', p=> FACETA.general[obraState(p).G].label],
+  ['Parts', p=> FACETA.parts[obraState(p).P].label],
+  ['Parts que falten', p=> obraState(p).detail],
+  ['Cal revisar', p=> needsReview(p) ? 'Sí' : 'No'],
+  ['Al Box', p=> isDigital(p) ? 'Sí' : 'No'],
+  ['En físic', p=> isFisic(p) ? 'Sí' : 'No'],
+  ['Ubicació física', p=> (p.ubicacioFisica||[]).join(', ')],
+  ['General només en físic', p=> p.generalNomesFisic ? 'Sí' : ''],
+  ['Parts només en físic', p=> p.partsNomesFisic ? 'Sí' : ''],
+  ['Instruments addicionals', p=> (p.specials||[]).join(', ')],
+  ['Projectes', p=> (p.aparicions||[]).map(a=> a.projecte + (a.any ? ` (${a.any})` : '')).join(', ')],
+  ['Comentaris', p=> p.obs],
+  ['Cal revisar (motius)', p=> obraNotes(p).revisar.join(' | ')],
+  ['Sobre la partitura', p=> obraNotes(p).partitura.join(' | ')],
+  ['A tenir en compte', p=> obraNotes(p).compte.join(' | ')],
+  ['Detecció per IA', p=> deteccioIA(p) ? 'Sí' : ''],
+  ['Títol a Box', p=> p.titolBox],
+  ['Pendent d\'aprovació', p=> p.pendentAcceptacio ? 'Sí' : ''],
+  ['Registrada per', p=> p.registradaPer],
+  ['Data de registre', p=> p.dataRegistre],
+  ['ID', p=> p.id],
+];
+function csvCell(v){
+  v = v==null ? '' : String(v);
+  return /[";\n\r]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v;
+}
+function exportCsv(){
+  const rows = [...STATE.pieces].sort((a,b)=> (a.title||'').localeCompare(b.title||'', 'ca', {sensitivity:'base'}));
+  const lines = [CSV_COLS.map(c=> csvCell(c[0])).join(';'),
+    ...rows.map(p=> CSV_COLS.map(c=> csvCell(c[1](p))).join(';'))];
+  // BOM perquè Excel reconegui els accents; «;» és el separador que Excel espera en català
+  downloadFile(`arxiu-obres-${exportDate()}.csv`, '﻿'+lines.join('\r\n'), 'text/csv;charset=utf-8');
+  showSavePill(`CSV baixat (${rows.length} obres)`);
+}
 function renderConfig(){
   const root = document.getElementById('configBody');
   root.innerHTML = CFG_GROUPS.map(g=>`
@@ -1858,7 +1918,17 @@ function renderConfig(){
         </button>
         ${open?`<div class="cfgpanel" id="cfgbody_${it.key}"></div>`:''}
       </section>`; }).join('')}`).join('')
-    + `<p class="cfgnote">Si corregeixes un nom, es corregeix també a totes les obres que el tenen. Si l'elimines de la llista, les obres el conserven.</p>`;
+    + `<p class="cfgnote">Si corregeixes un nom, es corregeix també a totes les obres que el tenen. Si l'elimines de la llista, les obres el conserven.</p>
+    <h3 class="sec">Exportació</h3>
+    <div class="exportbox">
+      <div class="btnrow">
+        <button class="btn" id="expBackup">Còpia de seguretat</button>
+        <button class="btn" id="expCsv">Exporta a CSV</button>
+      </div>
+      <p>La còpia de seguretat (.json) conté totes les dades de l'arxiu: obres i llistes. El CSV es pot obrir amb Excel o Google Sheets: una fila per obra i una columna per característica.</p>
+    </div>`;
+  root.querySelector('#expBackup').addEventListener('click', exportBackup);
+  root.querySelector('#expCsv').addEventListener('click', exportCsv);
   root.querySelectorAll('[data-toggle]').forEach(h=> h.addEventListener('click', ()=>{
     STATE.cfgOpen = STATE.cfgOpen===h.dataset.toggle ? null : h.dataset.toggle;
     renderConfig();
