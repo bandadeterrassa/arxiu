@@ -262,6 +262,7 @@ body.auth > .top, body.auth > main, body.auth > .nav, body.auth #azindex{display
 .tagpill.bad{background:var(--bad-bg);color:var(--bad-fg)}
 .aifoot{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px 10px;margin:4px 0 8px;font-size:12px;color:var(--muted)}
 .revactions{display:flex;justify-content:flex-end;margin-top:8px}
+.btn.delobra{display:flex;width:100%;margin-top:22px;flex:none}
 .revactions .btn{flex:none}
 .revbox{margin-bottom:14px}
 .revbox .revhint{margin:0 0 8px;font-size:12.5px;opacity:.85}
@@ -1179,8 +1180,6 @@ function openProjecteSheet(pid){
 const TASQUES = [
   {key:'acceptar',   title:'Registres per acceptar',  desc:'Obres registrades per músics que Junta ha d\'acceptar.', test:p=>p.pendentAcceptacio, accept:true},
   {key:'revisar',    title:'Cal revisar',             desc:'Incidències concretes: notes de l\'inventari, autoria dubtosa, noms per normalitzar o fitxers per obrir.', test:p=>needsReview(p) && !p.pendentAcceptacio, reasons:true},
-  {key:'falten',     title:'Falten parts',            desc:'No tots els instruments disposen de parts.', test:p=>facets(p).P==='falta'},
-  {key:'general',    title:'Falta la partitura general', desc:'No consta la partitura general.', test:p=>facets(p).G==='falta'},
   {key:'vparts',     title:'Parts sense verificar',   desc:'Cal comprovar a l\'arxiu quines parts hi ha.', test:p=>facets(p).P==='?', byPlace:true},
   {key:'vgeneral',   title:'General sense verificar', desc:'Cal comprovar a l\'arxiu si hi ha la partitura general.', test:p=>facets(p).G==='?', byPlace:true},
   {key:'compositor', title:'Sense compositor',        desc:'Falta el nom del compositor.', test:p=>!p.composer},
@@ -1772,6 +1771,7 @@ function openEditPiece(id, opts={}){
       <h3 class="sec">Comentaris</h3>
       <textarea class="textarea" id="ein_comentaris">${esc(draft.comentaris)}</textarea>
 
+      <button class="btn btn-danger-ghost delobra" id="eDelete">Elimina l'obra</button>
       <div class="btnbar"><button class="btn primary" id="eSave" style="flex:1">Desa els canvis</button></div>
     </div>
   </div>`;
@@ -1811,6 +1811,12 @@ function openEditPiece(id, opts={}){
 
   function close(){ document.body.removeChild(bg); document.body.classList.remove('locked'); }
   bg.querySelector('#eClose').addEventListener('click', ()=>{ close(); if(opts.back) openDetail(piece.id); });
+  bg.querySelector('#eDelete').addEventListener('click', ()=>{
+    if(STATE.role!=='gestio') return;
+    if(!confirm(`Segur que vols eliminar «${piece.title}» de l'arxiu?\n\nDesapareixerà per a tothom.`)) return;
+    STATE.pieces = STATE.pieces.filter(x=> x.id!==piece.id);
+    persist(); close(); refreshViews(); showSavePill(`«${piece.title}» eliminada`);
+  });
 
   bg.querySelector('#eSave').addEventListener('click', ()=>{
     let ok = true;
@@ -2339,7 +2345,7 @@ function openHelp(){
       <div class="help-row"><span>🎼</span><div><b>Projectes</b>Cada concert o actuació amb el seu repertori. Des de la fitxa d'una obra pots anar als projectes on s'ha tocat.</div></div>
       ${gestio ? `
       <h3 class="help-h">Amb el rol d'edició</h3>
-      <div class="help-row"><span>📋</span><div><b>Per revisar</b>La feina pendent agrupada: registres dels músics per acceptar, obres a revisar, parts o generals que falten i obres per comprovar.</div></div>
+      <div class="help-row"><span>📋</span><div><b>Per revisar</b>La feina pendent agrupada: registres dels músics per acceptar, obres a revisar i obres per comprovar. Les obres on falten parts o la general es troben amb els filtres de la biblioteca.</div></div>
       <div class="help-row"><span>✏️</span><div><b>Editar</b>Obre una obra o un projecte i toca «Edita». Des de «Per revisar», les obres s'obren directament per editar.</div></div>
       <div class="help-row"><span>⚙️</span><div><b>Configuració</b>Les llistes que fan servir els formularis: ubicacions, compositors, plantilla de la banda… Si hi canvies un nom, es canvia a totes les obres.</div></div>`
       : `
