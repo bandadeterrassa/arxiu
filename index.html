@@ -1758,8 +1758,8 @@ function openEditPiece(id, opts={}){
       </div>` : ''}
       <div class="block" style="box-shadow:none;padding:0;margin-bottom:6px">
         <div class="field" id="ef_nom"><label>Títol <span class="req">*</span></label><input class="input" id="ein_nom" value="${esc(draft.nom)}"><div class="errtext">Cal indicar el títol de la partitura.</div></div>
-        <div class="field" id="ef_autor"><label>Compositor <span class="req">*</span></label><div id="ecb_autor"></div><div class="errtext">Cal indicar el compositor.</div></div>
-        <div class="field"><label>Arranjador <span class="opt">opcional</span></label><div id="ecb_arranjador"></div></div>
+        <div class="field" id="ef_autor"><label>Compositor <span class="req">*</span> <span class="opt">(ex. Giuseppe Verdi)</span></label><div id="ecb_autor"></div><div class="errtext">Cal indicar el compositor.</div></div>
+        <div class="field"><label>Arranjador <span class="opt">opcional (ex. G. Verdi)</span></label><div id="ecb_arranjador"></div></div>
         <div class="field"><label>Estil <span class="opt">opcional</span></label><div id="ecb_estil"></div></div>
         ${originalHtml('ef_original', draft.original)}
         <div class="field"><label>Projectes <span class="opt">opcional — pot ser-hi en diversos</span></label><div id="ems_projecte"></div></div>
@@ -1855,8 +1855,8 @@ function renderRegistrar(){
     <div class="block">
       <h3>Informació de l'obra</h3>
       <div class="field" id="f_nom"><label>Títol <span class="req">*</span></label><input class="input" id="in_nom" placeholder="p. ex. Harry Potter"><div class="errtext">Cal indicar el títol de la partitura.</div></div>
-      <div class="field" id="f_autor"><label>Compositor <span class="req">*</span></label><div id="cb_autor"></div><div class="errtext">Cal indicar el compositor.</div></div>
-      <div class="field"><label>Arranjador <span class="opt">opcional</span></label><div id="cb_arranjador"></div></div>
+      <div class="field" id="f_autor"><label>Compositor <span class="req">*</span> <span class="opt">(ex. Giuseppe Verdi)</span></label><div id="cb_autor"></div><div class="errtext">Cal indicar el compositor.</div></div>
+      <div class="field"><label>Arranjador <span class="opt">opcional (ex. G. Verdi)</span></label><div id="cb_arranjador"></div></div>
       <div class="field"><label>Estil <span class="opt">opcional</span></label><div id="cb_estil"></div></div>
       ${originalHtml('f_original', null)}
     </div>
