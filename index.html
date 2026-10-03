@@ -260,7 +260,13 @@ body.auth > .top, body.auth > main, body.auth > .nav, body.auth #azindex{display
 .tagpill{display:inline-flex;align-items:center;gap:6px;min-height:24px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:700;background:var(--gray-bg);color:var(--ink2);white-space:nowrap}
 .tagpill.ok{background:var(--ok-bg);color:var(--ok-fg)}
 .tagpill.bad{background:var(--bad-bg);color:var(--bad-fg)}
-.aifoot{display:flex;align-items:center;justify-content:center;gap:6px;margin:4px 0 8px;font-size:12px;color:var(--muted)}
+.aifoot{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px 10px;margin:4px 0 8px;font-size:12px;color:var(--muted)}
+.revactions{display:flex;justify-content:flex-end;margin-top:8px}
+.revactions .btn{flex:none}
+.revbox{margin-bottom:14px}
+.revbox .revhint{margin:0 0 8px;font-size:12.5px;opacity:.85}
+.revitem{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-top:1px solid color-mix(in srgb, currentColor 15%, transparent);cursor:pointer}
+.revitem input{flex:none;width:20px;height:20px;margin:1px 0 0;accent-color:var(--ok)}
 .tagpill.ia{background:var(--info-bg);color:var(--info)}
 .tagpill.warn{background:var(--gold-bg);color:var(--gold-ink)}
 .tagpill .tdot{width:6px;height:6px;border-radius:50%;background:currentColor}
@@ -618,11 +624,10 @@ function obraNotes(p){
   const out = {revisar:[], partitura:[], compte:[]};
   const {G, P} = facets(p);
   // Cal revisar
-  if(p.autoriaConflicte) out.revisar.push('El compositor o l\'arranjador no coincideix entre les diverses còpies d\'aquesta obra — cal confirmar quin és el correcte.');
-  if(p.arranjadorRevisar) out.revisar.push('El nom de l\'arranjador no s\'ha pogut normalitzar.');
-  if(p.notaPaper && p.notaPaper.length) out.revisar.push('Hi ha una nota de l\'inventari en paper pendent de revisar: «'+p.notaPaper.join('; ')+'».');
+  out.revisar = revisioItems(p).map(x=> x.text);
   // Sobre la partitura / notes de la importació
-  (p.revisioNota||[]).forEach(n=>{ const c = classifyNote(n); if(c!=='ocult') out[c].push(n); });
+  (p.revisioNota||[]).forEach(n=>{ if(classifyNote(n)==='partitura') out.partitura.push(n); });
+  if(p.notaPaperRevisada && p.notaPaperRevisada.length) out.partitura.push('Nota de l\'inventari en paper: «'+p.notaPaperRevisada.join('; ')+'».');
   // A tenir en compte
   if(p.nomesFisicPendent && (G==='?' || P==='?')) out.compte.push('Només registrada a l\'inventari en paper. Cal comprovar l\'inventari físic.');
   else {
@@ -633,6 +638,27 @@ function obraNotes(p){
   if(!p.composer && !p.arranger) out.compte.push('No consta ni el compositor ni l\'arranjador.');
   else if(!p.composer) out.compte.push('No consta el compositor.');
   return out;
+}
+/* incidències de «Cal revisar»: cadascuna té una clau perquè es pugui marcar com a revisada */
+function revisioItems(p){
+  const out = [];
+  if(p.autoriaConflicte) out.push({key:'autoria', text:'El compositor o l\'arranjador no coincideix entre les diverses còpies d\'aquesta obra — cal confirmar quin és el correcte.'});
+  if(p.arranjadorRevisar) out.push({key:'arranjador', text:'El nom de l\'arranjador no s\'ha pogut normalitzar.'});
+  if(p.notaPaper && p.notaPaper.length) out.push({key:'paper', text:'Hi ha una nota de l\'inventari en paper pendent de revisar: «'+p.notaPaper.join('; ')+'».'});
+  (p.revisioNota||[]).forEach(n=>{ if(classifyNote(n)==='revisar') out.push({key:'nota:'+n, text:n}); });
+  return out;
+}
+/* marca com a revisades les incidències indicades (totes si no se'n passa cap) */
+function marcaRevisada(p, keys){
+  keys = keys || revisioItems(p).map(x=> x.key);
+  if(!keys.length) return;
+  keys.forEach(k=>{
+    if(k==='autoria') p.autoriaConflicte = false;
+    else if(k==='arranjador') p.arranjadorRevisar = false;
+    else if(k==='paper'){ p.notaPaperRevisada = [...(p.notaPaperRevisada||[]), ...(p.notaPaper||[])]; p.notaPaper = []; }
+    else if(k.startsWith('nota:')){ const n = k.slice(5); p.revisioNota = (p.revisioNota||[]).filter(x=> x!==n); p.revisioFeta = [...(p.revisioFeta||[]), n]; }
+  });
+  p.revisada = {per: STATE.user ? STATE.user.name : '', data: new Date().toLocaleDateString('ca-ES', {day:'numeric', month:'long', year:'numeric'})};
 }
 /* marca «Detecció per IA»: dades obtingudes automàticament (poden tenir errors) */
 function deteccioIA(p){ return !!p.origenIA || partsSeverity(p)==='forgivable'; }
@@ -1427,6 +1453,7 @@ function openDetail(id){
           ${p.specials&&p.specials.length ? `<dt>Instruments addicionals</dt><dd><div class="tagrow">${p.specials.map(x=>`<span class="tagpill">${esc(x)}</span>`).join('')}</div></dd>` : ''}
         </dl>
         ${notesHtml(obraNotes(p))}
+        ${canEdit && needsReview(p) ? `<div class="revactions"><button class="btn btn-sm" id="dRevisada">Marca com a revisada</button></div>` : ''}
       </div>
 
       ${aparicions.length ? `<div class="box">
@@ -1440,7 +1467,7 @@ function openDetail(id){
       ${p.obs? `<div class="box"><h4>Comentaris</h4><div style="font-size:14.5px;color:var(--ink2);overflow-wrap:anywhere">${esc(p.obs)}</div></div>` : ''}
 
 
-      ${deteccioIA(p) ? `<p class="aifoot"><span class="tagpill ia">Detecció per IA</span></p>` : ''}
+      ${p.revisada || deteccioIA(p) ? `<p class="aifoot">${deteccioIA(p) ? '<span class="tagpill ia">Detecció per IA</span>' : ''}${p.revisada ? `<span>Revisada per ${esc(p.revisada.per||'—')} el ${esc(p.revisada.data||'')}</span>` : ''}</p>` : ''}
       ${canEdit ? `<div class="btnbar">
         ${p.pendentAcceptacio?'<button class="btn primary" id="dAccept" style="flex:1">Accepta el registre</button><button class="btn btn-danger-ghost" id="dReject" style="flex:1">Elimina</button>':''}
         <button class="btn ${p.pendentAcceptacio?'':'primary'}" id="dEdit" style="flex:1">Edita</button>
@@ -1453,6 +1480,9 @@ function openDetail(id){
   bg.querySelectorAll('[data-goproj]').forEach(b=> b.addEventListener('click', ()=>{ close(); openProjecteSheet(b.dataset.goproj); }));
   bg.addEventListener('click', e=>{ if(e.target===bg) close(); });
   const editBtn = bg.querySelector('#dEdit'); if(editBtn) editBtn.addEventListener('click', ()=>{ close(); openEditPiece(p.id, {back:true}); });
+  const revBtn = bg.querySelector('#dRevisada'); if(revBtn) revBtn.addEventListener('click', ()=>{
+    marcaRevisada(p); persist(); close(); refreshViews(); openDetail(p.id); showSavePill('Marcada com a revisada');
+  });
   const acceptBtn = bg.querySelector('#dAccept'); if(acceptBtn) acceptBtn.addEventListener('click', ()=>{ p.pendentAcceptacio=false; persist(); close(); refreshViews(); });
   const rejectBtn = bg.querySelector('#dReject'); if(rejectBtn) rejectBtn.addEventListener('click', ()=>{
     if(!confirm('Segur que vols eliminar aquest registre pendent? No es pot desfer.')) return;
@@ -1711,14 +1741,20 @@ function openEditPiece(id, opts={}){
     general: piece.general||'desconegut', estatParts: piece.estatParts==='No és a Box' ? 'Per revisar' : (piece.estatParts||'Per revisar'),
     ...archInit(piece),
     missing: missingInit(piece), instrExterns: piece.specials||[],
-    comentaris: piece.obs||'', original: typeof piece.original==='boolean' ? piece.original : null
+    comentaris: piece.obs||'', original: typeof piece.original==='boolean' ? piece.original : null,
+    revisats: new Set(),
   };
+  const revItems = revisioItems(piece);
   const bg = document.createElement('div'); bg.className='sheet-bg';
   bg.innerHTML = `<div class="sheet">
     <div class="sheet-head"><div class="htxt"><h2 style="display:block">Edita l'obra</h2><div class="hsub">${esc(piece.title)}</div></div>
       <button class="sheet-close" id="eClose"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
     </div>
     <div class="sheet-body">
+      ${revItems.length ? `<div class="note warn revbox" id="ef_rev"><b>Cal revisar</b>
+        <p class="revhint">Marca cada punt quan l'hagis comprovat o corregit. En desar, l'obra sortirà de «Cal revisar».</p>
+        ${revItems.map(it=>`<label class="revitem"><input type="checkbox" data-rev="${esc(it.key)}"><span>${esc(it.text)}</span></label>`).join('')}
+      </div>` : ''}
       <div class="block" style="box-shadow:none;padding:0;margin-bottom:6px">
         <div class="field" id="ef_nom"><label>Títol <span class="req">*</span></label><input class="input" id="ein_nom" value="${esc(draft.nom)}"><div class="errtext">Cal indicar el títol de la partitura.</div></div>
         <div class="field" id="ef_autor"><label>Compositor <span class="req">*</span></label><div id="ecb_autor"></div><div class="errtext">Cal indicar el compositor.</div></div>
@@ -1741,14 +1777,23 @@ function openEditPiece(id, opts={}){
   document.body.appendChild(bg); document.body.classList.add('locked');
 
   function updatePreview(){
-    const tmp = {...piece, general:draft.general, estatParts:draft.estatParts, ...(missingFields(draft)||{}),
-      ...archApply(draft), composer:draft.autor, arranger:draft.arranjador};
+    const tmp = JSON.parse(JSON.stringify({...piece, general:draft.general, estatParts:draft.estatParts, ...(missingFields(draft)||{}),
+      ...archApply(draft), composer:draft.autor, arranger:draft.arranjador}));
+    marcaRevisada(tmp, [...draft.revisats]);
     const st = obraState(tmp);
     bg.querySelector('#ef_preview').innerHTML = `<b>Estat resultant:</b> ${esc(stateText(st))}${needsReview(tmp)?' · Cal revisar':''}`;
   }
 
-  makeCombobox(bg.querySelector('#ecb_autor'), {items:STATE.catalogs.autors, value:draft.autor, placeholder:'Cerca o afegeix un autor', onChange:v=>{draft.autor=v; updatePreview();}});
-  makeCombobox(bg.querySelector('#ecb_arranjador'), {items:STATE.catalogs.arranjadors, value:draft.arranjador, placeholder:'Cerca o afegeix un arranjador', onChange:v=>{draft.arranjador=v; updatePreview();}});
+  // en corregir l'autoria, es marca sol el punt corresponent (es pot desmarcar)
+  function autoRev(keys){
+    keys.forEach(k=>{ const cb = bg.querySelector(`[data-rev="${k}"]`); if(cb && !cb.checked){ cb.checked = true; draft.revisats.add(k); } });
+  }
+  bg.querySelectorAll('[data-rev]').forEach(cb=> cb.addEventListener('change', ()=>{
+    if(cb.checked) draft.revisats.add(cb.dataset.rev); else draft.revisats.delete(cb.dataset.rev);
+    updatePreview();
+  }));
+  makeCombobox(bg.querySelector('#ecb_autor'), {items:STATE.catalogs.autors, value:draft.autor, placeholder:'Cerca o afegeix un autor', onChange:v=>{draft.autor=v; if(v!==(piece.composer||'')) autoRev(['autoria']); updatePreview();}});
+  makeCombobox(bg.querySelector('#ecb_arranjador'), {items:STATE.catalogs.arranjadors, value:draft.arranjador, placeholder:'Cerca o afegeix un arranjador', onChange:v=>{draft.arranjador=v; if(v!==(piece.arranger||'')) autoRev(['arranjador','autoria']); updatePreview();}});
   makeCombobox(bg.querySelector('#ecb_estil'), {items:STATE.catalogs.estils, value:draft.estil, placeholder:'Cerca o afegeix un estil', onChange:v=>draft.estil=v});
   bindOriginal(bg.querySelector('#ef_original'), draft);
   const projLabelOf = pp=> pp.name+(pp.year?' ('+pp.year+')':'');
@@ -1794,6 +1839,7 @@ function openEditPiece(id, opts={}){
       ...archApply(draft),
       nomesFisicPendent: !!piece.nomesFisicPendent && estatParts==='Per revisar',
     });
+    if(draft.revisats.size) marcaRevisada(piece, [...draft.revisats]);
     persist(); refreshViews(); close();
     if(opts.back) openDetail(piece.id);
   });
@@ -1984,6 +2030,7 @@ const CSV_COLS = [
   ['Projectes', p=> (p.aparicions||[]).map(a=> a.projecte + (a.any ? ` (${a.any})` : '')).join(', ')],
   ['Comentaris', p=> p.obs],
   ['Cal revisar (motius)', p=> obraNotes(p).revisar.join(' | ')],
+  ['Revisada', p=> p.revisada ? `${p.revisada.per} (${p.revisada.data})` : ''],
   ['Sobre la partitura', p=> obraNotes(p).partitura.join(' | ')],
   ['A tenir en compte', p=> obraNotes(p).compte.join(' | ')],
   ['Detecció per IA', p=> deteccioIA(p) ? 'Sí' : ''],
