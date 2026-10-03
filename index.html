@@ -711,7 +711,7 @@ function obraCardHtml(p, opts={}){
   const authors = [p.composer, p.arranger?('Arr. '+p.arranger):''].filter(Boolean).join(' · ');
   return `<div class="card" data-id="${p.id}" role="button" tabindex="0">
     <div class="main">
-      <div class="titlerow"><p class="title">${esc(p.title)}</p>${p.estil?`<span class="estilchip">${esc(p.estil)}</span>`:''}</div>
+      <div class="titlerow"><p class="title">${esc(p.title)}</p></div>
       ${authors?`<p class="authors">${esc(authors)}</p>`:''}
       ${tagsHtml(p, st)}
       ${locLineHtml(p)}
