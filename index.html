@@ -677,7 +677,7 @@ function placesText(arr){ return arr.map((x,i)=> i ? PLACE_LABEL[x].toLowerCase(
 function locLineHtml(p){
   if(!isFisic(p)) return '';
   const what = !isDigital(p) ? ['Només en físic']
-    : [p.generalNomesFisic && 'General només en físic', p.partsNomesFisic && 'Parts només en físic'].filter(Boolean);
+    : [p.generalNomesFisic && facets(p).G!=='falta' && 'General només en físic', p.partsNomesFisic && facets(p).P!=='falta' && 'Parts només en físic'].filter(Boolean);
   if(!what.length) return '';
   const bits = [...what, (p.ubicacioFisica||[]).join(', ') || 'lloc sense indicar'];
   return `<p class="locline">${esc(bits.join(' · '))}</p>`;
@@ -697,7 +697,7 @@ function placePillsHtml(p){
   const out = [];
   if(d) out.push('Al Box');
   if(f) out.push(`En físic · ${(p.ubicacioFisica||[]).join(', ') || 'lloc sense indicar'}`);
-  if(d && f){ if(p.generalNomesFisic) out.push('General només en físic'); if(p.partsNomesFisic) out.push('Parts només en físic'); }
+  if(d && f){ if(p.generalNomesFisic && facets(p).G!=='falta') out.push('General només en físic'); if(p.partsNomesFisic && facets(p).P!=='falta') out.push('Parts només en físic'); }
   return out.length ? `<div class="tagrow">${out.map(x=>`<span class="placepill">${esc(x)}</span>`).join('')}</div>` : '<span class="hint" style="margin:0">No consta enlloc</span>';
 }
 function notesHtml(n){
@@ -1663,7 +1663,7 @@ function archHtml(pre, d, allowUnknown){
     <div class="field archfield" id="${pre}_parts">
       <label>Parts de la banda <span class="req">*</span></label>
       <div class="chips">${pOpts.map(([k,l])=>`<button type="button" class="chip ${d.estatParts===k?'on':''}" data-p="${k}">${l}</button>`).join('')}</div>
-      ${where('pp', d.pPlaces, 'On són?', !!d.estatParts)}
+      ${where('pp', d.pPlaces, 'On són?', !!d.estatParts && d.estatParts!=='Falten parts')}
       ${missingHtml(pre+'_missing', d.missing, d.estatParts!=='Falten parts')}
       <div class="errtext">Indica com estan les parts i on són.</div>
     </div>
@@ -1674,7 +1674,7 @@ function bindArch(root, pre, d, onChange){
   const llocs = root.querySelector('#'+pre+'_llocs');
   const sync = ()=>{
     gBox.querySelector('.archwhere').classList.toggle('hidden', !d.general || d.general==='no');
-    pBox.querySelector('.archwhere').classList.toggle('hidden', !d.estatParts);
+    pBox.querySelector('.archwhere').classList.toggle('hidden', !d.estatParts || d.estatParts==='Falten parts');
     root.querySelector('#'+pre+'_missing').classList.toggle('hidden', d.estatParts!=='Falten parts');
     if(llocs) llocs.classList.toggle('hidden', !archApply(d).enPaper);
     onChange();
@@ -1698,14 +1698,15 @@ function bindArch(root, pre, d, onChange){
 }
 function archValidate(root, pre, d){
   const gOk = !!d.general && (d.general==='no' || d.gPlaces.length>0);
-  const pOk = !!d.estatParts && d.pPlaces.length>0;
+  const pOk = !!d.estatParts && (d.estatParts==='Falten parts' || d.pPlaces.length>0);
   root.querySelector('#'+pre+'_general').classList.toggle('err', !gOk);
   root.querySelector('#'+pre+'_parts').classList.toggle('err', !pOk);
   return gOk && pOk;
 }
 /* camps d'ubicació que resulten del formulari */
 function archApply(d){
-  const g = d.general && d.general!=='no' ? d.gPlaces : [], pp = d.pPlaces;
+  // si falta la general o falten parts, no són enlloc: no compten per a la ubicació
+  const g = d.general && d.general!=='no' ? d.gPlaces : [], pp = d.estatParts==='Falten parts' ? [] : d.pPlaces;
   const box = g.includes('box') || pp.includes('box'), fis = g.includes('fisic') || pp.includes('fisic');
   const cat = STATE.catalogs.ubicacions||[];
   const llocs = !fis ? [] : cat.length===1 ? [cat[0]] : (d.llocs.length ? d.llocs : cat.slice(0,1));
