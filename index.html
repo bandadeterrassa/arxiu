@@ -753,7 +753,7 @@ async function servidor(ruta, body){
   const txt = await r.text(); let data = null; try{ data = txt ? JSON.parse(txt) : null; }catch(e){}
   if(!r.ok){
     const m = (data && (data.error || data.message)) || '';
-    throw new ErrorServidor(/SESSIO_CADUCADA/.test(m) ? 'SESSIO' : /SENSE_PERMIS/.test(m) ? 'PERMIS' : (data && data.error) || ('HTTP'+r.status));
+    throw new ErrorServidor(/SESSIO_CADUCADA/.test(m) ? 'SESSIO' : /SENSE_PERMIS/.test(m) ? 'PERMIS' : /PROTECCIO/.test(m) ? 'PROTECCIO' : (data && data.error) || ('HTTP'+r.status));
   }
   return data;
 }
@@ -764,17 +764,21 @@ const rpc = (fn, args)=> servidor('/rest/v1/rpc/'+fn, args);
    juntament amb aquesta versió de base: el servidor combina els canvis camp per camp, de manera que
    si algú altre ha editat la mateixa obra (o la mateixa llista) mentrestant, no se li trepitgen els canvis.
    Les dades es tornen a demanar al servidor en tornar a l'app i cada minut, si no hi ha res obert ni pendent. */
-const SNAP = {obres: new Map(), cat: new Map()};
+/* SNAP.ready: només hi ha res a desar quan les dades ja s'han carregat del servidor
+   (abans, les llistes buides d'una app que encara carrega semblarien canvis) */
+const SNAP = {obres: new Map(), cat: new Map(), ready: false};
 function snapshot(){
+  SNAP.ready = true;
   SNAP.obres = new Map(STATE.pieces.map(o=> [o.id, JSON.stringify(o)]));
   SNAP.cat = new Map(Object.entries(STATE.catalogs).map(([k,v])=> [k, JSON.stringify(v)]));
 }
 function pendingChanges(){
+  if(!SNAP.ready || !STATE.session) return null;
   const obres = [], bases = {}, esborra = [], catalegs = {}, catalegsBase = {};
   const cur = new Map(STATE.pieces.map(o=> [o.id, JSON.stringify(o)]));
   cur.forEach((j, id)=>{ const b = SNAP.obres.get(id); if(b!==j){ obres.push(JSON.parse(j)); bases[id] = b ? JSON.parse(b) : null; } });
   SNAP.obres.forEach((_, id)=>{ if(!cur.has(id)) esborra.push(id); });
-  Object.entries(STATE.catalogs).forEach(([k,v])=>{ const b = SNAP.cat.get(k); if(b!==JSON.stringify(v)){ catalegs[k] = JSON.parse(JSON.stringify(v)); catalegsBase[k] = b ? JSON.parse(b) : null; } });
+  Object.entries(STATE.catalogs).forEach(([k,v])=>{ const b = SNAP.cat.get(k); if(b!==undefined && b!==JSON.stringify(v)){ catalegs[k] = JSON.parse(JSON.stringify(v)); catalegsBase[k] = b ? JSON.parse(b) : null; } });
   return (obres.length || esborra.length || Object.keys(catalegs).length) ? {obres, bases, esborra, catalegs, catalegsBase} : null;
 }
 const jstr = x => JSON.stringify(x);
@@ -843,6 +847,7 @@ function persist(delay){
     }catch(e){
       if(e.codi==='SESSIO'){ sessionExpired(); }
       else if(e.codi==='PERMIS'){ showSavePill('No tens permís per fer aquest canvi'); await loadData(); }
+      else if(e.codi==='PROTECCIO'){ showSavePill('El servidor ha bloquejat un canvi massa gran. Es tornen a carregar les dades.'); await loadData(); }
       else {
         retryDelay = Math.min(retryDelay ? retryDelay*2 : 3000, 30000);
         showSavePill('Sense connexió. Els canvis es desaran quan torni.');
@@ -925,6 +930,7 @@ function setRole(r){
 }
 function userLine(){ return STATE.user ? esc(STATE.user.name) : ''; }
 async function startSession(ses){
+  SNAP.ready = false;
   STATE.session = ses;
   showLoading();
   let u;
@@ -944,7 +950,7 @@ async function startSession(ses){
   renderList();
 }
 function sessionExpired(){
-  saveSession(null); STATE.session = null; STATE.user = null;
+  saveSession(null); STATE.session = null; STATE.user = null; SNAP.ready = false;
   document.querySelectorAll('.sheet-bg').forEach(x=> x.remove()); document.body.classList.remove('locked');
   showLogin('La sessió ha caducat. Torna a entrar.');
 }
@@ -1033,7 +1039,8 @@ document.getElementById('logoutBtn').addEventListener('click', ()=>{
   if(!confirm('Vols tancar la sessió?')) return;
   if(STATE.session) rpc('tanca_sessio', {p_token: STATE.session.token}).catch(()=>{});
   saveSession(null); STATE.session = null; STATE.user = null;
-  STATE.pieces = []; snapshot();
+  clearTimeout(saveTimer);
+  STATE.pieces = []; snapshot(); SNAP.ready = false;
   document.querySelectorAll('.sheet-bg').forEach(x=> x.remove()); document.body.classList.remove('locked');
   showLogin();
 });
