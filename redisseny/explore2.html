@@ -1,0 +1,113 @@
+<!doctype html><html lang="ca"><head><meta charset="utf-8"><title>Exploració 2 · Arxiu</title>
+<link rel="stylesheet" href="kit/device.css"><link rel="stylesheet" href="fonts/fonts.css"><style>.screen .body { position:absolute; inset:var(--safe-top) 0 0; display:flex; flex-direction:column; }
+.ico { width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; flex:none; }
+.top { display:flex; align-items:center; justify-content:space-between; padding:6px 16px 0 20px; height:52px; flex:none; }
+.brand { display:flex; align-items:center; gap:8px; font:600 13px/1 "Hanken Grotesk", var(--sf); }
+.brand img { width:30px; height:30px; object-fit:contain; }
+.tools { display:flex; gap:10px; }
+.gbtn { width:44px; height:44px; border-radius:22px; display:grid; place-items:center; }
+.gbtn.add { box-shadow:none; }
+.tabbar { position:absolute; left:20px; right:20px; bottom:21px; height:62px; border-radius:31px; display:flex; align-items:center; padding:0 6px; z-index:50; font-family:"Hanken Grotesk", var(--sf); }
+.tab { flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; font-size:10px; font-weight:600; height:52px; justify-content:center; border-radius:26px; position:relative; }
+.tab .ico { width:23px; height:23px; }
+.tab .badge { position:absolute; top:5px; left:calc(50% + 6px); min-width:18px; height:18px; padding:0 5px; border-radius:9px; font-size:11px; font-weight:700; display:grid; place-items:center; background:#D23B33; color:#fff; }
+
+/* ===== 1 · Prestatgeria: l'armari 0P2, amb els lloms de les carpetes ===== */
+.e1 { --ground:#E8ECF1; --ink:#102A43; --ink-2:#47566B; --plank:#B9C2CE; --accent:#E9579A; --ok:#FFFFFF; --bad:#E2483F; --warn:#F2C230; --rev:#F2C230;
+      background:var(--ground); color:var(--ink); font-family:"Hanken Grotesk", var(--sf); }
+.e1 .brand { color:var(--ink-2); }
+.e1 .gbtn { color:var(--ink); } .e1 .gbtn.add { background:var(--ink); color:#fff; }
+.e1 .hero { display:flex; align-items:flex-end; justify-content:space-between; margin:18px 20px 0; }
+.e1 h1 { margin:0; font-family:"Big Shoulders Display", var(--sf); font-weight:900; font-size:64px; line-height:.86; letter-spacing:-.5px; text-transform:uppercase; }
+.e1 .sub { margin:0 0 4px; text-align:right; font-size:13px; color:var(--ink-2); line-height:1.35; }
+.e1 .sub b { font:800 28px/1 "Big Shoulders Display", var(--sf); color:var(--ink); }
+.e1 .search { margin:18px 20px 0; height:48px; border-radius:24px; background:#fff; display:flex; align-items:center; gap:10px; padding:0 18px; font-size:17px; color:var(--ink-2); flex:none; }
+.e1 .shelves { flex:1; min-height:0; overflow:hidden; padding:22px 0 110px; }
+.e1 .shelf { position:relative; margin-bottom:22px; padding-left:20px; }
+.e1 .shlab { position:absolute; left:20px; top:0; font:900 30px/1 "Big Shoulders Display", var(--sf); color:var(--ink); z-index:2; display:flex; flex-direction:column; }
+.e1 .shlab small { font:600 12px/1.3 "Hanken Grotesk", var(--sf); color:var(--ink-2); }
+.e1 .row { display:flex; align-items:flex-end; gap:3px; padding:0 0 0 46px; height:200px; border-bottom:8px solid var(--plank); overflow:hidden; white-space:nowrap; }
+.e1 .spine { position:relative; flex:none; border-radius:3px 3px 1px 1px; display:flex; justify-content:center; }
+.e1 .spine .sp-t { position:absolute; left:0; right:0; top:12px; bottom:36px; writing-mode:sideways-lr; font:700 16px/1 "Big Shoulders Display", var(--sf); letter-spacing:.4px; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:start; }
+.e1 .spine .lab { position:absolute; left:50%; bottom:10px; width:16px; height:16px; margin-left:-8px; border-radius:8px; background:var(--c); }
+.e1 .spine.ok { --c:var(--ok); } .e1 .spine.bad { --c:var(--bad); } .e1 .spine.warn, .e1 .spine.rev { --c:var(--warn); }
+.e1 .tabbar { --glass:rgba(255,255,255,.7); } .e1 .tab { color:var(--ink-2); } .e1 .tab.on { color:var(--ink); background:rgba(16,42,67,.08); }
+
+/* ===== 2 · Cartell: el cartell del concert, a tot color ===== */
+.e2 { --ground:#F6A52C; --ink:#14110C; --ink-2:#3B2E17; --accent:#14110C; --stamp:#14110C;
+      background:var(--ground); color:var(--ink); font-family:"Archivo", var(--sf); }
+.e2 .bigA { position:absolute; right:-40px; top:92px; width:300px; height:300px; pointer-events:none; }
+.e2 .brand { color:var(--ink); }
+.e2 .gbtn { color:var(--ink); } .e2 .gbtn.add { background:var(--ink); color:var(--ground); }
+.e2 .glass { --glass:rgba(255,255,255,.28); }
+.e2 h1 { margin:22px 20px 0; font-weight:900; font-stretch:125%; font-size:52px; line-height:.92; letter-spacing:-1.8px; position:relative; }
+.e2 .search { margin:22px 20px 0; height:52px; border-bottom:3px solid var(--ink); display:flex; align-items:center; gap:10px; font-size:17px; font-weight:500; color:var(--ink-2); position:relative; }
+.e2 .next { margin:16px 20px 0; display:flex; gap:10px; align-items:baseline; font-size:13px; font-weight:500; color:var(--ink); position:relative; }
+.e2 .next .k { flex:none; background:var(--ink); color:var(--ground); font-weight:700; padding:3px 8px; border-radius:4px; font-size:12px; }
+.e2 .plist { flex:1; min-height:0; overflow:hidden; padding:20px 20px 110px; position:relative; }
+.e2 .pr { padding:12px 0 11px; border-top:1.5px solid rgba(20,17,12,.85); }
+.e2 .pt { font-weight:800; font-stretch:112%; font-size:22px; line-height:1.1; letter-spacing:-.5px; }
+.e2 .pc { margin-top:4px; font-size:13px; font-weight:500; color:var(--ink-2); display:flex; gap:10px; align-items:center; }
+.e2 .stamp { margin-left:auto; font-size:12px; font-weight:800; padding:3px 9px; border-radius:4px; color:var(--ground); background:var(--ink); }
+.e2 .stamp.warn, .e2 .stamp.rev { background:transparent; color:var(--ink); box-shadow:inset 0 0 0 1.5px var(--ink); }
+.e2 .tabbar { --glass:rgba(255,236,205,.55); } .e2 .tab { color:var(--ink-2); } .e2 .tab.on { color:var(--ground); background:var(--ink); }
+
+/* ===== 3 · Pentagrama: el repertori es llegeix com una partitura ===== */
+.e3 { --ground:#0E1320; --ink:#F2EEE6; --ink-2:#A9AFBD; --staff:rgba(242,238,230,.13); --accent:#E3B252; --bad:#FF6A5C; --warn:#F2C94C;
+      background:var(--ground); color:var(--ink); font-family:"Hanken Grotesk", var(--sf); }
+.e3 .brand { color:var(--ink-2); }
+.e3 .gbtn { color:var(--ink); } .e3 .gbtn.add { background:var(--accent); color:#1A1305; }
+.e3 h1 { margin:20px 20px 0; font-family:"Bodoni Moda", var(--ny); font-weight:700; font-size:50px; line-height:1; letter-spacing:-1px; font-style:italic; }
+.e3 .sub { margin:10px 20px 0; font-size:13px; color:var(--ink-2); }
+.e3 .search { margin:18px 20px 0; height:46px; border-radius:23px; background:rgba(242,238,230,.08); display:flex; align-items:center; gap:10px; padding:0 18px; font-size:17px; color:var(--ink-2); flex:none; }
+.e3 .score { flex:1; min-height:0; overflow:hidden; padding:14px 20px 190px; }
+.e3 .sr { position:relative; display:flex; align-items:center; gap:14px; height:62px;
+          background:repeating-linear-gradient(to bottom, transparent 0 11px, var(--staff) 11px 12px) 0 6px / 100% 50px no-repeat; }
+.e3 .note { width:26px; height:20px; flex:none; fill:var(--ink); }
+.e3 .sr.bad .note { fill:var(--bad); }
+.e3 .sr.warn .note, .e3 .sr.rev .note { fill:none; stroke:var(--warn); stroke-width:2.2; }
+.e3 .tx { min-width:0; }
+.e3 .t { font-family:"Bodoni Moda", var(--ny); font-weight:600; font-size:21px; letter-spacing:-.2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; background:var(--ground); padding-right:8px; display:inline-block; max-width:100%; }
+.e3 .c { font-size:13px; color:var(--ink-2); }
+.e3 .sr.bad .c b { color:var(--bad); font-weight:700; } .e3 .sr.warn .c b, .e3 .sr.rev .c b { color:var(--warn); font-weight:700; }
+.e3 .piano { position:absolute; left:20px; right:20px; bottom:100px; height:62px; display:flex; gap:3px; z-index:40; }
+.e3 .piano .k { flex:1; border-radius:0 0 8px 8px; background:#F2EEE6; color:#0E1320; font:700 13px/1 "Hanken Grotesk", var(--sf); display:flex; align-items:flex-end; justify-content:center; padding-bottom:8px; }
+.e3 .piano .k.on { background:var(--accent); }
+.e3 .tabbar { --glass-dark:rgba(30,36,52,.78); } .e3 .tab { color:var(--ink-2); } .e3 .tab.on { color:var(--accent); background:rgba(227,178,82,.12); }
+.e1 .spine.paper.ok { --c:#102A43; }
+</style></head><body>
+<section class="screen e1" data-name="1-prestatgeria" data-time="19:42">
+ <div class="body">
+  <div class="top"><div class="brand"><img src="../logo.png" alt="">Banda de Terrassa</div>
+      <div class="tools"><div class="gbtn glass"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c1.2-3.6 4-5.4 7-5.4s5.8 1.8 7 5.4"/></svg></div><div class="gbtn add" aria-label="Registra una obra"><svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div></div></div>
+  <div class="hero"><h1>Armari<br>0P2</h1><p class="sub"><b>539</b> obres<br>en 26 prestatges</p></div>
+  <div class="search"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg><span>Títol, autor, projecte…</span></div>
+  <div class="shelves" data-scrolls>
+    <div class="shelf"><div class="shlab">A<small>58</small></div><div class="row" data-bleed><div class="spine ok" style="width:50px;height:188px;background:#102A43"><span class="sp-t" style="line-height:50px;">A Christmas Festival</span><i class="lab"></i></div><div class="spine ok" style="width:44px;height:176px;background:#1E3A5F"><span class="sp-t" style="line-height:44px;">A Klezmer Karnival</span><i class="lab"></i></div><div class="spine bad" style="width:58px;height:196px;background:#29486F"><span class="sp-t" style="line-height:58px;">A Town with an Ocean View</span><i class="lab"></i></div><div class="spine ok" style="width:46px;height:182px;background:#163250"><span class="sp-t" style="line-height:46px;">ABBA Gold</span><i class="lab"></i></div><div class="spine ok paper" style="width:42px;height:170px;background:#F4EEE4"><span class="sp-t" style="line-height:42px;color:#102A43">Adagio</span><i class="lab"></i></div><div class="spine ok" style="width:54px;height:192px;background:#0E2238"><span class="sp-t" style="line-height:54px;">Aida – Acte II</span><i class="lab"></i></div><div class="spine ok" style="width:48px;height:188px;background:#102A43"><span class="sp-t" style="line-height:48px;">Aladdin</span><i class="lab"></i></div><div class="spine bad" style="width:56px;height:176px;background:#1E3A5F"><span class="sp-t" style="line-height:56px;">All That Jazz</span><i class="lab"></i></div><div class="spine ok" style="width:52px;height:196px;background:#29486F"><span class="sp-t" style="line-height:52px;">Also sprach Zarathustra</span><i class="lab"></i></div></div></div>
+    <div class="shelf"><div class="shlab">B<small>31</small></div><div class="row" data-bleed><div class="spine ok" style="width:46px;height:182px;background:#163250"><span class="sp-t" style="line-height:46px;">Bailando</span><i class="lab"></i></div><div class="spine ok" style="width:42px;height:170px;background:#33557F"><span class="sp-t" style="line-height:42px;">Ball de Gegants</span><i class="lab"></i></div><div class="spine warn" style="width:54px;height:192px;background:#0E2238"><span class="sp-t" style="line-height:54px;">Barcelona</span><i class="lab"></i></div><div class="spine ok" style="width:48px;height:188px;background:#102A43"><span class="sp-t" style="line-height:48px;">Bella ciao</span><i class="lab"></i></div><div class="spine bad" style="width:56px;height:176px;background:#1E3A5F"><span class="sp-t" style="line-height:56px;">Bohemian Rhapsody</span><i class="lab"></i></div><div class="spine ok paper" style="width:52px;height:196px;background:#F4EEE4"><span class="sp-t" style="line-height:52px;color:#102A43">Bolero</span><i class="lab"></i></div><div class="spine ok" style="width:44px;height:182px;background:#163250"><span class="sp-t" style="line-height:44px;">Bolivar</span><i class="lab"></i></div></div></div>
+  </div>
+ </div>
+ <nav class="tabbar glass" data-system data-float><div class="tab on"><svg class="ico" viewBox="0 0 24 24"><path d="M5 4h4v16H5zM10 4h4v16h-4zM15.5 5l3.5 1-3 14-3.5-1"/></svg>Armari</div><div class="tab"><svg class="ico" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Projectes</div><div class="tab"><span class="badge">26</span><svg class="ico" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/></svg>Per revisar</div><div class="tab"><svg class="ico" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Ajustos</div></nav>
+</section><section class="screen e2" data-name="2-cartell" data-time="12:05">
+ <svg class="bigA" viewBox="0 0 300 300" aria-hidden="true"><path d="M30 290 L130 10 L190 10 L290 290 L222 290 L202 228 L118 228 L98 290 Z M135 176 L185 176 L160 96 Z" fill="rgba(20,17,12,.07)" fill-rule="evenodd"/></svg>
+ <div class="body">
+  <div class="top"><div class="brand"><img src="../logo.png" alt="">Banda de Terrassa</div>
+      <div class="tools"><div class="gbtn glass"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c1.2-3.6 4-5.4 7-5.4s5.8 1.8 7 5.4"/></svg></div><div class="gbtn add" aria-label="Registra una obra"><svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div></div></div>
+  <h1>Què<br>toquem?</h1>
+  <div class="search"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg><span>Busca entre 539 obres</span></div>
+  <div class="next"><span class="k">Pròxim</span><span>Concert de Nadal · 20 de desembre</span></div>
+  <div class="plist" data-scrolls><div class="pr"><div class="pt">A Christmas Festival</div><div class="pc">Leroy Anderson</div></div><div class="pr"><div class="pt">A Town with an Ocean View</div><div class="pc">Joe Hisaishi<span class="stamp bad">Falten parts</span></div></div><div class="pr"><div class="pt">Adagio</div><div class="pc">Tomaso Albinoni</div></div><div class="pr"><div class="pt">All That Jazz</div><div class="pc">John Kander<span class="stamp bad">Falten parts</span></div></div><div class="pr"><div class="pt">Amarcord</div><div class="pc">Nino Rota<span class="stamp rev">Cal revisar</span></div></div><div class="pr"><div class="pt">American Patrol</div><div class="pc">F. W. Meacham<span class="stamp warn">Sense verificar</span></div></div></div>
+ </div>
+ <nav class="tabbar glass" data-system data-float><div class="tab on"><svg class="ico" viewBox="0 0 24 24"><path d="M5 4h4v16H5zM10 4h4v16h-4zM15.5 5l3.5 1-3 14-3.5-1"/></svg>Obres</div><div class="tab"><svg class="ico" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Projectes</div><div class="tab"><span class="badge">26</span><svg class="ico" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/></svg>Per revisar</div><div class="tab"><svg class="ico" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Ajustos</div></nav>
+</section><section class="screen e3" data-name="3-pentagrama" data-theme="dark" data-time="21:30">
+ <div class="body">
+  <div class="top"><div class="brand"><img src="../logo.png" alt="">Banda de Terrassa</div>
+      <div class="tools"><div class="gbtn glass"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c1.2-3.6 4-5.4 7-5.4s5.8 1.8 7 5.4"/></svg></div><div class="gbtn add" aria-label="Registra una obra"><svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div></div></div>
+  <h1>Repertori</h1><p class="sub">539 obres · llegides d'esquerra a dreta, de la A a la Z</p>
+  <div class="search"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg><span>Títol, autor, projecte…</span></div>
+  <div class="score" data-scrolls><div class="sr ok"><svg class="note" viewBox="0 0 26 20"><ellipse cx="13" cy="10" rx="9" ry="6.2" transform="rotate(-22 13 10)"/></svg><div class="tx"><div class="t">A Christmas Festival</div><div class="c">Leroy Anderson</div></div></div><div class="sr ok"><svg class="note" viewBox="0 0 26 20"><ellipse cx="13" cy="10" rx="9" ry="6.2" transform="rotate(-22 13 10)"/></svg><div class="tx"><div class="t">A Klezmer Karnival</div><div class="c">Philip Sparke</div></div></div><div class="sr bad"><svg class="note" viewBox="0 0 26 20"><ellipse cx="13" cy="10" rx="9" ry="6.2" transform="rotate(-22 13 10)"/></svg><div class="tx"><div class="t">A Town with an Ocean View</div><div class="c">Joe Hisaishi · <b>Falten parts</b></div></div></div><div class="sr ok"><svg class="note" viewBox="0 0 26 20"><ellipse cx="13" cy="10" rx="9" ry="6.2" transform="rotate(-22 13 10)"/></svg><div class="tx"><div class="t">Adagio</div><div class="c">Tomaso Albinoni</div></div></div><div class="sr bad"><svg class="note" viewBox="0 0 26 20"><ellipse cx="13" cy="10" rx="9" ry="6.2" transform="rotate(-22 13 10)"/></svg><div class="tx"><div class="t">All That Jazz</div><div class="c">John Kander · <b>Falten parts</b></div></div></div><div class="sr rev"><svg class="note" viewBox="0 0 26 20"><ellipse cx="13" cy="10" rx="9" ry="6.2" transform="rotate(-22 13 10)"/></svg><div class="tx"><div class="t">Amarcord</div><div class="c">Nino Rota · <b>Cal revisar</b></div></div></div><div class="sr warn"><svg class="note" viewBox="0 0 26 20"><ellipse cx="13" cy="10" rx="9" ry="6.2" transform="rotate(-22 13 10)"/></svg><div class="tx"><div class="t">American Patrol</div><div class="c">F. W. Meacham · <b>Sense verificar</b></div></div></div><div class="sr ok"><svg class="note" viewBox="0 0 26 20"><ellipse cx="13" cy="10" rx="9" ry="6.2" transform="rotate(-22 13 10)"/></svg><div class="tx"><div class="t">Amparito Roca</div><div class="c">Jaime Texidor</div></div></div></div>
+  <div class="piano" data-float><span class="k on">A</span><span class="k">B</span><span class="k">C</span><span class="k">D</span><span class="k">E</span><span class="k">F</span><span class="k">G</span><span class="k">H</span><span class="k">I</span><span class="k">J</span></div>
+ </div>
+ <nav class="tabbar glass" data-system data-float><div class="tab on"><svg class="ico" viewBox="0 0 24 24"><path d="M5 4h4v16H5zM10 4h4v16h-4zM15.5 5l3.5 1-3 14-3.5-1"/></svg>Repertori</div><div class="tab"><svg class="ico" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Projectes</div><div class="tab"><span class="badge">26</span><svg class="ico" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/></svg>Per revisar</div><div class="tab"><svg class="ico" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Ajustos</div></nav>
+</section>
+<script src="kit/device.js"></script></body></html>

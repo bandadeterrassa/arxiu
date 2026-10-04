@@ -79,3 +79,22 @@ Pantalla: la biblioteca (l'acció principal), amb dades reals i en un estat real
 - **Índex A–Z prop de la vora:** és el patró natiu d'iOS.
 - **Tres colors saturats:** són l'accent més dos colors d'estat del domini.
 - **Mida de lletra:** es valorarà quan hi hagi una sola direcció.
+
+## Exploració 2 (després que l'usuari descartés la primera per poc original)
+
+**Per què no funcionava la primera:** les tres propostes eren la mateixa estructura (títol, cercador i una llista de files) amb un aspecte diferent. Ara canvia l'estructura de la pantalla. Captures: `shots/explore2/sheet.png`.
+
+| | 1 · Prestatgeria | 2 · Cartell | 3 · Pentagrama |
+|---|---|---|---|
+| Frase | «L'Arxiu és la prestatgeria de l'armari 0P2.» | «L'Arxiu és el cartell del pròxim concert.» | «L'Arxiu és una partitura que es llegeix de la A a la Z.» |
+| Família | place / object | printed | media |
+| Fons | light (paret `#E8ECF1`) | colour-field (taronja del logo `#F6A52C`) | dark (tinta de nit `#0E1320`) |
+| Tipus | condensed (Big Shoulders Display) | expanded (Archivo 125 %) | serif (Bodoni Moda, cursiva) + Hanken |
+| Accent | blue (marina de la banda) | orange (el camp) amb tinta negra | yellow (llautó de banda `#E3B252`) |
+| Riquesa | shape: lloms de carpeta amb etiqueta d'estat, prestatges per lletra | colour-material: cartell a tot color amb una A gegant | shape: pentagrama i caps de nota |
+| Estructura | una prestatgeria per lletra; cada lletra es desplaça en horitzontal | cerca com a pregunta («Què toquem?»), pròxim concert, i una llista com un cartell | llista sobre pentagrama, amb un teclat de piano com a índex A–Z |
+| Moment propi | treure una carpeta de la prestatgeria: el llom surt i s'obre la fitxa | — | lliscar el dit pel teclat per saltar de lletra, amb una vibració a cada tecla |
+
+**Senyals de la revisió automàtica, explicats:**
+- **Títols retallats als lloms:** és deliberat. Són prestatges que es desplacen en horitzontal, i els títols llargs es tallen al llom.
+- **Línies de pentagrama:** són degradats que fan de dibuix, no de fons.

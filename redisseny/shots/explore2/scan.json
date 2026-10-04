@@ -1,0 +1,101 @@
+[
+  {
+    "name": "1-prestatgeria",
+    "fails": [
+      "Text clipped: \"A Town with an Ocean View\" (height); \"Aladdin\" cut by its container; \"All That Jazz\" cut by its container; \"Also sprach Zarathustra\" cut by its container"
+    ],
+    "warns": [
+      "Three saturated hue families (216°, 0°, 48°). Is each one earning its place?"
+    ],
+    "facts": {
+      "fonts": {
+        "Hanken Grotesk": 5,
+        "Big Shoulders Display": 20
+      },
+      "sizes": [
+        64,
+        30,
+        28,
+        17,
+        16,
+        13,
+        12
+      ],
+      "weights": [
+        "400",
+        "600",
+        "700",
+        "800",
+        "900"
+      ],
+      "leftEdges": 5,
+      "accentHues": [
+        216,
+        0,
+        48
+      ],
+      "cards": 0
+    }
+  },
+  {
+    "name": "2-cartell",
+    "fails": [],
+    "warns": [],
+    "facts": {
+      "fonts": {
+        "Hanken Grotesk": 1,
+        "Archivo": 20
+      },
+      "sizes": [
+        52,
+        22,
+        17,
+        13,
+        12
+      ],
+      "weights": [
+        "500",
+        "600",
+        "700",
+        "800",
+        "900"
+      ],
+      "leftEdges": 3,
+      "accentHues": [
+        24,
+        48
+      ],
+      "cards": 0
+    }
+  },
+  {
+    "name": "3-pentagrama",
+    "fails": [],
+    "warns": [
+      "8 gradients. Gradients are a seasoning, not a surface treatment."
+    ],
+    "facts": {
+      "fonts": {
+        "Hanken Grotesk": 25,
+        "Bodoni Moda": 9
+      },
+      "sizes": [
+        50,
+        21,
+        17,
+        13
+      ],
+      "weights": [
+        "400",
+        "600",
+        "700"
+      ],
+      "leftEdges": 4,
+      "accentHues": [
+        48,
+        0
+      ],
+      "cards": 0
+    }
+  }
+]
