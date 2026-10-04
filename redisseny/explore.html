@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<title>Exploració · Arxiu</title>
+<link rel="stylesheet" href="kit/device.css">
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+/* ===== comuns ===== */
+.screen .body { position:absolute; inset:var(--safe-top) 0 0; display:flex; flex-direction:column; }
+.ico { width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; flex:none; }
+.tabbar { position:absolute; left:20px; right:20px; bottom:21px; height:62px; border-radius:31px; display:flex; align-items:center; padding:0 6px; z-index:50; }
+.tab { flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; font-size:10px; font-weight:600; height:52px; justify-content:center; border-radius:26px; position:relative; }
+.tab .ico { width:23px; height:23px; }
+.tab .badge { position:absolute; top:5px; left:calc(50% + 6px); min-width:18px; height:18px; padding:0 5px; border-radius:9px; font-size:11px; font-weight:700; display:grid; place-items:center; }
+.az { position:absolute; right:6px; top:392px; width:14px; display:flex; flex-direction:column; align-items:center; gap:0; font-size:11px; font-weight:700; line-height:15.5px; z-index:5; }
+
+/* ===== 1 · Programa de concert ===== */
+.d1 { --ground:#FFFFFF; --ink:#141B2B; --ink-2:#4A5468; --ink-3:#5E6779; --rule:#D9DEE7; --accent:#2747A6; --on-accent:#fff;
+      --ok:#1E8A50; --bad:#C2352F; --warn:#9A6A08;
+      background:var(--ground); color:var(--ink); font-family:"Hanken Grotesk", var(--sf); }
+.d1 .top { display:flex; align-items:center; justify-content:space-between; padding:6px 16px 0 20px; height:52px; }
+.d1 .brand { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; color:var(--ink-2); }
+.d1 .brand img { width:30px; height:30px; object-fit:contain; }
+.d1 .tools { display:flex; gap:10px; }
+.d1 .gbtn { width:44px; height:44px; border-radius:22px; display:grid; place-items:center; color:var(--ink); }
+.d1 .gbtn.add { background:var(--accent); color:var(--on-accent); box-shadow:none; }
+.d1 h1 { font-family:"Newsreader", var(--ny); font-weight:600; font-size:46px; line-height:1; letter-spacing:-1.2px; margin:22px 20px 6px; }
+.d1 h1 i { font-weight:500; color:var(--accent); }
+.d1 .sub { margin:0 20px; font-size:15px; color:var(--ink-2); }
+.d1 .search { margin:20px 20px 0; display:flex; align-items:center; gap:10px; height:46px; border-bottom:1.5px solid var(--ink); font-size:17px; color:var(--ink-3); }
+.d1 .filters { margin:12px 20px 0; display:flex; gap:8px; }
+.d1 .chip { white-space:nowrap; height:32px; padding:0 14px; border-radius:16px; border:1px solid var(--rule); font-size:13px; font-weight:600; display:flex; align-items:center; color:var(--ink-2); }
+.d1 .chip.on { background:var(--ink); color:#fff; border-color:var(--ink); }
+.d1 .list { flex:1; min-height:0; overflow:hidden; padding:0 36px 120px 20px; }
+.d1 .letter { display:flex; align-items:flex-end; gap:12px; margin:30px 0 6px; }
+.d1 .letter b { font-family:"Newsreader", var(--ny); font-style:italic; font-weight:500; font-size:34px; line-height:.9; color:var(--accent); }
+.d1 .staff { flex:1; height:17px; background:repeating-linear-gradient(to bottom, var(--rule) 0 1px, transparent 1px 4px); }
+.d1 .row { display:flex; align-items:baseline; gap:8px; padding:11px 0 10px; }
+.d1 .row .t { font-family:"Newsreader", var(--ny); font-size:21px; font-weight:600; letter-spacing:-.3px; white-space:nowrap; }
+.d1 .row .lead { flex:1; min-width:12px; border-bottom:2px dotted var(--rule); transform:translateY(-5px); }
+.d1 .row .st { font-size:13px; font-weight:700; white-space:nowrap; }
+.d1 .row .st.ok { color:var(--ink-3); font-weight:500; } .d1 .row .st.bad { color:var(--bad); } .d1 .row .st.warn { color:var(--warn); }
+.d1 .by { font-size:13px; color:var(--ink-2); margin-top:-8px; padding-bottom:6px; }
+.d1 .az { color:var(--accent); }
+.d1 .tabbar { --glass: rgba(255,255,255,.72); }
+.d1 .tab { color:var(--ink-2); } .d1 .tab.on { color:var(--accent); background:rgba(39,71,166,.09); }
+.d1 .tab .badge { background:var(--bad); color:#fff; }
+
+/* ===== 2 · Faristol a l'escenari ===== */
+.d2 { --ground:#0B1220; --raised:#152033; --ink:#F3F1EC; --ink-2:#AEB6C4; --ink-3:#7D8799; --rule:#223049; --accent:#F6A93B; --on-accent:#1A1206;
+      --ok:#4CC38A; --bad:#FF6B5E; --warn:#F2C94C;
+      background:var(--ground); color:var(--ink); font-family:"Archivo", var(--sf); font-stretch:100%; }
+.d2 .lamp { position:absolute; left:-120px; top:-170px; width:560px; height:470px; background:radial-gradient(closest-side, rgba(246,169,59,.30), rgba(246,169,59,.10) 55%, rgba(246,169,59,0)); pointer-events:none; }
+.d2 .top { position:relative; display:flex; align-items:center; justify-content:space-between; padding:6px 16px 0 20px; height:52px; }
+.d2 .brand { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; color:var(--ink-2); letter-spacing:.2px; }
+.d2 .brand img { width:30px; height:30px; object-fit:contain; }
+.d2 .tools { display:flex; gap:10px; }
+.d2 .gbtn { width:44px; height:44px; border-radius:22px; display:grid; place-items:center; color:var(--ink); }
+.d2 .gbtn.add { background:var(--accent); color:var(--on-accent); box-shadow:none; }
+.d2 .hero { position:relative; margin:22px 20px 0; display:flex; align-items:flex-end; justify-content:space-between; }
+.d2 h1 { font-stretch:62%; font-weight:800; font-size:64px; line-height:.88; letter-spacing:-1.4px; margin:0; text-transform:uppercase; }
+.d2 .count { text-align:right; font-stretch:62%; }
+.d2 .count b { display:block; font-size:64px; font-weight:700; line-height:.9; color:var(--accent); font-variant-numeric:tabular-nums; }
+.d2 .count span { font-size:13px; font-stretch:100%; color:var(--ink-2); }
+.d2 .search { position:relative; margin:22px 20px 0; display:flex; align-items:center; gap:10px; height:48px; padding:0 16px; border-radius:14px; background:var(--raised); font-size:17px; color:var(--ink-3); }
+.d2 .filters { margin:12px 20px 0; display:flex; gap:8px; }
+.d2 .chip { white-space:nowrap; height:32px; padding:0 14px; border-radius:10px; background:transparent; border:1px solid var(--rule); font-size:13px; font-weight:600; display:flex; align-items:center; color:var(--ink-2); }
+.d2 .chip.on { border-color:var(--ink); color:var(--ink); }
+.d2 .list { flex:1; min-height:0; overflow:hidden; padding:0 30px 120px 20px; }
+.d2 .letter { margin:26px 0 8px; font-stretch:62%; font-size:17px; font-weight:800; color:var(--accent); letter-spacing:1.5px; }
+.d2 .row { position:relative; display:flex; align-items:center; gap:12px; padding:12px 0 12px 16px; border-top:1px solid var(--rule); }
+.d2 .row::before { content:""; position:absolute; left:0; top:13px; bottom:13px; width:4px; border-radius:2px; background:var(--c); }
+.d2 .row.ok { --c:var(--rule); } .d2 .row.bad { --c:var(--bad); } .d2 .row.warn { --c:var(--warn); }
+.d2 .row .tx { flex:1; min-width:0; }
+.d2 .row .t { font-stretch:85%; font-size:21px; font-weight:600; letter-spacing:-.2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.d2 .row .by { font-size:13px; color:var(--ink-2); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.d2 .row .st { flex:none; font-size:13px; font-weight:600; color:var(--c); white-space:nowrap; text-align:right; }
+.d2 .row.ok .st { color:var(--ink-3); font-weight:500; }
+.d2 .az { color:var(--accent); }
+.d2 .tabbar { --glass-dark: rgba(28,38,58,.72); }
+.d2 .tab { color:var(--ink-2); } .d2 .tab.on { color:var(--accent); background:rgba(246,169,59,.12); }
+.d2 .tab .badge { background:var(--bad); color:#fff; }
+
+/* ===== 3 · Armari de carpetes ===== */
+.d3 { --ground:#EE5C9E; --sleeve:#FFF7EE; --ink:#13213A; --ink-2:#4B4F63; --on-ground:#13213A; --accent:#13213A; --on-accent:#FFF7EE;
+      --ok:#2E9D63; --bad:#D9443A; --warn:#E9B230;
+      background:var(--ground); color:var(--ink); font-family:"M PLUS Rounded 1c", var(--sf-rounded); }
+.d3 .top { display:flex; align-items:center; justify-content:space-between; padding:6px 16px 0 20px; height:52px; }
+.d3 .brand { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:700; color:var(--on-ground); }
+.d3 .brand img { width:30px; height:30px; object-fit:contain; }
+.d3 .tools { display:flex; gap:10px; }
+.d3 .gbtn { width:44px; height:44px; border-radius:22px; display:grid; place-items:center; color:var(--on-ground); }
+.d3 .gbtn.add { background:var(--accent); color:var(--on-accent); box-shadow:none; }
+.d3 h1 { font-weight:800; font-size:48px; line-height:1; letter-spacing:-1.6px; margin:20px 20px 4px; color:var(--on-ground); }
+.d3 .sub { margin:0 20px; font-size:15px; font-weight:500; color:var(--on-ground); }
+.d3 .search { margin:18px 20px 0; display:flex; align-items:center; gap:10px; height:48px; padding:0 18px; border-radius:24px; background:var(--sleeve); font-size:17px; color:var(--ink-2); }
+.d3 .drawer { flex:1; min-height:0; overflow:hidden; padding:26px 30px 120px 16px; }
+.d3 .folder { position:relative; background:var(--sleeve); border-radius:4px 18px 18px 18px; padding:14px 16px 16px; margin-top:-14px; box-shadow:0 -1px 0 rgba(19,33,58,.08); }
+.d3 .folder:first-child { margin-top:0; }
+.d3 .folder .tabtop { position:absolute; left:0; top:-22px; height:24px; padding:0 12px; border-radius:10px 10px 0 0; background:var(--sleeve); display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:var(--ink); }
+.d3 .folder .tabtop i { width:9px; height:9px; border-radius:5px; background:var(--c); }
+.d3 .folder.ok { --c:#B9B1A6; } .d3 .folder.bad { --c:var(--bad); } .d3 .folder.warn { --c:var(--warn); }
+.d3 .folder + .folder { margin-top:16px; }
+.d3 .folder .t { font-size:21px; font-weight:800; letter-spacing:-.4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.d3 .folder .by { font-size:13px; font-weight:500; color:var(--ink-2); margin-top:2px; }
+.d3 .az { color:var(--on-ground); }
+.d3 .tabbar { --glass: rgba(255,247,238,.62); }
+.d3 .tab { color:var(--ink); } .d3 .tab.on { background:var(--ink); color:var(--sleeve); }
+.d3 .tab .badge { background:var(--bad); color:#fff; }
+</style>
+</head>
+<body>
+
+<!-- ========== 1 · Programa de concert ========== -->
+<section class="screen d1" data-name="1-programa" data-time="19:42">
+  <div class="body">
+    <div class="top">
+      <div class="brand"><img src="../logo.png" alt="">Banda de Terrassa</div>
+      <div class="tools">
+        <div class="gbtn glass"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c1.2-3.6 4-5.4 7-5.4s5.8 1.8 7 5.4"/></svg></div>
+        <div class="gbtn add" aria-label="Registra una obra"><svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+      </div>
+    </div>
+    <h1>El <i>repertori</i></h1>
+    <p class="sub">539 obres a l'arxiu · temporada 2025–26</p>
+    <div class="search"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>Títol, autor, projecte, instrument</div>
+    <div class="filters"><span class="chip on">Totes</span><span class="chip">Amb incidències</span><span class="chip">Filtres</span></div>
+    <div class="list" data-scrolls>
+      <div class="letter"><b>A</b><span class="staff"></span></div>
+      <div class="row"><span class="t">A Christmas Festival</span><span class="lead"></span><span class="st ok">Completa</span></div>
+      <div class="by">Leroy Anderson</div>
+      <div class="row"><span class="t">A Klezmer Karnival</span><span class="lead"></span><span class="st ok">Completa</span></div>
+      <div class="by">Philip Sparke</div>
+      <div class="row"><span class="t">A Town with an Ocean View</span><span class="lead"></span><span class="st bad">Falta general</span></div>
+      <div class="by">Joe Hisaishi · arr. K. Morita</div>
+      <div class="row"><span class="t">Adagio</span><span class="lead"></span><span class="st ok">Completa</span></div>
+      <div class="by">Tomaso Albinoni · arr. J. de Haan</div>
+      <div class="row"><span class="t">All That Jazz</span><span class="lead"></span><span class="st bad">Falten parts</span></div>
+      <div class="by">John Kander · arr. F. Bernaerts</div>
+      <div class="row"><span class="t">American Patrol</span><span class="lead"></span><span class="st warn">Sense verificar</span></div>
+      <div class="by">F. W. Meacham</div>
+    </div>
+  </div>
+  <div class="az"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div>
+  <nav class="tabbar glass" data-system data-float>
+    <div class="tab on"><svg class="ico" viewBox="0 0 24 24"><path d="M5 4h4v16H5zM10 4h4v16h-4zM15.5 5l3.5 1-3 14-3.5-1"/></svg>Repertori</div>
+    <div class="tab"><svg class="ico" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Projectes</div>
+    <div class="tab"><span class="badge">26</span><svg class="ico" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/></svg>Per revisar</div>
+    <div class="tab"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.6 1.6 0 00-1.8-.3 1.6 1.6 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.6 1.6 0 00-1-1.5 1.6 1.6 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.6 1.6 0 00.3-1.8 1.6 1.6 0 00-1.5-1H3a2 2 0 110-4h.1a1.6 1.6 0 001.5-1 1.6 1.6 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.6 1.6 0 001.8.3H9a1.6 1.6 0 001-1.5V3a2 2 0 114 0v.1a1.6 1.6 0 001 1.5 1.6 1.6 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.6 1.6 0 00-.3 1.8V9a1.6 1.6 0 001.5 1H21a2 2 0 110 4h-.1a1.6 1.6 0 00-1.5 1z"/></svg>Ajustos</div>
+  </nav>
+</section>
+
+<!-- ========== 2 · Faristol a l'escenari ========== -->
+<section class="screen d2" data-name="2-faristol" data-theme="dark" data-time="21:07">
+  <div class="lamp"></div>
+  <div class="body">
+    <div class="top">
+      <div class="brand"><img src="../logo.png" alt="">Banda de Terrassa</div>
+      <div class="tools">
+        <div class="gbtn glass"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c1.2-3.6 4-5.4 7-5.4s5.8 1.8 7 5.4"/></svg></div>
+        <div class="gbtn add" aria-label="Registra una obra"><svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+      </div>
+    </div>
+    <div class="hero">
+      <h1>Arxiu de<br>partitures</h1>
+      <div class="count"><b>539</b><span>obres</span></div>
+    </div>
+    <div class="search"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>Títol, autor, projecte, instrument</div>
+    <div class="filters"><span class="chip on">Totes</span><span class="chip">Amb incidències</span><span class="chip">Filtres</span></div>
+    <div class="list" data-scrolls>
+      <div class="letter">A</div>
+      <div class="row ok"><div class="tx"><div class="t">A Christmas Festival</div><div class="by">Leroy Anderson</div></div><div class="st">Completa</div></div>
+      <div class="row ok"><div class="tx"><div class="t">A Klezmer Karnival</div><div class="by">Philip Sparke</div></div><div class="st">Completa</div></div>
+      <div class="row bad"><div class="tx"><div class="t">A Town with an Ocean View</div><div class="by">Joe Hisaishi · arr. K. Morita</div></div><div class="st">Falta general</div></div>
+      <div class="row ok"><div class="tx"><div class="t">Adagio</div><div class="by">Tomaso Albinoni · arr. J. de Haan</div></div><div class="st">Completa</div></div>
+      <div class="row bad"><div class="tx"><div class="t">All That Jazz</div><div class="by">John Kander · arr. F. Bernaerts</div></div><div class="st">Falten parts</div></div>
+      <div class="row warn"><div class="tx"><div class="t">American Patrol</div><div class="by">F. W. Meacham</div></div><div class="st">Sense verificar</div></div>
+    </div>
+  </div>
+  <div class="az"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div>
+  <nav class="tabbar glass" data-system data-float>
+    <div class="tab on"><svg class="ico" viewBox="0 0 24 24"><path d="M5 4h4v16H5zM10 4h4v16h-4zM15.5 5l3.5 1-3 14-3.5-1"/></svg>Arxiu</div>
+    <div class="tab"><svg class="ico" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Projectes</div>
+    <div class="tab"><span class="badge">26</span><svg class="ico" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/></svg>Per revisar</div>
+    <div class="tab"><svg class="ico" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Ajustos</div>
+  </nav>
+</section>
+
+<!-- ========== 3 · Armari de carpetes ========== -->
+<section class="screen d3" data-name="3-armari" data-time="18:15">
+  <div class="body">
+    <div class="top">
+      <div class="brand"><img src="../logo.png" alt="">Banda de Terrassa</div>
+      <div class="tools">
+        <div class="gbtn glass"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c1.2-3.6 4-5.4 7-5.4s5.8 1.8 7 5.4"/></svg></div>
+        <div class="gbtn add" aria-label="Registra una obra"><svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+      </div>
+    </div>
+    <h1>L'armari</h1>
+    <p class="sub">539 carpetes · calaix A</p>
+    <div class="search"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>Títol, autor, projecte, instrument</div>
+    <div class="drawer" data-scrolls>
+      <div class="folder ok"><div class="tabtop"><i></i>Completa</div><div class="t">A Christmas Festival</div><div class="by">Leroy Anderson</div></div>
+      <div class="folder ok"><div class="tabtop"><i></i>Completa</div><div class="t">A Klezmer Karnival</div><div class="by">Philip Sparke</div></div>
+      <div class="folder bad"><div class="tabtop"><i></i>Falta general</div><div class="t">A Town with an Ocean View</div><div class="by">Joe Hisaishi · arr. K. Morita</div></div>
+      <div class="folder ok"><div class="tabtop"><i></i>Completa</div><div class="t">Adagio</div><div class="by">Tomaso Albinoni · arr. J. de Haan</div></div>
+      <div class="folder bad"><div class="tabtop"><i></i>Falten parts</div><div class="t">All That Jazz</div><div class="by">John Kander · arr. F. Bernaerts</div></div>
+    </div>
+  </div>
+  <div class="az"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span><span>M</span><span>N</span><span>O</span><span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span><span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span><span>Z</span></div>
+  <nav class="tabbar glass" data-system data-float>
+    <div class="tab on"><svg class="ico" viewBox="0 0 24 24"><path d="M3 7l2-3h5l2 2h9v13H3z"/></svg>Armari</div>
+    <div class="tab"><svg class="ico" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Projectes</div>
+    <div class="tab"><span class="badge">26</span><svg class="ico" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/></svg>Per revisar</div>
+    <div class="tab"><svg class="ico" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Ajustos</div>
+  </nav>
+</section>
+
+<script src="kit/device.js"></script>
+</body>
+</html>

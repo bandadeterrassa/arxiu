@@ -1,0 +1,106 @@
+[
+  {
+    "name": "1-programa",
+    "fails": [],
+    "warns": [
+      "Text within 12pt of the screen edge: 9px \"A\"; 10px \"B\"; 9px \"C\"",
+      "Three saturated hue families (216°, 0°, 48°). Is each one earning its place?"
+    ],
+    "facts": {
+      "fonts": {
+        "Hanken Grotesk": 44,
+        "Newsreader": 9
+      },
+      "sizes": [
+        46,
+        34,
+        21,
+        17,
+        15,
+        13,
+        11
+      ],
+      "weights": [
+        "400",
+        "500",
+        "600",
+        "700"
+      ],
+      "leftEdges": 3,
+      "accentHues": [
+        216,
+        0,
+        48
+      ],
+      "cards": 0
+    }
+  },
+  {
+    "name": "2-faristol",
+    "fails": [],
+    "warns": [
+      "Text within 12pt of the screen edge: 9px \"A\"; 9px \"B\"; 9px \"C\"",
+      "Lines of text touching vertically (ink under 2pt apart): \"539\" / \"obres\"",
+      "Three saturated hue families (24°, 0°, 48°). Is each one earning its place?"
+    ],
+    "facts": {
+      "fonts": {
+        "Archivo": 53
+      },
+      "sizes": [
+        64,
+        21,
+        17,
+        13,
+        11
+      ],
+      "weights": [
+        "400",
+        "500",
+        "600",
+        "700",
+        "800"
+      ],
+      "leftEdges": 3,
+      "accentHues": [
+        24,
+        0,
+        48
+      ],
+      "cards": 0
+    }
+  },
+  {
+    "name": "3-armari",
+    "fails": [],
+    "warns": [
+      "Text within 12pt of the screen edge: 9px \"A\"; 10px \"B\"; 10px \"C\""
+    ],
+    "facts": {
+      "fonts": {
+        "M PLUS Rounded 1c": 45
+      },
+      "sizes": [
+        48,
+        21,
+        17,
+        15,
+        13,
+        12,
+        11
+      ],
+      "weights": [
+        "400",
+        "500",
+        "700",
+        "800"
+      ],
+      "leftEdges": 3,
+      "accentHues": [
+        216,
+        0
+      ],
+      "cards": 0
+    }
+  }
+]
