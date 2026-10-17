@@ -2,7 +2,7 @@
 <html lang="ca"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#F8FAFC">
+<meta name="theme-color" content="#0E2338">
 <title>Arxiu · Banda de Terrassa</title>
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
@@ -11,512 +11,390 @@
 <meta name="apple-mobile-web-app-title" content="Arxiu">
 <style>
 :root{
-  /* Marca (mateixa identitat que l'app d'assistència) */
-  --brand-navy:#102A43; --brand-pink:#F05FA3;
-  --accent-h:212; --accent-s:32%; --accent-l:15%;
-  --accent:hsl(var(--accent-h) var(--accent-s) var(--accent-l)); --accent-ink:#FFFFFF;
-  --accent-soft:hsl(var(--accent-h) 50% 95%); --accent-line:hsl(var(--accent-h) 38% 82%);
-  --accent-2:var(--brand-pink);
-  /* Neutres */
-  --bg:#F8FAFC; --surface:#FFFFFF; --surface2:#EEF2F6; --line:#E1E7EF; --line2:#E1E7EF; --line-strong:#C7D1DD;
-  --ink:#10151F; --ink2:#3A4453; --muted:#67728A;
-  /* Estats */
-  --ok:#1F9A57; --ok-bg:#D8F0E2; --ok-fg:#0D6B3C;
-  --bad:#D8433E; --bad-bg:#F9DCDB; --bad-fg:#A3231F;
-  --gold:#D6A84F; --gold-bg:#F6E8CC; --gold-ink:#5C3E0A;
-  --info:#0B4C6B; --info-bg:#D7ECF7; --gray-bg:#EEF2F6;
-  --overlay:rgba(10,15,23,.46);
-  /* Forma i elevació */
-  --radius:16px; --radius-s:10px; --radius-l:24px; --radius-pill:999px;
-  --shadow-sm:0 1px 2px rgba(16,21,31,.06);
-  --shadow:0 1px 2px rgba(16,21,31,.04), 0 18px 38px -10px rgba(16,21,31,.16);
-  --shadow-lg:0 2px 6px rgba(16,21,31,.06), 0 28px 56px -14px rgba(16,21,31,.24);
+  --navy:#0E2338; --bg:#F8FAFC; --surface:#FFFFFF; --ink:#0E2338; --ink-2:#44546A; --ink-3:#586578;
+  --rule:#E2E8F0; --line:#CBD5E1; --band:#E6ECF3;
+  --ok:#17784A; --warn:#B8860B; --warn-t:#7A5500; --warn-bg:#FBF1D4; --bad:#B3121F; --bad-bg:#FBE4E6;
+  --sf:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",system-ui,"Segoe UI",Roboto,sans-serif;
+  --shadow-sm:0 1px 2px rgba(14,35,56,.08); --shadow-lg:0 8px 24px rgba(14,35,56,.18), 0 1px 3px rgba(14,35,56,.12);
   --ease-spring:cubic-bezier(.34,1.56,.64,1); --ease-out:cubic-bezier(.16,1,.3,1);
-  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",system-ui,"Segoe UI",Roboto,sans-serif;
-  --nav-h:64px;
+  --safe-t:env(safe-area-inset-top,0px); --safe-b:env(safe-area-inset-bottom,0px);
   color-scheme:light;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{-webkit-text-size-adjust:100%}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--sf);font-size:15px;line-height:1.4;-webkit-font-smoothing:antialiased}
 body.locked{overflow:hidden}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
-a{color:inherit}
+:focus-visible{outline:2px solid var(--navy);outline-offset:2px;border-radius:6px}
+h1,h2,h3,p,ul{margin:0}
 .hidden{display:none!important}
+.ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
 
-/* ---- capçalera ---- */
-.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb, var(--bg) 88%, transparent);backdrop-filter:saturate(1.4) blur(16px);-webkit-backdrop-filter:saturate(1.4) blur(16px);padding-top:env(safe-area-inset-top,0px);border-bottom:1px solid transparent;transition:border-color .2s}
-.top-in{max-width:680px;margin:0 auto;display:flex;align-items:center;gap:9px;padding:14px 16px 10px}
-.logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(155deg, var(--brand-navy), hsl(var(--accent-h) var(--accent-s) 14%) 70%);display:grid;place-items:center;flex:none;box-shadow:var(--shadow-sm), 0 0 0 1px color-mix(in srgb, var(--line-strong) 70%, transparent)}
-/* logotip sense fons */
-.logo,.logo-big{background:none!important;box-shadow:none!important;border-radius:0!important;overflow:visible}
-.logo img,.logo-big img{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(16,21,31,.18))}
-.logo-big img{filter:drop-shadow(0 8px 18px rgba(16,21,31,.22))}
-.top h1{flex:1;min-width:0;font-size:clamp(14px,4.5vw,21px);font-weight:700;margin:0;letter-spacing:-.015em;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.top h1 small{display:block;overflow:hidden;text-overflow:ellipsis;font-size:12.5px;color:var(--muted);font-weight:400;letter-spacing:0;margin-top:1px}
-.top .sp{flex:0}
-@media (max-width:360px){ .top-in{padding:12px 12px 9px;gap:7px} .top .logo{width:36px;height:36px} .top .icon-btn{width:36px;height:36px} }
-.savepill{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--nav-h) + 20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);font-size:14px;font-weight:500;padding:10px 16px;border-radius:12px;z-index:60;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .25s}
+/* ---------- capçalera ---------- */
+.top{position:sticky;top:-62px;z-index:20;background:var(--navy);color:#fff;border-radius:0 0 28px 28px;padding:calc(var(--safe-t) + 14px) 20px 18px}
+.top-brand{max-width:680px;margin:0 auto;height:44px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.lg2{width:40px;height:40px;border-radius:11px;background:#fff;display:grid;place-items:center;flex:none}
+.lg2 img{width:32px;height:32px;object-fit:contain}
+.brand b{display:block;font:700 17px/20px var(--sf);letter-spacing:-.3px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand small{display:block;font:600 13px/16px var(--sf);color:#C9D5E4}
+.top-act{display:flex;gap:8px;flex:none}
+.qm{width:40px;height:40px;border-radius:20px;border:0;background:rgba(255,255,255,.14);color:#fff;display:grid;place-items:center;font:700 19px/1 var(--sf);flex:none;transition:transform .15s var(--ease-spring)}
+.qm:active{transform:scale(.92)}
+.qm .ic{width:20px;height:20px}
+.pt{max-width:680px;margin:14px auto 0;height:46px;border-radius:23px;background:rgba(255,255,255,.12);display:grid;grid-auto-flow:column;grid-auto-columns:1fr;padding:3px;gap:2px}
+.pt button{border:0;background:transparent;border-radius:20px;font:700 15px/1 var(--sf);color:#C9D5E4;transition:background .2s var(--ease-out),color .2s}
+.pt button.on{background:#fff;color:var(--navy)}
+body[data-screen=config] .pt, body[data-screen=registrar] .pt{display:none}
+body[data-screen=config] .top{top:0;padding-bottom:22px}
+body[data-screen=registrar] .top{display:none}
+
+main{max-width:680px;margin:0 auto;padding:18px 20px calc(var(--safe-b) + 120px);animation:fadeUp .35s var(--ease-out)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+body[data-screen=registrar] main#mainRegistrar{padding-top:calc(var(--safe-t) + 16px)}
+
+/* ---------- barra inferior flotant ---------- */
+.fbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--safe-b) + 14px);height:64px;border-radius:32px;background:#fff;box-shadow:var(--shadow-lg);display:flex;padding:6px;gap:4px;z-index:30}
+.fbar button{width:72px;border:0;border-radius:26px;display:grid;place-items:center;background:transparent;color:var(--ink-3);transition:background .2s var(--ease-out),color .2s}
+.fbar button.on{background:var(--navy);color:#fff}
+.fbar .ic{width:26px;height:26px}
+body[data-screen=registrar] .fbar{display:none}
+.savepill{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--safe-b) + 92px);max-width:calc(100vw - 32px);text-align:center;background:var(--navy);color:#fff;font-size:14px;font-weight:600;padding:10px 16px;border-radius:14px;z-index:90;box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:opacity .25s}
 .savepill.show{opacity:1}
 
-main{max-width:680px;margin:0 auto;padding:8px 16px calc(var(--nav-h) + 40px + env(safe-area-inset-bottom,0px));animation:fadeUp .35s var(--ease-out)}
-@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-
-/* ---- Consultar ---- */
-.search{position:relative;margin-bottom:12px}
-.search svg{position:absolute;left:15px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--muted);pointer-events:none}
-.search input{width:100%;min-height:44px;padding:0 16px 0 42px;border:1px solid var(--line-strong);border-radius:var(--radius-pill);background:var(--surface);outline:none;font-size:16px;transition:border-color .2s,box-shadow .2s}
-.search input:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
-.search input::placeholder{color:var(--muted)}
-
-.countline{font-size:13px;color:var(--muted);margin:2px 2px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px}
-.countline button{border:1px solid var(--line-strong);background:var(--surface);border-radius:999px;min-height:40px;padding:0 14px;color:var(--ink2);font-weight:600;font-size:13.5px;display:flex;align-items:center;gap:6px;transition:transform .15s var(--ease-spring)}
-.countline button:active{transform:scale(.95)}
-.countline .fbadge{background:var(--ink);color:var(--bg);border-radius:999px;font-size:10.5px;padding:1px 7px;font-weight:700}
-
-.list{display:flex;flex-direction:column;gap:10px}
-.card{background:var(--surface);border-radius:var(--radius-l);box-shadow:var(--shadow-sm);border:1px solid var(--line);padding:14px 14px 14px 16px;text-align:left;width:100%;display:flex;align-items:center;gap:12px;transition:transform .18s var(--ease-spring),box-shadow .2s ease,background .15s}
-.card:active{background:var(--surface2);transform:scale(.985)}
-@media (hover:hover){ .card:hover{box-shadow:var(--shadow)} }
-.card .main{flex:1;min-width:0}
-.card .titlerow{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:2px}
-.card .title{font-weight:600;font-size:16px;line-height:1.25;letter-spacing:-.01em;margin:0}
-.estilchip{display:inline-flex;align-items:center;height:21px;padding:0 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;letter-spacing:.02em;white-space:nowrap}
-.card .authors{font-size:13.5px;color:var(--muted);margin:0 0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.statusline{display:inline-flex;align-items:center;gap:6px;min-height:24px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:700;margin:0;background:var(--gray-bg);color:var(--ink2)}
-.statusline .dot{width:7px;height:7px;border-radius:50%;flex:none;background:currentColor}
-.statusline.ok{background:var(--ok-bg);color:var(--ok-fg)}
-.statusline.warn{background:var(--gold-bg);color:var(--gold-ink)}
-.statusline.bad{background:var(--bad-bg);color:var(--bad-fg)}
-.statusline.gray{background:var(--gray-bg);color:var(--muted)}
-.countline .sp{flex:1}
-.viewtoggle{display:flex;background:var(--surface);border:1px solid var(--line-strong);border-radius:999px;padding:2px}
-.viewtoggle button{border:0!important;background:transparent!important;min-height:36px!important;width:40px;padding:0!important;border-radius:999px!important;display:grid!important;place-items:center;color:var(--muted)!important}
-.viewtoggle button.on{background:var(--ink)!important;color:var(--bg)!important}
-/* vista compacta: una targeta per obra amb el color de l'estat al marc */
-.list#list{padding-right:18px;gap:0}
-.list > .cards{display:flex;flex-direction:column;gap:10px}
-.list#list h3.letter{margin:20px 16px 6px;font-size:13px;letter-spacing:.02em;text-transform:none;color:var(--muted);font-weight:600}
-.list#list h3.letter:first-child{margin-top:2px}
-.list.compact h3.letter{margin:20px 16px 6px;font-size:13px;letter-spacing:.02em;text-transform:none;color:var(--muted);font-weight:600}
-.list.compact h3.letter:first-child{margin-top:2px}
-.crows{display:flex;flex-direction:column;gap:8px}
-/* cada obra és una targeta arrodonida; el color de l'estat forma part del marc (com les sessions del calendari de l'app d'assistència) */
-.crow{position:relative;display:flex;align-items:center;gap:12px;min-height:58px;padding:9px 14px 9px 14px;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-left:7px solid var(--line-strong);border-radius:var(--radius-l);box-shadow:var(--shadow-sm);overflow:hidden;transition:transform .18s var(--ease-spring),background .15s}
-.crow.ok{border-left-color:var(--ok)} .crow.bad{border-left-color:var(--bad)} .crow.warn{border-left-color:var(--gold)}
-.crow:active{background:var(--surface2);transform:scale(.985)}
-.ctext{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
-.ctitle{font-weight:500;font-size:16px;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cwho{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cflag{width:20px;height:20px;border-radius:50%;background:var(--gold-bg);color:var(--gold-ink);font-weight:800;font-size:12px;display:grid;place-items:center;flex:none}
-.crow .chevron{color:var(--line-strong);flex:none;width:14px;height:14px}
+/* ---------- cerca, comptador, vista ---------- */
+.search{position:relative;display:flex;align-items:center;gap:10px;height:48px;border-radius:24px;background:#fff;border:1px solid var(--line);padding:0 8px 0 18px}
+.search input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:400 17px/1 var(--sf);height:46px}
+.search input::placeholder{color:var(--ink-3)}
+.search:focus-within{border-color:var(--navy)}
+.search svg{display:none}
+.cfgsearch{height:46px;min-width:0}.cfgsearch input{height:44px;font-size:16px;width:100%;min-width:0}
+.search button{border:0;background:transparent;font:700 15px/1 var(--sf);color:var(--navy);height:36px;padding:0 10px;border-radius:18px;display:inline-flex;align-items:center;gap:6px;flex:none}
+.fbadge{background:var(--navy);color:#fff;border-radius:10px;font-size:11px;min-width:20px;height:20px;padding:0 6px;display:inline-grid;place-items:center}
+.cnt{font:400 13px/18px var(--sf);color:var(--ink-3);margin:10px 4px 0}
+.lhrow{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:48px;padding:6px 0 4px}
+.af{font:700 15px/20px var(--sf);min-width:0;display:flex;gap:10px;align-items:baseline;flex:1}
+.aft{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink-2);font-weight:600}
+.af button{flex:none;white-space:nowrap}
+.af button{border:0;background:transparent;padding:0;color:var(--bad);font:700 15px/20px var(--sf)}
+.viewtoggle,.seg{display:flex;border:1px solid var(--line);border-radius:16px;background:#fff;padding:2px;margin-left:auto}
+.viewtoggle button{border:0;background:transparent;height:32px;width:44px;border-radius:14px;display:grid;place-items:center;color:var(--ink-2)}
+.viewtoggle button.on{background:var(--navy);color:#fff}
+.viewtoggle .ic{width:20px;height:20px}
+.letter{font:700 13px/1 var(--sf);color:var(--ink-3);margin:18px 4px 8px}
+.letter:first-child{margin-top:4px}
+.cards{display:flex;flex-direction:column}
+#list{padding-right:16px}
 .azindex{position:fixed;right:max(2px, calc((100vw - 680px) / 2 - 22px));transform:translateY(-50%);z-index:15;display:flex;flex-direction:column;align-items:center;padding:4px 2px;touch-action:none;user-select:none;-webkit-user-select:none}
-.azindex button{border:0;background:transparent;color:var(--accent);font-weight:700;line-height:1;padding:0 6px;min-height:0;display:flex;align-items:center}
-/* ajuda */
-.icon-btn{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;color:var(--ink2);border:1px solid var(--line);background:var(--surface);flex:none;transition:transform .15s var(--ease-spring)}
-.icon-btn:active{transform:scale(.9)}
-.icon-btn svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.help-intro{background:var(--accent-soft);border-radius:var(--radius);padding:12px 14px;font-size:13.5px;color:var(--ink2);margin:0 0 6px}
-.help-h{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:700;margin:20px 2px 4px}
-.help-row{display:flex;gap:13px;align-items:flex-start;padding:12px 0}
-.help-row + .help-row{border-top:1px solid var(--line)}
-.help-row > span:first-child{flex:none;width:40px;height:40px;border-radius:12px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:18px}
-.help-row > div{font-size:13.5px;line-height:1.45;color:var(--ink2);padding-top:2px}
-.help-row b{color:var(--ink);font-size:14.5px;display:block;margin-bottom:3px}
-.help-row .tagrow{margin:4px 0 6px}
-.swatch{position:relative}
-.swatch::before{content:"";width:5px;height:24px;border-radius:4px;background:currentColor}
-.swatch.ok{color:var(--ok)} .swatch.bad{color:var(--bad)} .swatch.warn{color:var(--gold)}
-/* inici de sessió (igual que l'app d'assistència) */
-body.auth > .top, body.auth > main, body.auth > .nav, body.auth #azindex{display:none!important}
-#loginScreen{padding:0 16px}
-.login{min-height:100vh;min-height:100svh;display:grid;align-content:center;justify-items:center;gap:18px;padding:32px 0;text-align:center}
-.login form{display:grid;gap:12px;width:min(100%,340px);text-align:left}
-.logo-big{width:96px;height:96px;margin:0 0 -16px;border-radius:26px;background:linear-gradient(155deg, var(--brand-navy), hsl(var(--accent-h) var(--accent-s) 14%) 65%);box-shadow:var(--shadow-lg), 0 0 0 1px color-mix(in srgb, var(--line-strong) 70%, transparent);display:grid;place-items:center}
-.login-h1{margin:0;font-weight:700;font-size:25px;line-height:1.12;letter-spacing:-.02em}
-.login .muted{color:var(--muted);font-size:14px}
-.login-foot{font-size:12.5px;color:var(--muted);max-width:34ch;margin:0}
-.err{background:var(--bad-bg);color:var(--bad-fg);border-radius:10px;padding:8px 12px;font-size:13.5px;font-weight:600}
-.lfield{display:grid;gap:6px;min-width:0}
-.lfield > span{font-size:12.5px;font-weight:600;color:var(--ink2)}
-.inp{width:100%;min-height:44px;border-radius:10px;border:1px solid var(--line-strong);background:var(--surface);padding:0 12px;font-size:16px;outline:none}
-.inp:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
-.pass-wrap{position:relative}
-.pass-wrap .inp{padding-right:44px}
-.pass-toggle{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:36px;height:36px;border:0;background:transparent;border-radius:50%;display:grid;place-items:center;color:var(--ink2)}
-.pass-toggle svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.pass-toggle .slash{opacity:0}
-.pass-toggle[aria-pressed="true"] .slash{opacity:1}
-.toggle-row{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px;font-size:13.5px}
-.switch{position:relative;width:48px;height:28px;flex:none}
-.switch input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
-.switch span{position:absolute;inset:0;border-radius:999px;background:var(--line-strong);transition:background .15s;pointer-events:none}
-.switch span::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .15s}
-.switch input:checked + span{background:var(--accent)}
-.switch input:checked + span::after{transform:translateX(20px)}
-.tagrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
-.minitag{display:inline-flex;align-items:center;min-height:22px;padding:0 8px;border-radius:999px;font-size:11.5px;font-weight:600;background:var(--gray-bg);color:var(--ink2);white-space:nowrap}
-.minitag.warn{background:var(--gold-bg);color:var(--gold-ink)}
-.minitag.gray{background:var(--gray-bg);color:var(--muted)}
-.minitag.ok{background:var(--ok-bg);color:var(--ok-fg)}
-.placepill{display:inline-flex;align-items:center;gap:5px;border-radius:999px;font-weight:600;background:var(--accent-soft);color:var(--accent)}
-.placepill{min-height:26px;padding:0 11px;font-size:12.5px}
-.locline{font-size:12.5px;color:var(--muted);margin:7px 0 0}
-.placenote{font-size:12.5px;color:var(--muted);align-self:center}
-.archwhere{display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px;margin-top:10px;padding:10px 12px;border-radius:var(--radius);background:var(--surface2)}
-.archwhere .archq{font-size:12.5px;font-weight:600;color:var(--ink2)}
-.archwhere .chip{min-height:42px;padding:0 14px;font-size:13px}
-.archfield.err .archwhere{box-shadow:inset 0 0 0 1px var(--bad)}
-.reasons{margin:8px 0 0;padding-left:16px;font-size:12.5px;color:var(--gold-ink);line-height:1.5}
-.acceptbtns{display:flex;flex-direction:column;gap:6px;flex:none}
-.btn-sm{min-height:36px;padding:0 14px;font-size:13.5px}
-.btn-danger-ghost{background:var(--bad-bg);border-color:var(--bad-bg);color:var(--bad-fg)}
-.statgrid2{align-items:center}
-.statgrid2 dd{display:flex;flex-wrap:wrap;gap:6px}
-.seccnt{font-weight:600;color:var(--ink2);letter-spacing:0;margin-left:4px}
-/* feina pendent */
-.task{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-l);box-shadow:var(--shadow-sm);margin-bottom:10px;overflow:hidden}
-.taskhead{width:100%;display:flex;align-items:center;gap:12px;min-height:64px;padding:12px 14px 12px 16px;border:0;background:transparent;text-align:left}
-.taskhead:active{background:var(--surface2)}
-.tasktxt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
-.tasktitle{font-weight:600;font-size:15.5px}
-.taskdesc{font-size:12.5px;color:var(--muted);line-height:1.35}
-.taskhead .count{font-size:12.5px;font-weight:700;color:var(--ink2);background:var(--surface2);border-radius:999px;padding:2px 10px;font-variant-numeric:tabular-nums;flex:none}
-.taskcaret{color:var(--muted);flex:none;transition:transform .25s var(--ease-out)}
-.task.open .taskcaret{transform:rotate(180deg)}
-.taskbody{border-top:1px solid var(--line);background:var(--bg);padding:12px}
-.taskbody h3.sec:first-child{margin-top:4px}
-/* projecte: repertori editable */
-.projrow2 .rowmain{flex:1;min-width:0;display:flex;align-items:center;gap:10px;border:0;background:transparent;padding:0;text-align:left}
-.projrow2 .rowmain .main{flex:1;min-width:0}
-.pickl{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:6px}
-.pickrow{display:flex;align-items:center;gap:10px;min-height:52px;padding:8px 14px;border:0;border-top:1px solid var(--line);background:transparent;text-align:left}
+.azindex button{border:0;background:transparent;color:var(--navy);font-weight:700;line-height:1;padding:0 6px;min-height:0;display:flex;align-items:center}
+.empty{padding:42px 16px;text-align:center;color:var(--ink-3)}
+.empty p{margin:0 auto;max-width:36ch;font-size:15px}
+
+/* ---------- targeta d'obra amb marc corbat ---------- */
+.fr{display:block;width:100%;text-align:left;background:#fff;border:0;border-radius:16px;border-left:8px solid var(--c,var(--line));padding:13px 16px 13px 14px;margin-bottom:10px;box-shadow:var(--shadow-sm);transition:transform .18s var(--ease-spring)}
+.fr[data-id],.fr[data-pid],.fr[data-oid]{cursor:pointer}
+.fr[data-id]:active,.fr[data-pid]:active,.fr[data-oid]:active{transform:scale(.985)}
+.fr.ok{--c:var(--ok)} .fr.warn{--c:var(--warn)} .fr.bad{--c:var(--bad)} .fr.nv{--c:var(--navy)} .fr.n{--c:var(--line)}
+.fr .tt,.tt{font:700 19px/24px var(--sf);letter-spacing:-.4px;overflow-wrap:anywhere}
+.fr .who{font:400 15px/20px var(--sf);color:var(--ink-2)}
+.fr .st{font:600 13px/18px var(--sf);margin-top:5px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.st.ok{color:var(--ink-3)} .st.warn{color:var(--warn-t)} .st.bad{color:var(--bad)}
+.fr .loc,.loc{font:400 13px/18px var(--sf);color:var(--ink-3);margin-top:2px}
+.flag{font:700 13px/1 var(--sf);color:var(--warn-t);background:var(--warn-bg);border-radius:12px;height:24px;padding:0 10px;display:inline-grid;place-items:center;margin-left:auto}
+.fr.cmp{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;margin-bottom:8px}
+.fr.cmp .tt{font-size:17px;line-height:22px}
+.fr.cmp .st{margin-top:2px}
+.fr.cmp .flag{flex:none}
+.fr .accbtns{display:flex;gap:8px;margin-top:12px}
+.fr .reasons{margin:8px 0 0;padding-left:18px;font-size:13px;color:var(--warn-t);line-height:1.5}
+.fr .ct{font:800 15px/20px var(--sf);letter-spacing:-.2px;margin-bottom:2px}
+.fr.warn .ct{color:var(--warn-t)}
+.fr .kv .i:first-child{border-top:0}
+.fr .kv .i:last-child{padding-bottom:2px}
+.fr p.t2{font:400 15px/20px var(--sf);color:var(--ink-2)}
+.fr ul.t2{padding-left:18px;font:400 15px/21px var(--sf);color:var(--ink-2)}
+.fr .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.fr .row > div{min-width:0}
+.fr .row.prow{align-items:center}
+.row .main{flex:1;min-width:0}
+
+/* ---------- elements bàsics ---------- */
+.btn{height:52px;border-radius:26px;border:0;display:inline-flex;align-items:center;justify-content:center;gap:6px;font:700 17px/1 var(--sf);background:var(--navy);color:#fff;padding:0 22px;transition:transform .2s var(--ease-spring),opacity .12s;text-decoration:none}
+.btn:active{transform:scale(.97);opacity:.92}
+.btn.o{background:#fff;color:var(--navy);outline:1.5px solid var(--navy);outline-offset:-1.5px}
+.btn.s,.btn-sm{height:44px;padding:0 20px;font-size:15px}
+.btn.bd{background:#fff;color:var(--bad);outline:1.5px solid var(--bad);outline-offset:-1.5px}
+.btn.w{width:100%}
+.btn:disabled{opacity:.5}
+.pill{font:700 13px/1 var(--sf);height:36px;padding:0 14px;border-radius:18px;display:inline-grid;place-items:center;background:#fff;border:1px solid var(--line);color:var(--navy)}
+.ib{width:40px;height:40px;border-radius:20px;border:0;display:grid;place-items:center;outline:1.5px solid var(--line);outline-offset:-1.5px;background:#fff;color:var(--navy);flex:none;transition:transform .15s var(--ease-spring)}
+.ib:active{transform:scale(.92)}
+.ib.d{color:var(--bad);outline-color:var(--bad)}
+.ib .ic{width:20px;height:20px}
+.h1{font:800 28px/32px var(--sf);letter-spacing:-.8px}
+.sub{font:400 15px/20px var(--sf);color:var(--ink-2);margin-top:6px}
+.hint{font:400 13px/18px var(--sf);color:var(--ink-3);margin-top:6px}
+.sec-h{font:800 17px/22px var(--sf);letter-spacing:-.3px;margin:22px 0 10px;display:flex;align-items:center;gap:10px}
+h3.sec{font:800 17px/22px var(--sf);letter-spacing:-.3px;margin:22px 0 10px}
+h3.sec:first-child{margin-top:4px}
+.seccnt{font-weight:600;color:var(--ink-2);letter-spacing:0;margin-left:6px}
+.kv .i{display:flex;gap:16px;padding:13px 0;border-top:1px solid var(--rule);font:400 15px/20px var(--sf)}
+.kv .k{width:128px;color:var(--ink-2);flex:none}
+.kv .v{font-weight:600;flex:1;min-width:0;overflow-wrap:anywhere}
+.kv .v.bad{color:var(--bad)} .kv .v.warn{color:var(--warn-t)}
+.kv .v div + div{margin-top:2px}
+.kv .v .sm{display:block;font-weight:400;color:var(--ink-2)}
+.ia{font:700 11px/1 var(--sf);letter-spacing:.4px;color:var(--ink-3);outline:1px solid var(--line);outline-offset:-1px;border-radius:6px;padding:4px 6px;flex:none}
+.ia.d{color:#C9D5E4;outline-color:rgba(255,255,255,.5)}
+.err{background:var(--bad-bg);color:var(--bad);border-radius:12px;padding:10px 12px;font:600 14px/1.35 var(--sf)}
+
+/* ---------- bandes de secció (formularis) ---------- */
+.sec{margin-top:26px}
+.sec.first{margin-top:22px}
+.band{background:var(--band);color:var(--navy);border-radius:12px;border-left:6px solid var(--navy);height:36px;display:flex;align-items:center;padding:0 14px 0 12px;font:800 15px/20px var(--sf);letter-spacing:-.2px;margin-bottom:12px}
+.hn,.fl i{font-style:normal;font-weight:400;color:var(--ink-3);margin-left:6px;font-size:13px}
+.band .hn{color:var(--ink-2)}
+.hn::before,.fl i::before{content:"("} .hn::after,.fl i::after{content:")"}
+.fl{display:block;font:700 13px/18px var(--sf);margin:18px 0 8px}
+.field{margin:0}
+.field:first-child .fl{margin-top:0}
+.errtext{display:none;color:var(--bad);font:600 13px/18px var(--sf);margin-top:6px}
+.field.err .errtext{display:block}
+.field.err .inp2,.field.err .combo-input{border-color:var(--bad)}
+.field.err .three, .field.err .chips{outline:1.5px solid var(--bad);outline-offset:4px;border-radius:14px}
+.inp2,.textarea,.combo-input,.inp{width:100%;height:52px;border-radius:14px;background:#fff;border:1px solid var(--line);padding:0 16px;font:400 17px/1 var(--sf);outline:none;transition:border-color .15s}
+.inp2:focus,.textarea:focus,.combo-input:focus,.inp:focus{border-color:var(--navy)}
+.inp2:disabled{opacity:.5}
+.textarea{height:auto;min-height:96px;padding:14px 16px;line-height:1.4;resize:vertical}
+.three{display:flex;gap:8px}
+.three button{flex:1;min-height:52px;border-radius:14px;background:#fff;border:1.5px solid var(--line);font:700 15px/1.1 var(--sf);padding:0 6px;display:grid;place-items:center;text-align:center;transition:background .15s,color .15s,border-color .15s}
+.three button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.three button.on.bd{background:var(--bad);border-color:var(--bad)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:40px;padding:0 14px;border-radius:20px;background:#fff;border:1.5px solid var(--line);font:700 15px/1 var(--sf);display:inline-flex;align-items:center;gap:6px;transition:background .15s,color .15s,border-color .15s}
+.chip:active{transform:scale(.96)}
+.chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.chip.on.bd{background:var(--bad);border-color:var(--bad)}
+.chip.add{border-style:dashed;color:var(--navy)}
+.chip:disabled{opacity:.4}
+.chips.s .chip{min-height:38px}
+.addline{display:flex;gap:8px;margin-top:10px}
+.addline .inp2{flex:1;height:46px}
+.addline .btn{height:46px;font-size:15px;padding:0 18px}
+.link{border:0;background:transparent;color:var(--navy);font:700 13px/18px var(--sf);padding:6px 0;text-decoration:underline;text-underline-offset:3px}
+.gr{width:100%;display:flex;align-items:center;gap:10px;padding:13px 0;border:0;border-top:1px solid var(--rule);background:transparent;text-align:left;font:700 15px/20px var(--sf)}
+.gr > span:first-child{flex:1}
+.gr .sm{font-weight:400;color:var(--ink-3);text-align:right;max-width:55%}
+.gr .sm.on{font-weight:700;color:var(--bad)}
+.gr .ex{color:var(--navy);width:14px;text-align:center}
+.grp.dis{opacity:.4;pointer-events:none}
+.grp .chips{padding-bottom:10px}
+.steps{display:flex;gap:8px;align-items:center;margin-top:16px}
+.steps b{width:28px;height:28px;border-radius:8px;border:1.5px solid var(--line);color:var(--ink-3);display:grid;place-items:center;font:800 13px/1 var(--sf)}
+.steps b.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.steps b.done{border-color:var(--ok);color:var(--ok)}
+.steps i{flex:1;height:2px;background:var(--line);max-width:36px}
+.foot{position:fixed;left:0;right:0;bottom:0;z-index:25;padding:14px 20px calc(var(--safe-b) + 18px);background:linear-gradient(to bottom,rgba(248,250,252,0),var(--bg) 22px);display:flex;gap:10px}
+.foot .btn{flex:1}
+.foot .back{flex:0 0 112px}
+.foot-in{max-width:680px;margin:0 auto;width:100%;display:flex;gap:10px}
+.foot-in .btn{flex:1} .foot-in .back{flex:0 0 112px}
+.ctl{display:flex;justify-content:space-between;align-items:center}
+
+/* ---------- pàgines a pantalla completa (fitxa, projecte, edició) ---------- */
+.page{position:fixed;inset:0;z-index:50;background:var(--bg);overflow-y:auto;overscroll-behavior:contain;animation:pageIn .28s var(--ease-out)}
+@keyframes pageIn{from{opacity:.4;transform:translateY(18px)}to{opacity:1;transform:none}}
+.phead{background:var(--navy);color:#fff;border-radius:0 0 28px 28px;padding:calc(var(--safe-t) + 14px) 20px 24px}
+.phead-in,.pbody{max-width:680px;margin:0 auto}
+.ptop{display:flex;justify-content:space-between;align-items:center;height:44px}
+.ptitle{display:flex;align-items:center;gap:10px;margin-top:14px;flex-wrap:wrap}
+.ptitle h1{font:800 28px/32px var(--sf);letter-spacing:-.8px;color:#fff;overflow-wrap:anywhere}
+.pwho{font:400 17px/22px var(--sf);color:#C9D5E4;margin-top:6px}
+.pbody{padding:20px 20px calc(var(--safe-b) + 120px)}
+.pbody.light{padding-top:calc(var(--safe-t) + 14px)}
+.ptop.light{margin-bottom:14px}
+.pbody .fr{margin-bottom:12px}
+.pbody .fr .btn{margin-top:12px}
+.sticky-foot{position:sticky;bottom:0;z-index:5;padding:14px 20px calc(var(--safe-b) + 18px);background:linear-gradient(to bottom,rgba(248,250,252,0),var(--bg) 22px)}
+.sticky-foot .foot-in{max-width:680px}
+.pickl{display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-sm);overflow:hidden;margin:8px 0 6px}
+.pickrow{display:flex;align-items:center;gap:10px;min-height:56px;padding:8px 14px;border:0;border-top:1px solid var(--rule);background:transparent;text-align:left}
 .pickrow:first-child{border-top:0}
-.pickrow:active{background:var(--surface2)}
+.pickrow:active{background:var(--band)}
 .pickrow .main{flex:1;min-width:0;display:flex;flex-direction:column}
-.pickrow .title{font-weight:600;font-size:14.5px}
-.pickrow .authors{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pickplus{width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:700;font-size:18px;flex:none}
-/* parts que falten */
-.missbox{margin-top:12px;padding:14px;border-radius:var(--radius);background:var(--bad-bg)}
-.missbox .misslabel{display:block;font-size:12.5px;font-weight:600;color:var(--bad-fg);margin-bottom:8px}
-.missbox .chip{min-height:42px;padding:0 13px;font-size:13px}
-.missbox .chip.on{background:var(--bad);border-color:var(--bad);color:#fff}
-.missbox .chip:disabled{opacity:.4}
-/* configuració */
-.cfgpanel{border-top:1px solid var(--line);padding:12px 12px 6px;background:var(--bg)}
+.pickrow .title{font-weight:700;font-size:15px}
+.pickrow .authors{font-size:13px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pickplus{width:30px;height:30px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:700;font-size:18px;flex:none}
+.note-line{background:var(--band);border-radius:12px;padding:10px 12px;font:400 14px/20px var(--sf);color:var(--ink-2);margin-top:12px}
+.revitem{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-top:1px solid rgba(122,85,0,.18);cursor:pointer;font:400 14px/20px var(--sf);color:var(--ink-2)}
+.revitem input{flex:none;width:20px;height:20px;margin:1px 0 0;accent-color:var(--ok)}
+
+/* ---------- fulls modals (filtres, ajuda, edicions petites) ---------- */
+.sheet-bg{position:fixed;inset:0;background:rgba(14,35,56,.45);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:60;display:flex;align-items:flex-end;justify-content:center;height:100%;height:100dvh;animation:fadeIn .18s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.sheet{background:#fff;width:calc(100% - 16px);max-width:600px;margin-bottom:8px;border-radius:32px;max-height:calc(100dvh - 92px);overflow-y:auto;overscroll-behavior:contain;padding:20px 20px 0;animation:sheetUp .32s var(--ease-spring)}
+@keyframes sheetUp{from{transform:translateY(28px);opacity:.6}to{transform:none;opacity:1}}
+.sheet-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;position:sticky;top:-20px;background:#fff;z-index:2;padding:0 0 12px;margin-top:0}
+.sheet-head .htxt{flex:1;min-width:0}
+.sheet-head h2{font:800 28px/32px var(--sf);letter-spacing:-.8px}
+.sheet-head .hsub{font:400 15px/20px var(--sf);color:var(--ink-2);margin-top:4px}
+.sheet-close{border:1px solid var(--line);background:#fff;height:36px;padding:0 14px;border-radius:18px;display:grid;place-items:center;color:var(--navy);flex:none;font:700 13px/1 var(--sf)}
+.sheet-close svg{display:none}
+.sheet-close::after{content:"Tanca"}
+.sheet-body{padding:4px 0 24px}
+.sheet .btnbar,.btnbar{display:flex;gap:10px;position:sticky;bottom:0;z-index:3;background:linear-gradient(to bottom,rgba(255,255,255,0),#fff 16px);padding:16px 0 calc(var(--safe-b) + 16px)}
+.btnbar .btn{flex:1}
+.sheet .field{margin-bottom:14px}
+.sheet .field label{display:block;font:700 13px/18px var(--sf);margin:0 0 8px}
+.sheet .field label .opt{font-weight:400;color:var(--ink-3);font-size:13px}
+.sheet .input{width:100%;height:52px;border-radius:14px;background:#fff;border:1px solid var(--line);padding:0 16px;font:400 17px/1 var(--sf);outline:none}
+.sheet .input:focus{border-color:var(--navy)}
+.fgroup{margin-top:4px}
+.fgroup .fl{margin-top:18px}
+.restsum{list-style:none;margin:4px 0 12px;padding:0;border-top:1px solid var(--rule)}
+.restsum li{display:flex;justify-content:space-between;gap:12px;padding:12px 0;font-size:15px;border-bottom:1px solid var(--rule)}
+.restsum b{font-variant-numeric:tabular-nums}
+.help-intro{background:var(--band);border-radius:14px;padding:12px 14px;font-size:14px;color:var(--ink-2);margin:6px 0}
+.help-h{font:800 17px/22px var(--sf);letter-spacing:-.3px;margin:22px 0 6px}
+.help-row{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--rule)}
+.help-h + .help-row{border-top:0}
+.help-row > div{font:400 14px/20px var(--sf);color:var(--ink-2)}
+.help-row b{display:block;color:var(--ink);font:700 15px/20px var(--sf);margin-bottom:2px}
+.swatch{width:6px;height:44px;border-radius:8px;flex:none;background:var(--c)}
+.swatch.ok{--c:var(--ok)} .swatch.bad{--c:var(--bad)} .swatch.warn{--c:var(--warn)} .swatch.nv{--c:var(--navy)}
+.logline{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:22px;padding-top:14px;border-top:1px solid var(--rule);font:400 14px/20px var(--sf);color:var(--ink-2)}
+
+/* ---------- combobox ---------- */
+.combo{position:relative}
+.combo-arrow{position:absolute;right:16px;top:26px;transform:translateY(-50%);color:var(--ink-3);pointer-events:none}
+.combo-input{padding-right:40px}
+.combo-panel{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-lg);max-height:260px;overflow-y:auto;z-index:200}
+.combo-opt{min-height:48px;padding:10px 16px;font:400 15px/20px var(--sf);cursor:pointer;display:flex;align-items:center;border-top:1px solid var(--rule)}
+.combo-opt:first-child{border-top:0}
+.combo-opt:hover{background:var(--band)}
+.combo-opt.create{color:var(--navy);font-weight:700}
+.combo-empty{padding:14px;color:var(--ink-3);font-size:14px;text-align:center}
+.selectedchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.selchip{display:inline-flex;align-items:center;gap:6px;background:var(--navy);color:#fff;border-radius:20px;padding:0 6px 0 14px;min-height:40px;font:700 15px/1 var(--sf)}
+.selchip button{border:0;background:rgba(255,255,255,.18);width:28px;height:28px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:11px}
+
+/* ---------- feina pendent i configuració ---------- */
+.task{border-top:1px solid var(--rule)}
+.taskhead{width:100%;display:flex;align-items:center;gap:12px;min-height:64px;padding:12px 0;border:0;background:transparent;text-align:left}
+.tasktxt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.tasktitle{font:700 17px/22px var(--sf);letter-spacing:-.3px}
+.taskdesc{font:400 13px/18px var(--sf);color:var(--ink-3)}
+.taskhead .count{font:700 15px/1 var(--sf);min-width:40px;height:30px;padding:0 10px;border-radius:15px;border:1px solid var(--line);background:#fff;display:grid;place-items:center;flex:none}
+.taskcaret{color:var(--navy);flex:none;transition:transform .25s var(--ease-out)}
+.task.open .taskcaret{transform:rotate(180deg)}
+.taskbody{padding:4px 0 10px}
+.taskbody h3.sec{font-size:15px;margin-top:14px}
+.cfgpanel{padding:4px 0 14px}
 .cfgtools{display:flex;gap:8px;align-items:center}
 .cfgsearch{flex:1;margin:0}
-.cfgpanel .addrow{margin:10px 0 0}
-.cfglist{margin-top:10px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);max-height:420px;overflow-y:auto}
-.cfglist .cfgrow{padding:8px 8px 8px 14px;border-bottom:1px solid var(--line)}
-.cfglist .cfgrow:last-child{border-bottom:0}
+.cfgpanel .addrow,.addrow{display:flex;gap:8px;margin-top:10px}
+.addrow .input{flex:1;height:46px;border-radius:14px;border:1px solid var(--line);padding:0 16px;font:400 17px/1 var(--sf);outline:none;background:#fff}
+.addrow .btn{height:46px;flex:none;font-size:15px}
+.cfglist{margin-top:10px;max-height:420px;overflow-y:auto}
+.cfgrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--rule)}
 .cfgname{flex:1;min-width:0}
-.cfglist .iconbtn{width:40px;height:40px;border:0;background:transparent}
-.cfglist .cfgempty{padding:16px;text-align:center}
-.card .chevron{color:var(--line-strong);flex:none}
+.cfgname .nm{font:600 15px/20px var(--sf);overflow-wrap:anywhere}
+.cfgname .meta{font:400 13px/18px var(--sf);color:var(--ink-3)}
+.cfgacts{display:flex;gap:8px;flex:none}
+.cfgempty{padding:16px;text-align:center;color:var(--ink-3)}
+.iconbtn{width:40px;height:40px;border-radius:20px;border:0;display:grid;place-items:center;outline:1.5px solid var(--line);outline-offset:-1.5px;background:#fff;color:var(--navy);transition:transform .15s var(--ease-spring)}
+.iconbtn:active{transform:scale(.92)}
+.iconbtn.danger{color:var(--bad);outline-color:var(--bad)}
+.cfgnote{font:400 13px/18px var(--sf);color:var(--ink-3);margin-top:14px}
+.exportbox{display:flex;flex-direction:column;gap:10px}
+.exportbox .btnrow{display:flex;flex-direction:column;gap:10px}
+.exportbox .btn{width:100%}
+.exportbox .btn.restore{background:#fff;color:var(--bad);outline:1.5px solid var(--bad);outline-offset:-1.5px}
+.exportbox p{font:400 13px/18px var(--sf);color:var(--ink-3)}
+.btn.btn-danger-ghost{background:#fff;color:var(--bad);outline:1.5px solid var(--bad);outline-offset:-1.5px}
+.btn.primary{background:var(--navy);color:#fff}
+.btn.ghost{background:transparent;color:var(--navy)}
+.btn.pill-dark{margin:2px 0 6px;width:100%}
 
-.empty{padding:42px 16px;text-align:center;color:var(--muted)}
-.empty svg{width:40px;height:40px;margin-bottom:12px;opacity:.5}
-.empty p{margin:0 auto;max-width:36ch;font-size:14.5px}
-
-/* control segmentat (com les subpestanyes de l'app d'assistència) */
-.segctl{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px;margin-bottom:12px;gap:2px}
-.segctl button{border:0;background:transparent;min-height:40px;padding:0 6px;border-radius:999px;font-weight:600;font-size:13px;line-height:1.1;color:var(--ink2);transition:background .2s var(--ease-out),color .2s}
-@media (max-width:360px){ .segctl button{font-size:12px;padding:0 4px} .top-in{gap:9px} }
-.segctl button.on{background:var(--ink);color:var(--bg)}
-
-/* resum */
-.statgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.statcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:14px 16px}
-.statcard.warn{background:radial-gradient(130% 130% at 25% 15%, color-mix(in srgb, var(--gold) 22%, var(--surface)) 0%, var(--surface) 78%)}
-.statcard .num{font-size:32px;font-weight:700;letter-spacing:-.02em;line-height:1.05;font-variant-numeric:tabular-nums}
-.statcard .lbl{font-size:12.5px;color:var(--muted);margin-top:4px}
-.statcard.wide{grid-column:1/-1}
-.barrow{display:flex;align-items:center;gap:10px;font-size:13.5px;padding:7px 0}
-.barrow .lbl2{width:130px;flex:none;color:var(--ink2);font-weight:600}
-.barrow .bar{flex:1;height:8px;border-radius:999px;background:var(--surface2);overflow:hidden}
-.barrow .bar span{display:block;height:100%;border-radius:999px}
-.barrow .n{width:38px;text-align:right;font-variant-numeric:tabular-nums;flex:none}
-
-/* projectes */
-.projcard{background:var(--surface);border-radius:var(--radius-l);box-shadow:var(--shadow-sm);border:1px solid var(--line);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;margin-bottom:10px}
-.projcard .pn{font-weight:600;font-size:15px}
-.projcard .pm{font-size:12.5px;color:var(--muted);margin-top:2px}
-.projcard .pc{font-size:12px;font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:3px 10px;flex:none}
-
-/* seccions de detall */
-.box{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:14px 16px;margin-bottom:12px}
-.box h4{margin:0 0 12px;font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:700;display:flex;align-items:center;gap:8px}
-.box h4 .sp{flex:1}
-.box h4 .cnt{font-weight:600;color:var(--ink2);text-transform:none;letter-spacing:0;font-size:12.5px}
-.kvgrid{display:grid;grid-template-columns:112px 1fr;gap:10px 12px;font-size:14.5px;margin:0}
-.kvgrid dt{color:var(--muted);font-size:13.5px}
-.kvgrid dd{margin:0;overflow-wrap:anywhere;font-weight:500}
-.pathbox{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;color:var(--ink2);background:var(--surface2);border-radius:8px;padding:6px 9px;overflow-wrap:anywhere;margin-top:8px}
-.statusbig{display:flex;gap:8px;flex-wrap:wrap}
-.tagpill{display:inline-flex;align-items:center;gap:6px;min-height:24px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:700;background:var(--gray-bg);color:var(--ink2);white-space:nowrap}
-.tagpill.ok{background:var(--ok-bg);color:var(--ok-fg)}
-.tagpill.bad{background:var(--bad-bg);color:var(--bad-fg)}
-.aifoot{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px 10px;margin:4px 0 8px;font-size:12px;color:var(--muted)}
-.revactions{display:flex;justify-content:flex-end;margin-top:8px}
-.btn.delobra{display:flex;width:100%;margin-top:22px;flex:none}
-.revactions .btn{flex:none}
-.revbox{margin-bottom:14px}
-.revbox .revhint{margin:0 0 8px;font-size:12.5px;opacity:.85}
-.revitem{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-top:1px solid color-mix(in srgb, currentColor 15%, transparent);cursor:pointer}
-.revitem input{flex:none;width:20px;height:20px;margin:1px 0 0;accent-color:var(--ok)}
-.tagpill.ia{background:var(--info-bg);color:var(--info)}
-.tagpill.warn{background:var(--gold-bg);color:var(--gold-ink)}
-.tagpill .tdot{width:6px;height:6px;border-radius:50%;background:currentColor}
-.famgrid{display:flex;flex-direction:column;gap:10px}
-.famgrid .famrow{display:grid;grid-template-columns:78px 1fr;gap:8px;align-items:start}
-.famgrid .famrow>span{font-size:12px;font-weight:600;color:var(--muted);padding-top:4px}
-.famgrid .famrow .chipsw{display:flex;flex-wrap:wrap;gap:6px}
-.icchip{font-size:12px;font-weight:600;border-radius:999px;padding:3px 10px;background:var(--ink);color:var(--bg)}
-.icchip.off{background:transparent;color:var(--muted);border:1px dashed var(--line-strong)}
-.icchip.sp{background:var(--accent-soft);color:var(--accent)}
-.copyrow{display:flex;justify-content:space-between;align-items:center;min-height:48px;padding:12px 14px;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm)}
-.copyrow+.copyrow{margin-top:8px}
-.k4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
-.k4row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:16px}
-.k4row .k4item{text-align:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:12px 4px}
-.k4row .k4item .num{font-size:21px;font-weight:700;letter-spacing:-.02em;line-height:1.05;font-variant-numeric:tabular-nums}
-.k4row .k4item .lbl{font-size:11px;color:var(--muted);margin-top:4px}
-.projrow2{display:flex;gap:12px;align-items:center;min-height:64px;padding:12px 14px 12px 16px;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-l);box-shadow:var(--shadow-sm);transition:transform .18s var(--ease-spring),box-shadow .2s,background .15s}
-@media (hover:hover){ .projrow2:hover{box-shadow:var(--shadow)} }
-.projrow2:active{transform:scale(.985);background:var(--surface2)}
-.projrow2 .main{flex:1;min-width:0}
-.projrow2 .title{font-weight:600;letter-spacing:-.01em;line-height:1.25}
-.projrow2 .authors{font-size:12.5px;color:var(--muted);margin:3px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.projrow2 .chevron{color:var(--line-strong);flex:none}
-.yrbox{width:44px;height:44px;border-radius:12px;background:var(--surface2);display:grid;place-items:center;font-weight:700;font-size:12.5px;flex:none;color:var(--ink2)}
-
-/* xips (filtres) */
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{border:1px solid var(--line-strong);background:var(--surface);border-radius:var(--radius-pill);min-height:44px;padding:0 16px;font-size:13.5px;font-weight:600;color:var(--ink2);display:inline-flex;align-items:center;gap:6px;transition:transform .15s var(--ease-spring),background .15s,color .15s,border-color .15s}
-.chip:active{transform:scale(.95)}
-.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-
-/* full inferior (sheet) */
-.sheet-bg{position:fixed;inset:0;background:var(--overlay);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);z-index:40;display:flex;align-items:flex-end;justify-content:center;animation:sheetFade .18s ease}
-.sheet{background:var(--bg);width:100%;max-width:600px;border-radius:28px 28px 0 0;max-height:92vh;max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain;box-shadow:var(--shadow-lg);padding-bottom:env(safe-area-inset-bottom,0px);animation:sheetUp .32s var(--ease-spring)}
-@media (min-width:700px){ .sheet-bg{align-items:center} .sheet{border-radius:24px;max-height:86vh;max-height:86dvh} }
-.sheet-bg{height:100%;height:100dvh}
-.sheet .btnbar{position:sticky;bottom:0;z-index:3;margin:0 -16px;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(to bottom, color-mix(in srgb, var(--bg) 0%, transparent), var(--bg) 14px)}
-.sheet > .btnbar{margin:0}
-@keyframes sheetFade{from{opacity:0}to{opacity:1}}
-@keyframes sheetUp{from{transform:translateY(28px);opacity:.6}to{transform:none;opacity:1}}
-.sheet-head{position:sticky;top:0;background:color-mix(in srgb, var(--bg) 92%, transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);display:flex;align-items:flex-start;gap:10px;padding:16px 16px 12px;border-bottom:1px solid var(--line);z-index:2}
-.sheet-head .htxt{flex:1;min-width:0}
-.sheet-head h2{font-size:20px;font-weight:700;margin:0;letter-spacing:-.01em;line-height:1.2;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.sheet-head .hsub{color:var(--muted);font-size:13px;margin-top:2px}
-.sheet-head .authorlines{font-size:13.5px;color:var(--ink2);margin-top:6px;display:flex;flex-direction:column;gap:1px}
-.sheet-close{border:1px solid var(--line);background:var(--surface);width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--ink2);flex:none;transition:transform .15s var(--ease-spring)}
-.sheet-close:active{transform:scale(.9)}
-.sheet-body{padding:14px 16px 24px}
-
-h3.sec{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin:24px 2px 10px;font-weight:700}
-h3.sec:first-child{margin-top:12px}
-.kv{display:flex;flex-direction:column}
-.kv .item{display:flex;justify-content:space-between;gap:14px;font-size:14.5px;padding:10px 0;border-bottom:1px solid var(--line)}
-.kv .item:last-child{border-bottom:0}
-.kv .k{color:var(--muted);flex:none}
-.kv .v{text-align:right;font-weight:600}
-.taglist{display:flex;flex-wrap:wrap;gap:6px}
-.tag{background:var(--surface2);border-radius:999px;padding:3px 10px;font-size:12.5px;color:var(--ink2);font-weight:600}
-.tag.missing{background:var(--bad-bg);color:var(--bad-fg)}
-.note{background:var(--gold-bg);color:var(--gold-ink);border-radius:12px;padding:10px 12px;font-size:13.5px;line-height:1.45}
-.note.warn{background:var(--gold-bg);color:var(--gold-ink)}
-.note.bad{background:var(--bad-bg);color:var(--bad-fg)}
-.note.info{background:var(--info-bg);color:var(--info)}
-.note+.note{margin-top:8px}
-.statgrid2+.note{margin-top:12px}
-.note b{display:block;margin-bottom:4px}
-.note ul{margin:0;padding-left:18px}
-.note.plain{background:var(--surface2);color:var(--ink2)}
-.obsnote{background:var(--surface2);border-radius:12px;padding:10px 12px;font-size:13.5px;color:var(--ink2);line-height:1.45;white-space:pre-wrap}
-.projrow{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}
-.projrow:last-child{border-bottom:0}
-.projrow .pname{font-weight:600}
-.projrow .pmeta{color:var(--muted);font-size:12.5px;margin-top:1px}
-.revbadge{display:inline-flex;align-items:center;gap:6px;min-height:28px;font-size:13px;font-weight:700;padding:0 12px;border-radius:999px}
-.revbadge.ok{background:var(--ok-bg);color:var(--ok-fg)}
-.revbadge.warn{background:var(--gold-bg);color:var(--gold-ink)}
-
-/* barra inferior */
-.nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--surface);border-top:1px solid var(--line);padding-bottom:calc(env(safe-area-inset-bottom,0px) + 10px)}
-.nav-in{max-width:680px;margin:0 auto;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;height:var(--nav-h);gap:2px}
-.nav button{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:600;color:var(--muted);transition:color .2s}
-.nav button svg{width:22px;height:22px}
-.nav button .navicon{display:grid;place-items:center;width:52px;height:28px;border-radius:999px;transition:background .2s var(--ease-out),transform .3s var(--ease-spring)}
-.nav button.on{color:var(--accent)}
-.nav button.on .navicon{background:var(--accent-soft);transform:translateY(-1px)}
-
-/* formularis */
-.screen-title{padding:4px 2px 14px}
-.screen-title h2{font-size:25px;font-weight:700;margin:0 0 4px;line-height:1.12;letter-spacing:-.02em}
-.screen-title p{margin:0;color:var(--muted);font-size:14px}
-.block{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-l);box-shadow:var(--shadow-sm);padding:16px;margin-bottom:14px}
-.sheet-body .block[style*="padding:0"]{border:0;background:transparent}
-.block h3{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin:0 0 14px;font-weight:700}
-.field{margin-bottom:16px}
-.field:last-child{margin-bottom:0}
-.field label{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 6px;font-size:12.5px;font-weight:600;color:var(--ink2);margin-bottom:6px}
-.field label .req{color:var(--bad);font-weight:700}
-.field label .opt{color:var(--muted);font-weight:400;font-size:12px}
-.input,.textarea,.selectlike{width:100%;min-height:44px;padding:0 12px;border:1px solid var(--line-strong);border-radius:var(--radius-s);background:var(--surface);outline:none;font-size:16px;transition:border-color .15s,box-shadow .15s}
-.input:focus,.textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
-.textarea{padding:10px 12px;min-height:100px;resize:vertical;line-height:1.4;font-family:inherit}
-.errtext{color:var(--bad-fg);font-size:12.5px;margin-top:5px;display:none}
-.field.err .input,.field.err .selectlike{border-color:var(--bad)}
-.field.err .errtext{display:block}
-.block.err{border-color:var(--bad)}
-.block.err .errtext{display:block}
-.checkline{display:flex;align-items:center;gap:12px;min-height:44px;cursor:pointer}
-.checkline input[type=checkbox]{width:20px;height:20px;accent-color:var(--accent)}
-.checkline span{font-size:15px;font-weight:500}
-.hint{font-size:12px;color:var(--muted);margin-top:6px}
-
-/* combobox */
-.combo{position:relative}
-.combo-input{width:100%;min-height:44px;padding:0 36px 0 12px;border:1px solid var(--line-strong);border-radius:var(--radius-s);background:var(--surface);outline:none;font-size:16px;transition:border-color .15s,box-shadow .15s}
-.combo-input:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
-.combo-arrow{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
-.combo-panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-lg);max-height:260px;overflow-y:auto;z-index:200}
-.combo-opt{min-height:44px;padding:10px 14px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
-.combo-opt:last-child{border-bottom:0}
-.combo-opt:hover,.combo-opt.hi{background:var(--surface2)}
-.combo-opt.create{color:var(--accent);font-weight:600}
-.combo-empty{padding:14px;color:var(--muted);font-size:13.5px;text-align:center}
-.selectedchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.selchip{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:var(--accent-ink);border-radius:999px;padding:4px 5px 4px 12px;font-size:13px;font-weight:600}
-.selchip button{border:0;background:rgba(255,255,255,.18);width:28px;height:28px;margin:-4px -2px -4px 0;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:11px}
-
-.btnbar{display:flex;gap:8px;padding:14px 0 6px}
-.btn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:0 18px;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);border-radius:var(--radius-pill);font-weight:600;font-size:15px;letter-spacing:-.006em;transition:transform .2s var(--ease-spring),opacity .12s,box-shadow .2s}
-.btn:active{transform:scale(.955);opacity:.9}
-.btn.primary{background:linear-gradient(180deg, hsl(var(--accent-h) var(--accent-s) calc(var(--accent-l) + 4%)), var(--accent));border-color:var(--accent);color:var(--accent-ink);box-shadow:var(--shadow-sm), 0 8px 20px hsl(var(--accent-h) var(--accent-s) var(--accent-l) / .32)}
-.btn.pill-dark{flex:none;display:inline-flex;background:var(--ink);border-color:var(--ink);color:var(--bg);margin:2px 0 6px}
-.btn.ghost{background:transparent;border-color:transparent;color:var(--accent)}
-
-/* configuració */
-.cfgsection{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-l);box-shadow:var(--shadow-sm);margin-bottom:10px;overflow:hidden}
-.cfghead{display:flex;align-items:center;justify-content:space-between;min-height:56px;padding:0 16px;cursor:pointer}
-.cfghead h3{margin:0;font-size:15.5px;font-weight:600}
-.cfghead .count{font-size:12px;font-weight:600;color:var(--ink2);background:var(--surface2);border-radius:999px;padding:2px 10px;font-variant-numeric:tabular-nums}
-.cfgbody{border-top:1px solid var(--line);padding:6px 16px 14px}
-.cfgrow{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:14.5px;gap:10px}
-.cfgrow:last-of-type{border-bottom:0}
-.cfgrow .nm{font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cfgrow .meta{color:var(--muted);font-size:12.5px}
-.cfgacts{display:flex;gap:6px;flex:none}
-.iconbtn{border:1px solid var(--line);background:var(--surface);width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:var(--ink2);transition:transform .15s var(--ease-spring),background .15s}
-.iconbtn:active{transform:scale(.9);background:var(--surface2)}
-.iconbtn.danger{color:var(--bad)}
-.iconbtn.danger:active{background:var(--bad-bg)}
-.addrow{display:flex;gap:8px;margin-top:10px}
-.addrow input{flex:1}
-.addbtn{background:transparent;border:1px dashed var(--line-strong);border-radius:var(--radius);min-height:48px;padding:0 12px;width:100%;text-align:center;font-weight:600;color:var(--accent);font-size:14.5px;margin-top:8px;transition:background .15s}
-.addbtn:active{background:var(--surface2)}
-.cfgempty{color:var(--muted);font-size:13.5px;padding:10px 0}
-.cfgnote{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.45}
-.exportbox{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:10px}
-.exportbox .btnrow{display:flex;gap:8px;flex-wrap:wrap}
-.exportbox .btnrow .btn{white-space:nowrap}
-.exportbox .btn{flex:1 1 200px}
-.exportbox p{font-size:12.5px;color:var(--muted);line-height:1.45;margin:0}
-.exportbox .restore{flex-basis:100%;color:var(--bad-fg)}
-.btn.btn-danger-ghost{background:var(--bad-bg);border-color:var(--bad-bg);color:var(--bad-fg)}
-.restsum{list-style:none;margin:4px 0 12px;padding:0;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
-.restsum li{display:flex;justify-content:space-between;gap:12px;padding:11px 14px;font-size:14.5px;border-top:1px solid var(--line)}
-.restsum li:first-child{border-top:0}
-.restsum b{font-variant-numeric:tabular-nums}
+/* ---------- inici de sessió ---------- */
+body.auth > .top, body.auth > main, body.auth > .fbar, body.auth #azindex{display:none!important}
+.login{min-height:100vh;min-height:100svh;background:var(--bg);display:flex;flex-direction:column}
+.lhead{background:var(--navy);color:#fff;text-align:center;border-radius:0 0 28px 28px;padding:calc(var(--safe-t) + 56px) 20px 34px}
+.logo-big{width:84px;height:84px;border-radius:22px;background:#fff;display:grid;place-items:center;margin:0 auto 20px}
+.logo-big img{width:64px;height:64px;object-fit:contain}
+.login-h1{font:800 28px/32px var(--sf);letter-spacing:-.8px;color:#fff}
+.lsub{font:600 15px/20px var(--sf);color:#C9D5E4;margin-top:4px}
+.lbody{width:min(100%,420px);margin:0 auto;padding:30px 20px 40px;display:flex;flex-direction:column;gap:6px}
+.lbody form{display:grid;gap:12px}
+.lbody .lmuted{text-align:center;color:var(--ink-3)}
+.login-foot{text-align:center;font:400 15px/20px var(--sf);color:var(--ink-2);margin-top:14px}
+.lfield{display:grid;gap:8px;min-width:0}
+.lfield > span{font:700 13px/18px var(--sf)}
+.pass-wrap{position:relative}
+.pass-wrap .inp{padding-right:48px}
+.pass-toggle{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:40px;height:40px;border:0;background:transparent;border-radius:50%;display:grid;place-items:center;color:var(--ink-2)}
+.pass-toggle svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.pass-toggle .slash{opacity:0} .pass-toggle[aria-pressed="true"] .slash{opacity:1}
+.toggle-row{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px;font:400 15px/20px var(--sf)}
+.switch{position:relative;width:50px;height:30px;flex:none}
+.switch input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.switch span{position:absolute;inset:0;border-radius:15px;background:var(--line);transition:background .15s;pointer-events:none}
+.switch span::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:12px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .15s}
+.switch input:checked + span{background:var(--navy)}
+.switch input:checked + span::after{transform:translateX(20px)}
+.lbody .btn{width:100%;margin-top:8px}
 
 @media (prefers-reduced-motion:reduce){ *,*::before,*::after{animation:none!important;transition:none!important} }
 </style>
 </head>
-<body>
+<body data-screen="consultar">
 
-<div class="top">
-  <div class="top-in">
-    <div class="logo"><img src="logo.png" alt="Arxiu"></div>
-    <h1 id="topTitle">Banda de Terrassa<small></small></h1>
-    <div class="sp"></div>
-    <button class="icon-btn" id="helpBtn" aria-label="Com funciona l'arxiu"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M9.7 9.4a2.4 2.4 0 1 1 3.3 2.2c-.7.3-1 .8-1 1.6v.3M12 16.6v.2"/></svg></button>
-    <button class="icon-btn" id="logoutBtn" aria-label="Tanca la sessió"><svg viewBox="0 0 24 24"><path d="M15 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-2"/><path d="M9 12h11m0 0-3-3m3 3-3 3"/></svg></button>
+<header class="top" id="top">
+  <div class="top-brand">
+    <div class="brand"><span class="lg2"><img src="logo.png" alt="Arxiu"></span><div><b id="topTitle">Banda de Terrassa</b><small id="topSub">Arxiu</small></div></div>
+    <div class="top-act">
+      <button class="qm" id="logoutBtn" aria-label="Tanca la sessió"><svg class="ic" viewBox="0 0 24 24"><path d="M15 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-2"/><path d="M9 12h11m0 0-3-3m3 3-3 3"/></svg></button>
+      <button class="qm" id="helpBtn" aria-label="Com funciona l'arxiu">?</button>
+    </div>
   </div>
-</div>
-
-<main id="mainConsultar">
-  <div class="segctl" id="subviewCtl">
-    <button data-sub="biblioteca" class="on">Biblioteca</button>
+  <div class="pt" id="subviewCtl">
+    <button data-sub="biblioteca" class="on">Obres</button>
     <button data-sub="projectes">Projectes</button>
     <button data-sub="pendents">Per revisar</button>
   </div>
+</header>
 
+<main id="mainConsultar">
   <div id="subBiblioteca">
     <div class="search">
-      <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      <input id="searchInput" type="text" placeholder="Cerca per títol, autor, projecte, instrument…" autocomplete="off">
+      <input id="searchInput" type="text" placeholder="Cerca per títol, autor o projecte" autocomplete="off" enterkeyhint="search">
+      <button id="openFilters" aria-label="Filtres">Filtres<span class="fbadge hidden" id="filterCountBadge">0</span></button>
     </div>
-    <div class="countline">
-      <span id="resultCount"></span>
-      <span class="sp"></span>
+    <div class="cnt" id="resultCount"></div>
+    <div class="lhrow" id="lhrow">
+      <div class="af" id="activeFilters"></div>
       <div class="viewtoggle" role="group" aria-label="Vista">
-        <button data-view="ampliada" aria-label="Vista ampliada"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="7" rx="2" stroke="currentColor" stroke-width="2"/><rect x="4" y="13" width="16" height="7" rx="2" stroke="currentColor" stroke-width="2"/></svg></button>
-        <button data-view="compacta" aria-label="Vista compacta"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+        <button data-view="ampliada" aria-label="Vista ampliada"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="7" rx="2"/><rect x="4" y="13" width="16" height="7" rx="2"/></svg></button>
+        <button data-view="compacta" aria-label="Vista compacta"><svg class="ic" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
       </div>
-      <button id="openFilters">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M7 12h10M10 18h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        Filtres<span class="fbadge hidden" id="filterCountBadge">0</span>
-      </button>
     </div>
     <div class="list" id="list"></div>
-    <div class="empty hidden" id="emptyState">
-      <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      <p>Cap obra coincideix amb la cerca o els filtres.</p>
-    </div>
+    <div class="empty hidden" id="emptyState"><p>Cap obra coincideix amb la cerca o els filtres.</p></div>
   </div>
-
   <div id="subProjectes" class="hidden"></div>
   <div id="subPendents" class="hidden"></div>
 </main>
 
-<main class="hidden" id="mainRegistrar">
-  <div class="screen-title">
-    <h2>Registrar obra</h2>
-    <p>Afegeix una partitura nova al catàleg de l'arxiu.</p>
-  </div>
-  <div id="registrarForm"></div>
-</main>
+<main class="hidden" id="mainRegistrar"><div id="registrarForm"></div></main>
 
-<main class="hidden" id="mainConfig">
-  <div class="screen-title">
-    <h2>Configuració</h2>
-    <p>Gestiona les llistes que fan servir tots els formularis.</p>
-  </div>
-  <div id="configBody"></div>
-</main>
+<main class="hidden" id="mainConfig"><div id="configBody"></div></main>
 
-<div class="nav">
-  <div class="nav-in">
-    <button data-screen="consultar" id="navConsultar">
-      <span class="navicon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 016.5 17H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></span>
-      Arxiu
-    </button>
-    <button data-screen="registrar" id="navRegistrar">
-      <span class="navicon"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
-      Registrar
-    </button>
-    <button data-screen="config" id="navConfig">
-      <span class="navicon"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09A1.65 1.65 0 0015 4.6a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
-      Configuració
-    </button>
-  </div>
-</div>
+<nav class="fbar" aria-label="Seccions">
+  <button data-screen="consultar" id="navConsultar" aria-label="Arxiu"><svg class="ic" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></button>
+  <button data-screen="registrar" id="navRegistrar" aria-label="Registrar"><svg class="ic" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button data-screen="config" id="navConfig" aria-label="Configuració"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+</nav>
 
 <div class="savepill" id="savePill">Desat</div>
 
@@ -572,16 +450,16 @@ function partsSeverity(p){
    Per canviar un nom o un color, només cal tocar aquestes taules. */
 const ESTATS = {
   'complet':           {label:'Completa',                cls:'ok'},
-  'falta-general':     {label:'Falta general',           cls:'bad'},
+  'falta-general':     {label:'Falta la general',        cls:'bad'},
   'falten':            {label:'Falten parts',            cls:'bad'},
-  'falta-tot':         {label:'Falta general i parts',   cls:'bad'},
-  'verificar':         {label:'Sense verificar',         cls:'warn'},
+  'falta-tot':         {label:'Falta la general i parts',cls:'bad'},
+  'verificar':         {label:'Per verificar',           cls:'warn'},
   'verificar-general': {label:'General sense verificar', cls:'warn'},
   'verificar-parts':   {label:'Parts sense verificar',   cls:'warn'},
 };
 const FACETA = {  // com es mostra cada faceta a la fitxa i als filtres
-  general: {ok:{label:'Sí', cls:'ok'},        falta:{label:'Falta', cls:'bad'},  '?':{label:'Sense verificar', cls:'warn'}},
-  parts:   {ok:{label:'Completes', cls:'ok'}, falta:{label:'Falten', cls:'bad'}, '?':{label:'Sense verificar', cls:'warn'}},
+  general: {ok:{label:'Sí', cls:'ok'},        falta:{label:'Falta', cls:'bad'},  '?':{label:'Per verificar', cls:'warn'}},
+  parts:   {ok:{label:'Completes', cls:'ok'}, falta:{label:'Falten', cls:'bad'}, '?':{label:'Per verificar', cls:'warn'}},
 };
 function facets(p){
   const sev = partsSeverity(p);
@@ -673,60 +551,55 @@ function placesOf(p){
 }
 const PLACE_LABEL = {box:'Al Box', fisic:'En físic'};
 function placesText(arr){ return arr.map((x,i)=> i ? PLACE_LABEL[x].toLowerCase() : PLACE_LABEL[x]).join(' i '); }
-/* línia d'ubicació de la targeta: només quan alguna cosa és només en físic
-   (si és al Box, primer es busca allà) */
+
+/* ---------- icones i targeta d'obra (marc corbat de color) ---------- */
+const I = {
+  back:'<svg class="ic" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>',
+  edit:'<svg class="ic" viewBox="0 0 24 24"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>',
+  trash:'<svg class="ic" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>',
+  close:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+};
+const ICO_CHEVRON = '';
+function unlockBody(){ if(!document.querySelector('.page, .sheet-bg')) document.body.classList.remove('locked'); }
+/* línia d'ubicació de la targeta: només quan alguna cosa és només en físic (si és al Box, primer es busca allà) */
 function locLineHtml(p){
   if(!isFisic(p)) return '';
-  const what = !isDigital(p) ? ['Només en físic']
+  const what = !isDigital(p) ? ['En físic']
     : [p.generalNomesFisic && facets(p).G!=='falta' && 'General només en físic', p.partsNomesFisic && facets(p).P!=='falta' && 'Parts només en físic'].filter(Boolean);
   if(!what.length) return '';
   const bits = [...what, (p.ubicacioFisica||[]).join(', ') || 'lloc sense indicar'];
-  return `<p class="locline">${esc(bits.join(' · '))}</p>`;
+  return `<div class="loc">${esc(bits.join(' · '))}</div>`;
 }
-
-/* etiquetes d'una obra: capa 1 + capa 2 */
-function tagsHtml(p, st){
-  st = st || obraState(p);
-  const t = [`<span class="statusline ${st.cls}"><span class="dot"></span>${esc(st.label)}${st.detail?' · '+esc(st.detail):''}</span>`];
-  if(st.extra) t.push(`<span class="statusline warn"><span class="dot"></span>${esc(st.extra)}</span>`);
-  if(needsReview(p)) t.push(`<span class="minitag warn">Cal revisar</span>`);
-  return `<div class="tagrow">${t.join('')}</div>`;
+/* text de l'estat: «Falten parts» (si falten totes) o «Falten parts · Clarinet, Trompeta» (si en falten de concretes) */
+function stFull(st){
+  const det = st.detail && st.detail!=='totes' ? ' · '+st.detail : '';
+  return st.label + det + (st.extra ? ' · '+st.extra : '');
 }
-/* on es troba (fitxa): només on hi és, sempre amb el mateix estil */
-function placePillsHtml(p){
-  const d = isDigital(p), f = isFisic(p);
-  const out = [];
+/* línies d'ubicació (fitxa) */
+function placeLines(p){
+  const d = isDigital(p), f = isFisic(p), out = [];
   if(d) out.push('Al Box');
-  if(f) out.push(`En físic · ${(p.ubicacioFisica||[]).join(', ') || 'lloc sense indicar'}`);
+  if(f) out.push('En físic · '+((p.ubicacioFisica||[]).join(', ') || 'lloc sense indicar'));
   if(d && f){ if(p.generalNomesFisic && facets(p).G!=='falta') out.push('General només en físic'); if(p.partsNomesFisic && facets(p).P!=='falta') out.push('Parts només en físic'); }
-  return out.length ? `<div class="tagrow">${out.map(x=>`<span class="placepill">${esc(x)}</span>`).join('')}</div>` : '<span class="hint" style="margin:0">No consta enlloc</span>';
+  return out.length ? out.map(x=>`<div>${esc(x)}</div>`).join('') : '<span class="sm">No consta enlloc</span>';
 }
-function notesHtml(n){
-  const block = (cls, title, items)=> items.length ? `<div class="note ${cls}"><b>${title}</b><ul>${items.map(r=>`<li>${esc(r)}</li>`).join('')}</ul></div>` : '';
-  return block('warn', 'Cal revisar', n.revisar) + block('plain', 'Sobre la partitura', n.partitura) + block('info', 'A tenir en compte', n.compte);
-}
-/* targeta d'obra (biblioteca i feina pendent) */
-const ICO_CHEVRON = '<svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+/* targeta d'obra (arxiu i feina pendent): el color de l'estat és el marc de l'esquerra */
 function obraCardHtml(p, opts={}){
   const st = obraState(p);
   const authors = [p.composer, p.arranger?('Arr. '+p.arranger):''].filter(Boolean).join(' · ');
-  return `<div class="card" data-id="${p.id}" role="button" tabindex="0">
-    <div class="main">
-      <div class="titlerow"><p class="title">${esc(p.title)}</p></div>
-      ${authors?`<p class="authors">${esc(authors)}</p>`:''}
-      ${tagsHtml(p, st)}
-      ${locLineHtml(p)}
-      ${opts.reasons ? `<ul class="reasons">${obraNotes(p).revisar.map(r=>`<li>${esc(r)}</li>`).join('')}</ul>` : ''}
-    </div>
-    ${opts.accept ? `<div class="acceptbtns">
-        <button class="btn primary btn-sm" data-accept="${p.id}">Accepta</button>
-        <button class="btn btn-sm btn-danger-ghost" data-reject="${p.id}">Elimina</button>
-      </div>` : ICO_CHEVRON}
+  const idAttr = opts.preview ? '' : `data-id="${esc(p.id)}" role="button" tabindex="0"`;
+  return `<div class="fr ${st.cls}" ${idAttr}>
+    <div class="tt">${esc(p.title)}</div>
+    ${authors?`<div class="who">${esc(authors)}</div>`:''}
+    <div class="st ${st.cls}">${esc(stFull(st))}${needsReview(p)?'<span class="flag">Cal revisar</span>':''}</div>
+    ${locLineHtml(p)}
+    ${opts.reasons ? `<ul class="reasons">${obraNotes(p).revisar.map(r=>`<li>${esc(r)}</li>`).join('')}</ul>` : ''}
+    ${opts.accept ? `<div class="accbtns"><button class="btn s" data-accept="${esc(p.id)}">Accepta</button><button class="btn s bd" data-reject="${esc(p.id)}">Elimina</button></div>` : ''}
   </div>`;
 }
 function bindCards(root, open){
   open = open || openObraSmart;
-  root.querySelectorAll('.card[data-id], .crow[data-id]').forEach(c=>{
+  root.querySelectorAll('.fr[data-id]').forEach(c=>{
     c.addEventListener('click', ()=> open(c.dataset.id));
     c.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); open(c.dataset.id); } });
   });
@@ -951,7 +824,7 @@ async function startSession(ses){
 }
 function sessionExpired(){
   saveSession(null); STATE.session = null; STATE.user = null; SNAP.ready = false;
-  document.querySelectorAll('.sheet-bg').forEach(x=> x.remove()); document.body.classList.remove('locked');
+  document.querySelectorAll('.sheet-bg, .page').forEach(x=> x.remove()); document.body.classList.remove('locked');
   showLogin('La sessió ha caducat. Torna a entrar.');
 }
 function authScreen(){
@@ -960,10 +833,9 @@ function authScreen(){
   if(!el){ el = document.createElement('div'); el.id = 'loginScreen'; document.body.appendChild(el); }
   return el;
 }
-const AUTH_HEAD = `<div class="logo-big"><img src="logo.png" alt=""></div>
-    <div><h1 class="login-h1">Arxiu</h1><p class="muted" style="margin:4px 0 0">Banda de Terrassa</p></div>`;
+const AUTH_HEAD = `<div class="lhead"><div class="logo-big"><img src="logo.png" alt=""></div><h1 class="login-h1">Banda de Terrassa</h1><p class="lsub">Arxiu de partitures</p></div>`;
 function showLoading(){
-  authScreen().innerHTML = `<div class="login">${AUTH_HEAD}<p class="muted">Carregant l'arxiu…</p></div>`;
+  authScreen().innerHTML = `<div class="login">${AUTH_HEAD}<div class="lbody"><p class="lmuted">Carregant l'arxiu…</p></div></div>`;
 }
 const ICO_EYE = '<svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/><path class="slash" d="M4 4l16 16"/></svg>';
 function passFieldHtml(id, label, ac){
@@ -984,7 +856,7 @@ async function entrar(body){
 }
 function showLogin(err){
   const el = authScreen();
-  el.innerHTML = `<div class="login">${AUTH_HEAD}
+  el.innerHTML = `<div class="login">${AUTH_HEAD}<div class="lbody">
     <form id="loginf" autocomplete="on">
       ${err ? `<div class="err">${esc(err)}</div>` : ''}
       <label class="lfield"><span>Usuari</span><input class="inp" id="lg-user" placeholder="nom.cognom" autocapitalize="none" autocorrect="off" autocomplete="username"></label>
@@ -992,7 +864,7 @@ function showLogin(err){
       <label class="toggle-row"><span>Mantenir la sessió iniciada</span><span class="switch"><input type="checkbox" id="lg-keep" checked><span></span></span></label>
       <button class="btn primary" type="submit" style="width:100%">Entra</button>
     </form>
-    <p class="login-foot">Si no recordes les credencials,<br>parla amb la junta.</p></div>`;
+    <p class="login-foot">Si no recordes les credencials,<br>parla amb la junta.</p></div></div>`;
   bindEyes(el);
   el.querySelector('#loginf').addEventListener('submit', async e=>{
     e.preventDefault();
@@ -1011,7 +883,7 @@ function showLogin(err){
 /* primer accés: cal triar una contrasenya nova (val també per a l'app d'assistència) */
 function showFirstPassword(c, err){
   const el = authScreen();
-  el.innerHTML = `<div class="login">${AUTH_HEAD}
+  el.innerHTML = `<div class="login">${AUTH_HEAD}<div class="lbody">
     <form id="pwf" autocomplete="off">
       <div class="help-intro" style="margin:0">Hola${c.nom?', '+esc(c.nom.split(' ')[0]):''}! És el teu primer accés. Tria una contrasenya nova per continuar. També la faràs servir a l'app d'assistència.</div>
       ${err ? `<div class="err">${esc(err)}</div>` : ''}
@@ -1019,7 +891,7 @@ function showFirstPassword(c, err){
       ${passFieldHtml('pw-new2','Repeteix la contrasenya nova','new-password')}
       <button class="btn primary" type="submit" style="width:100%">Desa i entra</button>
       <button class="btn ghost" type="button" id="pw-back" style="width:100%">Torna enrere</button>
-    </form></div>`;
+    </form></div></div>`;
   bindEyes(el);
   el.querySelector('#pw-back').addEventListener('click', ()=> showLogin());
   el.querySelector('#pwf').addEventListener('submit', async e=>{
@@ -1041,25 +913,28 @@ document.getElementById('logoutBtn').addEventListener('click', ()=>{
   saveSession(null); STATE.session = null; STATE.user = null;
   clearTimeout(saveTimer);
   STATE.pieces = []; snapshot(); SNAP.ready = false;
-  document.querySelectorAll('.sheet-bg').forEach(x=> x.remove()); document.body.classList.remove('locked');
+  document.querySelectorAll('.sheet-bg, .page').forEach(x=> x.remove()); document.body.classList.remove('locked');
   showLogin();
 });
 
 function setScreen(s){
   STATE.screen = s;
+  document.body.dataset.screen = s;
   document.getElementById('mainConsultar').classList.toggle('hidden', s!=='consultar');
   document.getElementById('mainRegistrar').classList.toggle('hidden', s!=='registrar');
   document.getElementById('mainConfig').classList.toggle('hidden', s!=='config');
   document.getElementById('navConsultar').classList.toggle('on', s==='consultar');
   document.getElementById('navRegistrar').classList.toggle('on', s==='registrar');
   document.getElementById('navConfig').classList.toggle('on', s==='config');
-  document.getElementById('topTitle').innerHTML = `Banda de Terrassa<small>${userLine()}</small>`;
+  document.getElementById('topTitle').textContent = s==='config' ? 'Configuració' : 'Banda de Terrassa';
+  document.getElementById('topSub').textContent = s==='config' ? 'Banda de Terrassa · Arxiu' : 'Arxiu';
   window.scrollTo(0,0);
   if(s==='registrar') renderRegistrar();
   if(s==='config') renderConfig();
   renderAzIndex();
 }
-document.querySelectorAll('.nav button[data-screen]').forEach(b=> b.addEventListener('click', ()=> setScreen(b.dataset.screen)));
+document.querySelectorAll('.fbar button[data-screen]').forEach(b=> b.addEventListener('click', ()=> setScreen(b.dataset.screen)));
+
 
 /* ================= CONSULTAR: subvistes ================= */
 STATE.subview = 'biblioteca';
@@ -1093,40 +968,33 @@ function renderProjectesView(){
   prs.forEach(p=>{ const k = p.year || 'Sense any'; (byYear[k]=byYear[k]||[]).push(p); });
   const keys = Object.keys(byYear).sort((a,b)=> a==='Sense any'?1 : b==='Sense any'?-1 : b-a);
   root.innerHTML = `
-    <div class="search" style="margin-bottom:10px">
-      <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      <input class="pqInput" id="pqInput" type="text" placeholder="Cerca un projecte…" value="${esc(STATE.pq)}">
-    </div>
-    ${STATE.role==='gestio' ? `<button class="btn pill-dark" id="newProj">+ Nou projecte</button>` : ''}
-    ${keys.map(k=>`<h3 class="sec">${esc(String(k))}</h3><div class="list">${byYear[k].slice().sort((a,b)=>a.name.localeCompare(b.name,'ca')).map(pr=>{
+    <div class="search"><input id="pqInput" type="text" placeholder="Cerca un projecte…" value="${esc(STATE.pq)}" autocomplete="off"></div>
+    ${STATE.role==='gestio' ? `<button class="btn w" id="newProj" style="margin-top:12px">Nou projecte</button>` : ''}
+    ${keys.map(k=>`<h3 class="sec">${esc(String(k))}</h3>${byYear[k].slice().sort((a,b)=>a.name.localeCompare(b.name,'ca')).map(pr=>{
       const s = projStats(pr.id);
-      return `<button class="projrow2" data-pid="${pr.id}">
-        <div class="main">
-          <div class="title" style="font-size:15.5px">${esc(pr.name)}</div>
-          <p class="authors">${s.n} partitur${s.n===1?'a':'es'}</p>
-        </div>
-        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>`;
-    }).join('')}</div>`).join('') || '<div class="empty"><p>Cap projecte.</p></div>'}
+      return `<div class="fr nv" data-pid="${esc(pr.id)}" role="button" tabindex="0"><div class="tt">${esc(pr.name)}</div><div class="who">${s.n} partitur${s.n===1?'a':'es'}</div></div>`;
+    }).join('')}`).join('') || '<div class="empty"><p>Cap projecte.</p></div>'}
   `;
   const inp = document.getElementById('pqInput');
   inp.addEventListener('input', ()=>{ STATE.pq = inp.value; const pos = inp.selectionStart; renderProjectesView(); const n=document.getElementById('pqInput'); n.focus(); n.setSelectionRange(pos,pos); });
-  root.querySelectorAll('[data-pid]').forEach(b=> b.addEventListener('click', ()=> openProjecteSmart(b.dataset.pid)));
+  root.querySelectorAll('[data-pid]').forEach(b=>{
+    b.addEventListener('click', ()=> openProjecteSmart(b.dataset.pid));
+    b.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openProjecteSmart(b.dataset.pid); } });
+  });
   const newBtn = document.getElementById('newProj');
   if(newBtn) newBtn.addEventListener('click', ()=> editProjecte(null, ()=> renderProjectesView()));
 }
 
 function openProjecteSheet(pid){
   const canEdit = STATE.role==='gestio';
-  const bg = document.createElement('div'); bg.className='sheet-bg';
-  document.body.appendChild(bg); document.body.classList.add('locked');
+  const el = document.createElement('div'); el.className='page';
+  document.body.appendChild(el); document.body.classList.add('locked');
   let q = '', editing = false, toAdd = new Set(), toRm = new Set();
   const dirty = ()=> toAdd.size || toRm.size;
   function close(){
     if(editing && dirty() && !confirm('Hi ha canvis al repertori sense desar. Vols descartar-los?')) return;
-    STATE.sheetRefresh = null; document.body.removeChild(bg); document.body.classList.remove('locked'); refreshViews();
+    STATE.sheetRefresh = null; el.remove(); unlockBody(); refreshViews();
   }
-  bg.addEventListener('click', e=>{ if(e.target===bg) close(); });
   function save(){
     const pr = projById(pid);
     toAdd.forEach(id=>{ const p = STATE.pieces.find(x=>x.id===id); if(!p) return; p.aparicions = p.aparicions||[];
@@ -1136,52 +1004,47 @@ function openProjecteSheet(pid){
     toAdd = new Set(); toRm = new Set(); editing = false; q = ''; render();
   }
   function render(){
-    const pr = projById(pid); if(!pr){ close(); return; }
+    const pr = projById(pid); if(!pr){ STATE.sheetRefresh = null; el.remove(); unlockBody(); return; }
+    const sc = el.scrollTop;
     const obres = [...obresDe(pid).filter(p=> !toRm.has(p.id)), ...[...toAdd].map(id=> STATE.pieces.find(x=>x.id===id)).filter(Boolean)]
       .sort((a,b)=>a.title.localeCompare(b.title,'ca'));
     const nq = norm(q);
     const results = nq.length>=2 ? STATE.pieces.filter(p=> !obres.includes(p) && searchText(p).includes(nq)).sort((a,b)=>a.title.localeCompare(b.title,'ca')).slice(0,12) : [];
-    bg.innerHTML = `<div class="sheet">
-      <div class="sheet-head"><div class="htxt"><h2 style="display:block">${esc(pr.name)}</h2><div class="hsub">${pr.year||'Sense any'}${editing?' · Editant':''}</div></div>
-        <button class="sheet-close" id="pjClose" aria-label="Tanca"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
-      </div>
-      <div class="sheet-body">
-        ${!editing && pr.link?`<a class="btn primary" style="text-decoration:none;display:flex;margin-bottom:12px" href="${esc(pr.link)}" target="_blank" rel="noopener">Obre la carpeta a Box</a>`:''}
-        ${editing?`<button class="btn" id="pjData" style="width:100%;margin-bottom:12px">Edita el nom, l'any o l'enllaç</button>
-          <div class="search" style="margin-bottom:8px">
-            <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            <input id="pjAdd" type="text" placeholder="Afegeix una obra al repertori…" autocomplete="off" value="${esc(q)}">
-          </div>
-          ${nq.length>=2?`<div class="pickl">${results.map(p=>`<button class="pickrow" data-add="${p.id}"><span class="main"><span class="title">${esc(p.title)}</span><span class="authors">${esc([p.composer,p.arranger?('Arr. '+p.arranger):''].filter(Boolean).join(' · '))}</span></span><span class="pickplus">+</span></button>`).join('') || '<p class="hint" style="margin:4px 4px 8px">Cap obra coincideix, o ja és al repertori.</p>'}</div>`:''}`:''}
-        <h3 class="sec">Repertori <span class="seccnt">${obres.length}</span></h3>
-        <div class="list">${obres.map(o=>{ const st=obraState(o); return `<div class="projrow2">
-          <button class="rowmain" data-oid="${o.id}">
-            <span class="main"><span class="title" style="display:block;font-size:15px">${esc(o.title)}</span>
-            <span class="authors" style="display:block">${esc([o.composer,o.arranger?('Arr. '+o.arranger):''].filter(Boolean).join(' · '))}</span></span>
-            <span class="tagpill ${st.cls}"><span class="tdot"></span>${esc(st.label)}</span>
-          </button>
-          ${editing?`<button class="iconbtn danger" data-rm="${o.id}" aria-label="Treu del repertori"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 12h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>`:''}
-        </div>`; }).join('') || '<p class="hint" style="padding:8px 4px">Encara no hi ha cap obra al repertori d\'aquest projecte.</p>'}</div>
-        ${canEdit ? `<div class="btnbar">${editing
-          ? `<button class="btn" id="pjCancel">Cancel·la</button><button class="btn primary" id="pjSave">Desa</button>`
-          : `<button class="btn primary" id="pjEdit">Edita</button>`}</div>` : ''}
-      </div>
-    </div>`;
-    bg.querySelector('#pjClose').addEventListener('click', close);
-    const on = (sel, fn)=>{ const x = bg.querySelector(sel); if(x) x.addEventListener('click', fn); };
+    el.innerHTML = `<div class="pbody light">
+      <div class="ptop light">${editing ? '<button class="pill" id="pjCancel">Cancel·la</button>' : `<button class="ib" id="pjClose" aria-label="Enrere">${I.back}</button>`}</div>
+      <div style="display:flex;align-items:center;gap:12px"><h1 class="h1" style="flex:1;min-width:0;overflow-wrap:anywhere">${esc(pr.name)}</h1>${editing?`<button class="ib" id="pjData" aria-label="Edita el nom, l'any o l'enllaç">${I.edit}</button>`:''}</div>
+      <div class="sub">${pr.year||'Sense any'}${editing?' · Estàs editant el repertori':''}</div>
+      ${!editing && pr.link?`<a class="btn s" style="margin-top:16px" href="${esc(pr.link)}" target="_blank" rel="noopener">Obre la carpeta a Box</a>`:''}
+      ${editing?`<div class="search" style="margin-top:16px"><input id="pjAdd" type="text" placeholder="Afegeix una obra al repertori" autocomplete="off" value="${esc(q)}"></div>
+        ${nq.length>=2?`<div class="pickl">${results.map(p=>`<button class="pickrow" data-add="${esc(p.id)}"><span class="main"><span class="title">${esc(p.title)}</span><span class="authors">${esc([p.composer,p.arranger?('Arr. '+p.arranger):''].filter(Boolean).join(' · '))}</span></span><span class="pickplus">+</span></button>`).join('') || '<p class="hint" style="margin:10px 14px">Cap obra coincideix, o ja és al repertori.</p>'}</div>`:''}`:''}
+      <h3 class="sec">Repertori <span class="seccnt">${obres.length}</span></h3>
+      ${obres.map(o=>{ const st=obraState(o); return `<div class="fr ${st.cls}" data-oid="${esc(o.id)}" role="button" tabindex="0"><div class="row prow"><div class="main">
+          <div class="tt" style="font-size:17px;line-height:22px">${esc(o.title)}</div>
+          <div class="who">${esc([o.composer,o.arranger?('Arr. '+o.arranger):''].filter(Boolean).join(' · '))}</div>
+          <div class="st ${st.cls}">${esc(stFull(st))}</div></div>
+          ${editing?`<button class="ib d" data-rm="${esc(o.id)}" aria-label="Treu del repertori">${I.trash}</button>`:''}</div></div>`; }).join('') || '<p class="hint" style="padding:8px 4px">Encara no hi ha cap obra al repertori d\'aquest projecte.</p>'}
+    </div>
+    ${canEdit ? `<div class="sticky-foot"><div class="foot-in">${editing
+      ? `<button class="btn o back" id="pjCancel2">Cancel·la</button><button class="btn" id="pjSave">Desa</button>`
+      : `<button class="btn" id="pjEdit">Edita</button>`}</div></div>` : ''}`;
+    el.scrollTop = sc;
+    const on = (sel, fn)=>{ const x = el.querySelector(sel); if(x) x.addEventListener('click', fn); };
+    on('#pjClose', close);
     on('#pjEdit', ()=>{ editing = true; render(); });
-    on('#pjCancel', ()=>{ toAdd = new Set(); toRm = new Set(); editing = false; q = ''; render(); });
+    const cancel = ()=>{ toAdd = new Set(); toRm = new Set(); editing = false; q = ''; render(); };
+    on('#pjCancel', cancel); on('#pjCancel2', cancel);
     on('#pjSave', save);
     on('#pjData', ()=> editProjecte(pid, render));
-    const inp = bg.querySelector('#pjAdd');
-    if(inp) inp.addEventListener('input', ()=>{ q = inp.value; const pos = inp.selectionStart; render(); const n = bg.querySelector('#pjAdd'); n.focus(); n.setSelectionRange(pos,pos); });
-    bg.querySelectorAll('[data-add]').forEach(b=> b.addEventListener('click', ()=>{ const id = b.dataset.add; if(toRm.has(id)) toRm.delete(id); else toAdd.add(id); q=''; render(); }));
-    bg.querySelectorAll('[data-rm]').forEach(b=> b.addEventListener('click', ()=>{ const id = b.dataset.rm; if(toAdd.has(id)) toAdd.delete(id); else toRm.add(id); render(); }));
-    bg.querySelectorAll('[data-oid]').forEach(r=> r.addEventListener('click', ()=> openObraSmart(r.dataset.oid)));
+    const inp = el.querySelector('#pjAdd');
+    if(inp){ inp.addEventListener('input', ()=>{ q = inp.value; const pos = inp.selectionStart; render(); const n = el.querySelector('#pjAdd'); n.focus(); n.setSelectionRange(pos,pos); }); }
+    el.querySelectorAll('[data-add]').forEach(b=> b.addEventListener('click', ()=>{ const id = b.dataset.add; if(toRm.has(id)) toRm.delete(id); else toAdd.add(id); q=''; render(); }));
+    el.querySelectorAll('[data-rm]').forEach(b=> b.addEventListener('click', e=>{ e.stopPropagation(); const id = b.dataset.rm; if(toAdd.has(id)) toAdd.delete(id); else toRm.add(id); render(); }));
+    el.querySelectorAll('[data-oid]').forEach(r=> r.addEventListener('click', ()=> openObraSmart(r.dataset.oid)));
   }
   STATE.sheetRefresh = ()=>{ if(!editing) render(); };
   render();
 }
+
 
 /* Per revisar: cada grup és una llista de tasques. Per afegir-ne un, n'hi ha prou amb una línia nova. */
 const TASQUES = [
@@ -1191,12 +1054,13 @@ const TASQUES = [
   {key:'vgeneral',   title:'General sense verificar', desc:'Cal comprovar a l\'arxiu si hi ha la partitura general.', test:p=>facets(p).G==='?', byPlace:true},
   {key:'compositor', title:'Sense compositor',        desc:'Falta el nom del compositor.', test:p=>!p.composer},
 ];
-STATE.openTask = null;
+STATE.openTask = undefined;
 function renderPendentsView(){
   const root = document.getElementById('subPendents');
   const canEdit = STATE.role==='gestio';
   const byTitle = (a,b)=>a.title.localeCompare(b.title,'ca');
   const groups = TASQUES.map(t=>({...t, items: STATE.pieces.filter(t.test).sort(byTitle)})).filter(g=>g.items.length);
+  if(STATE.openTask===undefined) STATE.openTask = groups.some(g=>g.key==='acceptar') ? 'acceptar' : null;
 
   function bodyHtml(g){
     if(!g.byPlace) return `<div class="list">${g.items.map(p=>obraCardHtml(p,{reasons:g.reasons, accept:g.accept&&canEdit})).join('')}</div>`;
@@ -1218,7 +1082,7 @@ function renderPendentsView(){
       </button>
       ${STATE.openTask===g.key ? `<div class="taskbody">${bodyHtml(g)}</div>` : ''}
     </section>`).join('')
-    : '<div class="empty"><p>No hi ha feina pendent 🎉</p></div>';
+    : '<div class="empty"><p>No hi ha feina pendent.</p></div>';
 
   root.querySelectorAll('[data-task]').forEach(h=> h.addEventListener('click', ()=>{
     STATE.openTask = STATE.openTask===h.dataset.task ? null : h.dataset.task;
@@ -1261,8 +1125,10 @@ function searchText(p){
   ];
   return norm(fields.filter(Boolean).join(' · '));
 }
-function matches(p){
-  const f = STATE.filters;
+
+/* ---------- cerca, filtres i llista ---------- */
+function matches(p, f){
+  f = f || STATE.filters;
   if(f.q){
     const hay = searchText(p);
     if(!norm(f.q).split(/\s+/).filter(Boolean).every(w=> hay.includes(w))) return false;
@@ -1278,17 +1144,34 @@ function matches(p){
   if(f.instrExtern && !(p.specials||[]).includes(f.instrExtern)) return false;
   return true;
 }
-
+function filterWords(f){
+  const w = [];
+  if(f.estil) w.push(f.estil);
+  if(f.general) w.push('General: '+FACETA.general[f.general].label.toLowerCase());
+  if(f.estat) w.push('Parts: '+FACETA.parts[f.estat].label.toLowerCase());
+  if(f.ubicacio) w.push(f.ubicacio==='digital' ? 'Al Box' : 'En físic');
+  if(f.lloc) w.push(f.lloc);
+  if(f.original) w.push(f.original==='si' ? 'Originals' : 'Còpies');
+  if(f.instrExtern) w.push(f.instrExtern);
+  return w;
+}
+function clearFilters(){
+  STATE.filters = {q:STATE.filters.q, estil:null, projecte:null, any:null, estat:null, general:null, ubicacio:null, lloc:null, original:null, instrExtern:null};
+}
 function renderList(){
   const filtered = STATE.pieces.filter(p=>matches(p)).sort((a,b)=>a.title.localeCompare(b.title,'ca'));
   document.getElementById('resultCount').textContent = filtered.length===STATE.pieces.length ? `${filtered.length} obres` : `${filtered.length} de ${STATE.pieces.length} obres`;
-  const activeFilters = Object.entries(STATE.filters).filter(([k,v])=> k!=='q' && v).length;
+  const words = filterWords(STATE.filters);
   const badge = document.getElementById('filterCountBadge');
-  if(activeFilters>0){ badge.textContent = activeFilters; badge.classList.remove('hidden'); } else badge.classList.add('hidden');
+  if(words.length>0){ badge.textContent = words.length; badge.classList.remove('hidden'); } else badge.classList.add('hidden');
+  const af = document.getElementById('activeFilters');
+  af.innerHTML = words.length ? `<span class="aft">${esc(words.join(' · '))}</span><button id="afClear">${words.length>1?'Treu els filtres':'Treu el filtre'}</button>` : '';
+  const clr = document.getElementById('afClear');
+  if(clr) clr.addEventListener('click', ()=>{ clearFilters(); renderList(); });
 
   const list = document.getElementById('list');
   const empty = document.getElementById('emptyState');
-  if(filtered.length===0){ list.classList.add('hidden'); empty.classList.remove('hidden'); return; }
+  if(filtered.length===0){ list.classList.add('hidden'); empty.classList.remove('hidden'); renderAzIndex(); return; }
   list.classList.remove('hidden'); empty.classList.add('hidden');
 
   list.classList.toggle('compact', STATE.view==='compacta');
@@ -1296,34 +1179,34 @@ function renderList(){
   bindCards(list);
   renderAzIndex();
 }
-/* llista agrupada per inicial (les dues vistes). Compacta: una fila per obra; el color del marge és l'estat que predomina */
+/* llista agrupada per inicial (les dues vistes). Compacta: una fila per obra; el color del marc és l'estat */
 function groupedHtml(items, compact){
   let letter = null, out = '';
   items.forEach(p=>{
     const l = (norm(p.title).match(/[a-z0-9]/)||['#'])[0].toUpperCase();
     const L = /[0-9]/.test(l) ? '#' : l;
-    if(L!==letter){ if(letter!==null) out += '</div>'; out += `<h3 class="sec letter" id="letter-${L}">${L}</h3><div class="${compact?'crows':'cards'}">`; letter = L; }
+    if(L!==letter){ out += `<div class="letter" id="letter-${L}">${L}</div>`; letter = L; }
     if(!compact){ out += obraCardHtml(p); return; }
     const st = obraState(p);
     const who = p.composer || (p.arranger ? 'Arr. '+p.arranger : '');
-    out += `<div class="crow ${st.cls}" data-id="${p.id}" role="button" tabindex="0" title="${esc(stateText(st))}">
-      <span class="ctext"><span class="ctitle">${esc(p.title)}</span>${who?`<span class="cwho">${esc(who)}</span>`:''}</span>
-      ${needsReview(p)?'<span class="cflag" title="Cal revisar">!</span>':''}
-      ${ICO_CHEVRON}
+    out += `<div class="fr cmp ${st.cls}" data-id="${esc(p.id)}" role="button" tabindex="0" title="${esc(stFull(st))}">
+      <div style="min-width:0"><div class="tt">${esc(p.title)}</div>${who?`<div class="who" style="font-size:14px;line-height:18px">${esc(who)}</div>`:''}
+      ${st.cls!=='ok'?`<div class="st ${st.cls}">${esc(stFull(st))}</div>`:''}</div>
+      ${needsReview(p)?'<span class="flag">Cal revisar</span>':''}
     </div>`;
   });
-  return out + (letter!==null ? '</div>' : '');
+  return out;
 }
 /* índex alfabètic lateral, com a Contactes d'iOS */
 function renderAzIndex(){
   let el = document.getElementById('azindex');
   const show = STATE.screen==='consultar' && STATE.subview!=='projectes' && STATE.subview!=='pendents';
-  const letters = show ? [...document.querySelectorAll('#list h3.letter')].map(h=>h.textContent) : [];
+  const letters = show ? [...document.querySelectorAll('#list .letter')].map(h=>h.textContent) : [];
   if(letters.length < 4){ if(el) el.remove(); return; }
   if(!el){ el = document.createElement('nav'); el.id = 'azindex'; el.className = 'azindex'; el.setAttribute('aria-label','Índex alfabètic'); document.body.appendChild(el); }
   el.innerHTML = letters.map(l=>`<button data-l="${l}">${l}</button>`).join('');
   layoutAzIndex();
-  const go = l=>{ const h = document.getElementById('letter-'+l); if(h) window.scrollTo({top: h.getBoundingClientRect().top + scrollY - document.querySelector('.top').offsetHeight - 6}); };
+  const go = l=>{ const h = document.getElementById('letter-'+l); if(h) window.scrollTo({top: h.getBoundingClientRect().top + scrollY - document.querySelector('.top').getBoundingClientRect().bottom - 6}); };
   const pick = e=>{ const t = e.touches ? e.touches[0] : e; const b = document.elementFromPoint(t.clientX, t.clientY); if(b && b.dataset && b.dataset.l) go(b.dataset.l); };
   el.onclick = pick; el.ontouchstart = e=>{ e.preventDefault(); pick(e); }; el.ontouchmove = e=>{ e.preventDefault(); pick(e); };
 }
@@ -1331,8 +1214,8 @@ function renderAzIndex(){
 function layoutAzIndex(){
   const el = document.getElementById('azindex'); if(!el) return;
   const n = el.children.length;
-  const top = Math.max(document.querySelector('.top').getBoundingClientRect().bottom, document.querySelector('#subBiblioteca .countline').getBoundingClientRect().bottom) + 8;
-  const bottom = document.querySelector('.nav').getBoundingClientRect().top - 8;
+  const top = Math.max(document.querySelector('.top').getBoundingClientRect().bottom, document.querySelector('#lhrow').getBoundingClientRect().bottom) + 8;
+  const bottom = document.querySelector('.fbar').getBoundingClientRect().top - 8;
   const h = Math.max(8, Math.min(18, (bottom - top) / n));
   el.style.top = (top + (bottom - top) / 2) + 'px';
   [...el.children].forEach(b=>{ b.style.height = h+'px'; b.style.fontSize = Math.min(11, h - 1)+'px'; });
@@ -1348,155 +1231,118 @@ function setView(v){
 document.querySelectorAll('[data-view]').forEach(b=> b.addEventListener('click', ()=> setView(b.dataset.view)));
 document.getElementById('searchInput').addEventListener('input', e=>{ STATE.filters.q = e.target.value; renderList(); });
 
-function openFilters(){
-  const f = STATE.filters;
-  const estilOpts = STATE.catalogs.estils;
-  const bg = document.createElement('div'); bg.className='sheet-bg';
-  bg.innerHTML = `<div class="sheet">
-    <div class="sheet-head"><div class="htxt"><h2 style="display:block">Filtres</h2></div>
-      <button class="sheet-close" id="fClose"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
-    </div>
-    <div class="sheet-body">
-      <h3 class="sec" style="margin-top:14px">Estil</h3>
-      <div class="chips" id="fEstil">${estilOpts.length? estilOpts.map(e=>chipHtml(e,f.estil===e,'estil')).join('') : '<span class="hint">Encara no hi ha estils registrats.</span>'}</div>
-
-      <h3 class="sec">Partitura general</h3>
-      <div class="chips" id="fGeneral">${Object.entries(FACETA.general).map(([k,g])=>chipHtml(g.label, f.general===k,'general',k)).join('')}</div>
-
-      <h3 class="sec">Parts de la banda</h3>
-      <div class="chips" id="fEstat">${Object.entries(FACETA.parts).map(([k,e])=>chipHtml(e.label, f.estat===k,'estat',k)).join('')}</div>
-
-      <h3 class="sec">On es troba</h3>
-      <div class="chips" id="fUbi">${chipHtml('Al Box', f.ubicacio==='digital','ubicacio','digital')}${chipHtml('En físic', f.ubicacio==='fisic','ubicacio','fisic')}${chipHtml('Només en físic', f.ubicacio==='nomesfisic','ubicacio','nomesfisic')}</div>
-      <div class="chips" id="fLloc" style="margin-top:8px">${(STATE.catalogs.ubicacions||[]).map(u=>chipHtml(u, f.lloc===u,'lloc',u)).join('')}</div>
-
-      <h3 class="sec">Partitura original</h3>
-      <div class="chips" id="fOriginal">${chipHtml('Originals', f.original==='si','original','si')}${chipHtml('Còpies', f.original==='no','original','no')}</div>
-
-      <h3 class="sec">Instrumentació externa</h3>
-      <div class="chips" id="fInstr">${STATE.catalogs.instrumentsExterns.map(i=>chipHtml(i, f.instrExtern===i,'instrExtern',i)).join('')}</div>
-    </div>
-    <div class="btnbar">
-      <button class="btn ghost" id="fReset">Neteja</button>
-      <button class="btn primary" id="fApply">Aplica</button>
-    </div>
-  </div>`;
-  document.body.appendChild(bg); document.body.classList.add('locked');
-  const draft = {...f};
-  bg.querySelectorAll('.chip[data-group]').forEach(c=>{
-    c.addEventListener('click', ()=>{
-      const g = c.dataset.group, v = c.dataset.value;
-      const parsedV = (g==='any') ? Number(v) : v;
-      const bgd = bg.querySelector(`[id="f${g.charAt(0).toUpperCase()+g.slice(1)}"]`) || bg.querySelector(`#f${cap(g)}`);
-      const same = draft[g]===parsedV;
-      draft[g] = same ? null : parsedV;
-      bg.querySelectorAll(`.chip[data-group="${g}"]`).forEach(x=> x.classList.toggle('on', String(x.dataset.value)===String(draft[g]) && draft[g]!==null));
-    });
-  });
-  function cap(g){ return g.charAt(0).toUpperCase()+g.slice(1); }
-  function close(){ document.body.removeChild(bg); document.body.classList.remove('locked'); }
-  bg.querySelector('#fClose').addEventListener('click', close);
-  bg.addEventListener('click', e=>{ if(e.target===bg) close(); });
-  bg.querySelector('#fReset').addEventListener('click', ()=>{
-    STATE.filters = {q:STATE.filters.q, estil:null, projecte:null, any:null, estat:null, general:null, ubicacio:null, lloc:null, original:null, instrExtern:null};
-    renderList(); close();
-  });
-  bg.querySelector('#fApply').addEventListener('click', ()=>{
-    Object.assign(STATE.filters, draft); renderList(); close();
-  });
-}
 function chipHtml(label, on, group, value){
   const v = value===undefined? label : value;
   return `<button class="chip ${on?'on':''}" data-group="${group}" data-value="${esc(String(v))}">${esc(String(label))}</button>`;
 }
+function openFilters(){
+  const f = STATE.filters;
+  const bg = document.createElement('div'); bg.className='sheet-bg';
+  const draft = {...f};
+  const none = t=> `<span class="hint" style="margin:0">${t}</span>`;
+  bg.innerHTML = `<div class="sheet">
+    <div class="sheet-head"><div class="htxt"><h2>Filtres</h2></div>
+      <button class="sheet-close" id="fClose" aria-label="Tanca"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+    </div>
+    <div class="sheet-body">
+      <div class="fgroup"><div class="fl">Estil</div>
+      <div class="chips">${STATE.catalogs.estils.length ? STATE.catalogs.estils.map(e=>chipHtml(e,f.estil===e,'estil')).join('') : none('Encara no hi ha estils registrats.')}</div></div>
+
+      <div class="fgroup"><div class="fl">Partitura general (director)</div>
+      <div class="chips">${Object.entries(FACETA.general).map(([k,g])=>chipHtml(g.label, f.general===k,'general',k)).join('')}</div></div>
+
+      <div class="fgroup"><div class="fl">Parts dels instruments (músic)</div>
+      <div class="chips">${Object.entries(FACETA.parts).map(([k,e])=>chipHtml(e.label, f.estat===k,'estat',k)).join('')}</div></div>
+
+      <div class="fgroup"><div class="fl">Ubicació</div>
+      <div class="chips">${chipHtml('Al Box', f.ubicacio==='digital','ubicacio','digital')}${chipHtml('En físic', f.ubicacio==='fisic','ubicacio','fisic')}</div>
+      ${(STATE.catalogs.ubicacions||[]).length>1 ? `<div class="chips" style="margin-top:8px">${STATE.catalogs.ubicacions.map(u=>chipHtml(u, f.lloc===u,'lloc',u)).join('')}</div>` : ''}</div>
+
+      <div class="fgroup"><div class="fl">Partitura original</div>
+      <div class="chips">${chipHtml('Originals', f.original==='si','original','si')}${chipHtml('Còpies', f.original==='no','original','no')}</div></div>
+
+      ${STATE.catalogs.instrumentsExterns.length ? `<div class="fgroup"><div class="fl">Instrumentació extra</div>
+      <div class="chips">${STATE.catalogs.instrumentsExterns.map(i=>chipHtml(i, f.instrExtern===i,'instrExtern',i)).join('')}</div></div>` : ''}
+    </div>
+    <div class="btnbar">
+      <button class="btn o" id="fReset" style="flex:0 0 112px">Neteja</button>
+      <button class="btn" id="fApply" style="flex:1">Mostra obres</button>
+    </div>
+  </div>`;
+  document.body.appendChild(bg); document.body.classList.add('locked');
+  const apply = bg.querySelector('#fApply');
+  const count = ()=>{ const n = STATE.pieces.filter(p=>matches(p, {...f, ...draft})).length; apply.textContent = `Mostra ${n} ${n===1?'obra':'obres'}`; };
+  count();
+  bg.querySelectorAll('.chip[data-group]').forEach(c=>{
+    c.addEventListener('click', ()=>{
+      const g = c.dataset.group, v = c.dataset.value;
+      draft[g] = draft[g]===v ? null : v;
+      bg.querySelectorAll(`.chip[data-group="${g}"]`).forEach(x=> x.classList.toggle('on', draft[g]!==null && x.dataset.value===draft[g]));
+      count();
+    });
+  });
+  function close(){ bg.remove(); unlockBody(); }
+  bg.querySelector('#fClose').addEventListener('click', close);
+  bg.addEventListener('click', e=>{ if(e.target===bg) close(); });
+  bg.querySelector('#fReset').addEventListener('click', ()=>{ clearFilters(); renderList(); close(); });
+  apply.addEventListener('click', ()=>{ Object.assign(STATE.filters, draft); renderList(); close(); });
+}
 document.getElementById('openFilters').addEventListener('click', openFilters);
 
-/* ---- detail sheet ---- */
-const FAMILIES = [
-  ["Fusta", ["Flautí","Flauta","Oboè","Fagot","Clarinet","Clarinet baix","Saxo alt","Saxo tenor","Saxo baríton"]],
-  ["Metall", ["Trompa","Trompeta","Trombó","Bombardí","Tuba"]],
-  ["Percussió", ["Percussió"]],
-];
-function famGrid(p){
-  const present = new Set(p.partsDetectades||[]);
-  return FAMILIES.map(([fam, instrs])=>`<div class="famrow"><span>${fam}</span><div class="chipsw">${instrs.map(i=>`<span class="icchip ${present.has(i)?'':'off'}">${esc(i)}</span>`).join('')}</div></div>`).join('');
-}
 
+/* ---------- fitxa de l'obra ---------- */
 function openDetail(id){
   const p = STATE.pieces.find(x=>x.id===id);
   if(!p) return;
   const st = obraState(p);
+  const n = obraNotes(p);
   const aparicions = (p.aparicions||[]).slice().sort((a,b)=>(b.any||0)-(a.any||0));
   const canEdit = STATE.role==='gestio';
+  const gl = FACETA.general[st.G], pl = FACETA.parts[st.P];
+  const partsTxt = st.P==='falta' ? 'Falten' + (st.detail && st.detail!=='totes' ? ' · '+st.detail : '') : pl.label;
+  const who = [p.composer, p.arranger?('Arr. '+p.arranger):'', p.estil].filter(Boolean).join(' · ');
+  const card = (cls, t, b)=> `<div class="fr ${cls}"><div class="ct">${t}</div>${b}</div>`;
 
-  const bg = document.createElement('div'); bg.className='sheet-bg';
-  bg.innerHTML = `<div class="sheet">
-    <div class="sheet-head">
-      <div class="htxt">
-        <h2>${esc(p.title)}${p.estil?`<span class="estilchip">${esc(p.estil)}</span>`:''}</h2>
-        <div class="authorlines">${p.composer?`<span>${esc(p.composer)}</span>`:''}${p.arranger?`<span>Arr. ${esc(p.arranger)}</span>`:''}${p.de?`<span>De: ${esc(p.de)}</span>`:''}</div>
-      </div>
-      <button class="sheet-close" id="dClose"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+  const el = document.createElement('div'); el.className='page';
+  el.innerHTML = `<div class="phead"><div class="phead-in">
+      <div class="ptop"><button class="qm" id="dClose" aria-label="Enrere">${I.back}</button>${canEdit?`<button class="qm" id="dEdit" aria-label="Edita">${I.edit}</button>`:'<span></span>'}</div>
+      <div class="ptitle"><h1>${esc(p.title)}</h1>${deteccioIA(p)?'<span class="ia d" aria-label="Elaborada amb IA">IA</span>':''}</div>
+      ${who?`<div class="pwho">${esc(who)}</div>`:''}
+    </div></div>
+    <div class="pbody">
+      ${n.revisar.length ? `<div class="fr warn"><div class="ct">Cal revisar</div>${n.revisar.map(r=>`<p class="t2">${esc(r)}</p>`).join('')}${canEdit?'<button class="btn o s" id="dRevisada">Marca com a revisada</button>':''}</div>` : ''}
+      ${card(st.cls, 'Estat', `<div class="kv">
+        <div class="i"><span class="k">Partitura general (director)</span><span class="v ${gl.cls==='ok'?'':gl.cls}">${esc(gl.label)}</span></div>
+        <div class="i"><span class="k">Parts dels instruments (músic)</span><span class="v ${pl.cls==='ok'?'':pl.cls}">${esc(partsTxt)}</span></div>
+        <div class="i"><span class="k">Ubicació</span><span class="v">${placeLines(p)}</span></div>
+        ${p.specials&&p.specials.length ? `<div class="i"><span class="k">Instrumentació extra</span><span class="v">${esc(p.specials.join(', '))}</span></div>` : ''}
+        <div class="i"><span class="k">Partitura original</span><span class="v">${esc(originalText(p))}</span></div>
+        ${p.de ? `<div class="i"><span class="k">De</span><span class="v">${esc(p.de)}</span></div>` : ''}
+      </div>`)}
+      ${aparicions.length ? card('nv', 'Projectes', `<div class="kv">${aparicions.map(a=>{ const pr=projById(a.projecteId); return `<div class="i" ${pr?`data-goproj="${esc(pr.id)}" role="button" tabindex="0" style="cursor:pointer"`:''}><span class="v">${esc(pr?pr.name:a.projecte)}</span><span style="color:var(--ink-2)">${(pr?pr.year:a.any)||'Sense any'}</span></div>`; }).join('')}</div>`) : ''}
+      ${n.partitura.length ? card('nv', 'Sobre la partitura', n.partitura.map(r=>`<p class="t2">${esc(r)}</p>`).join('')) : ''}
+      ${n.compte.length ? card('nv', 'A tenir en compte', n.compte.map(r=>`<p class="t2">${esc(r)}</p>`).join('')) : ''}
+      ${p.obs ? card('nv', 'Comentaris', `<p class="t2" style="overflow-wrap:anywhere">${esc(p.obs)}</p>`) : ''}
+      ${p.revisada || deteccioIA(p) ? card('nv', 'Revisió', `${deteccioIA(p)?'<p class="t2">Fitxa elaborada amb IA.</p>':''}${p.revisada?`<p class="t2">Revisada per ${esc(p.revisada.per||'—')} el ${esc(p.revisada.data||'')}.</p>`:''}`) : ''}
     </div>
-    <div class="sheet-body" style="padding-top:14px">
-
-      <div class="box">
-        <h4>Informació de l'obra</h4>
-        <dl class="kvgrid">
-          <dt>Compositor</dt><dd>${p.composer?esc(p.composer):'—'}</dd>
-          <dt>Arranjador</dt><dd>${p.arranger?esc(p.arranger):'—'}</dd>
-          <dt>Estil</dt><dd>${p.estil?esc(p.estil):'—'}</dd>
-          <dt>Original</dt><dd>${esc(originalText(p))}</dd>
-        </dl>
-      </div>
-
-      <div class="box">
-        <h4>Estat de l'arxiu</h4>
-        <dl class="kvgrid statgrid2">
-          <dt>General</dt><dd><span class="tagpill ${FACETA.general[st.G].cls}">${esc(FACETA.general[st.G].label)}</span></dd>
-          <dt>Parts</dt><dd><span class="tagpill ${FACETA.parts[st.P].cls}">${esc(FACETA.parts[st.P].label)}${st.detail?' · '+esc(st.detail):''}</span></dd>
-          <dt>On es troba</dt><dd>${placePillsHtml(p)}</dd>
-          ${p.specials&&p.specials.length ? `<dt>Instruments addicionals</dt><dd><div class="tagrow">${p.specials.map(x=>`<span class="tagpill">${esc(x)}</span>`).join('')}</div></dd>` : ''}
-        </dl>
-        ${notesHtml(obraNotes(p))}
-        ${canEdit && needsReview(p) ? `<div class="revactions"><button class="btn btn-sm" id="dRevisada">Marca com a revisada</button></div>` : ''}
-      </div>
-
-      ${aparicions.length ? `<div class="box">
-        <h4>Projectes <span class="cnt">(${aparicions.length})</span></h4>
-        <div class="list">${aparicions.map(a=>{ const pr=projById(a.projecteId); return `<button class="projrow2 projlink" ${pr?`data-goproj="${pr.id}"`:'disabled'}>
-          <span class="main"><span class="title" style="display:block;font-size:15px">${esc(pr?pr.name:a.projecte)}</span><span class="authors" style="display:block">${(pr?pr.year:a.any)||'Sense any'}</span></span>
-          ${pr?ICO_CHEVRON:''}
-        </button>`; }).join('')}</div>
-      </div>` : ''}
-
-      ${p.obs? `<div class="box"><h4>Comentaris</h4><div style="font-size:14.5px;color:var(--ink2);overflow-wrap:anywhere">${esc(p.obs)}</div></div>` : ''}
-
-
-      ${p.revisada || deteccioIA(p) ? `<p class="aifoot">${deteccioIA(p) ? '<span class="tagpill ia">Detecció per IA</span>' : ''}${p.revisada ? `<span>Revisada per ${esc(p.revisada.per||'—')} el ${esc(p.revisada.data||'')}</span>` : ''}</p>` : ''}
-      ${canEdit ? `<div class="btnbar">
-        ${p.pendentAcceptacio?'<button class="btn primary" id="dAccept" style="flex:1">Accepta el registre</button><button class="btn btn-danger-ghost" id="dReject" style="flex:1">Elimina</button>':''}
-        <button class="btn ${p.pendentAcceptacio?'':'primary'}" id="dEdit" style="flex:1">Edita</button>
-      </div>` : ''}
-    </div>
-  </div>`;
-  document.body.appendChild(bg); document.body.classList.add('locked');
-  function close(){ document.body.removeChild(bg); document.body.classList.remove('locked'); }
-  bg.querySelector('#dClose').addEventListener('click', close);
-  bg.querySelectorAll('[data-goproj]').forEach(b=> b.addEventListener('click', ()=>{ close(); openProjecteSheet(b.dataset.goproj); }));
-  bg.addEventListener('click', e=>{ if(e.target===bg) close(); });
-  const editBtn = bg.querySelector('#dEdit'); if(editBtn) editBtn.addEventListener('click', ()=>{ close(); openEditPiece(p.id, {back:true}); });
-  const revBtn = bg.querySelector('#dRevisada'); if(revBtn) revBtn.addEventListener('click', ()=>{
+    ${canEdit && p.pendentAcceptacio ? `<div class="sticky-foot"><div class="foot-in"><button class="btn bd" id="dReject">Elimina</button><button class="btn" id="dAccept">Accepta el registre</button></div></div>` : ''}`;
+  document.body.appendChild(el); document.body.classList.add('locked');
+  function close(){ el.remove(); unlockBody(); }
+  el.querySelector('#dClose').addEventListener('click', close);
+  el.querySelectorAll('[data-goproj]').forEach(b=> b.addEventListener('click', ()=>{ close(); openProjecteSheet(b.dataset.goproj); }));
+  const editBtn = el.querySelector('#dEdit'); if(editBtn) editBtn.addEventListener('click', ()=>{ close(); openEditPiece(p.id, {back:true}); });
+  const revBtn = el.querySelector('#dRevisada'); if(revBtn) revBtn.addEventListener('click', ()=>{
     marcaRevisada(p); persist(); close(); refreshViews(); openDetail(p.id); showSavePill('Marcada com a revisada');
   });
-  const acceptBtn = bg.querySelector('#dAccept'); if(acceptBtn) acceptBtn.addEventListener('click', ()=>{ p.pendentAcceptacio=false; persist(); close(); refreshViews(); });
-  const rejectBtn = bg.querySelector('#dReject'); if(rejectBtn) rejectBtn.addEventListener('click', ()=>{
+  const acceptBtn = el.querySelector('#dAccept'); if(acceptBtn) acceptBtn.addEventListener('click', ()=>{ p.pendentAcceptacio=false; persist(); close(); refreshViews(); });
+  const rejectBtn = el.querySelector('#dReject'); if(rejectBtn) rejectBtn.addEventListener('click', ()=>{
     if(!confirm('Segur que vols eliminar aquest registre pendent? No es pot desfer.')) return;
     STATE.pieces = STATE.pieces.filter(x=>x.id!==p.id); persist(); close(); refreshViews();
   });
 }
 function openObraSmart(id){ openDetail(id); }
 function openProjecteSmart(pid){ openProjecteSheet(pid); }
+
 
 /* ================= COMBOBOX / MULTISELECT COMPONENTS ================= */
 function positionPanel(panel, input){
@@ -1589,20 +1435,6 @@ function makeMultiSelect(container, {items, values, onChange, placeholder, allow
   input.addEventListener('blur', ()=> setTimeout(closePanel,150));
 }
 
-/* llocs físics: xips de selecció múltiple sobre la llista tancada de Configuració */
-function llocChipsHtml(id, selected, hidden){
-  const items = STATE.catalogs.ubicacions||[];
-  return `<div class="field llocs ${hidden?'hidden':''}" id="${id}"><label>On és, a l'arxiu físic? <span class="opt">pots marcar-ne més d'un</span></label>
-    <div class="chips">${items.map(u=>`<button type="button" class="chip ${selected.includes(u)?'on':''}" data-lloc="${esc(u)}">${esc(u)}</button>`).join('')}</div></div>`;
-}
-function bindLlocChips(box, draft){
-  box.querySelectorAll('[data-lloc]').forEach(b=> b.addEventListener('click', ()=>{
-    const v = b.dataset.lloc;
-    draft.llocs = draft.llocs.includes(v) ? draft.llocs.filter(x=>x!==v) : [...draft.llocs, v];
-    b.classList.toggle('on', draft.llocs.includes(v));
-  }));
-}
-
 /* parts que falten: xips sobre la plantilla (Configuració › Parts) + camp lliure per a veus concretes */
 function missingInit(piece){
   const src = (piece.faltenInventari&&piece.faltenInventari.length) ? piece.faltenInventari : (piece.partsNoDetectades||[]);
@@ -1621,93 +1453,9 @@ function missingFields(draft){
   if(!draft.missing.touched) return null;
   return {faltenInventari: draft.missing.totes ? ['TOT'] : missingList(draft.missing), partsNoDetectades:[], totesFaltenParts: draft.missing.totes};
 }
-function missingHtml(id, m, hidden){
-  const cat = STATE.catalogs.parts||[];
-  return `<div class="missbox ${hidden?'hidden':''}" id="${id}">
-    <label class="misslabel">Quines parts falten?</label>
-    <div class="chips">
-      <button type="button" class="chip ${m.totes?'on':''}" data-totes="1">Totes</button>
-      ${cat.map(x=>`<button type="button" class="chip ${m.sel.includes(x)?'on':''}" data-miss="${esc(x)}" ${m.totes?'disabled':''}>${esc(x)}</button>`).join('')}
-    </div>
-    <div class="field" style="margin:12px 0 0"><label>Altres o veus concretes <span class="opt">separades per comes, p. ex. Clarinet 3, Trompa 2</span></label>
-      <input class="input" data-altres value="${esc(m.altres)}" ${m.totes?'disabled':''}></div>
-  </div>`;
-}
-function bindMissing(box, m, onChange){
-  const sync = ()=>{
-    box.querySelector('[data-totes]').classList.toggle('on', m.totes);
-    box.querySelectorAll('[data-miss]').forEach(b=>{ b.classList.toggle('on', m.sel.includes(b.dataset.miss)); b.disabled = m.totes; });
-    box.querySelector('[data-altres]').disabled = m.totes;
-    m.touched = true; onChange();
-  };
-  box.querySelector('[data-totes]').addEventListener('click', ()=>{ m.totes = !m.totes; sync(); });
-  box.querySelectorAll('[data-miss]').forEach(b=> b.addEventListener('click', ()=>{
-    const v = b.dataset.miss; m.sel = m.sel.includes(v) ? m.sel.filter(x=>x!==v) : [...m.sel, v]; sync();
-  }));
-  box.querySelector('[data-altres]').addEventListener('input', e=>{ m.altres = e.target.value; m.touched = true; onChange(); });
-}
-
-/* Estat de l'arxiu (formularis): per a la general i per a les parts, primer si hi són i després on són.
-   Amb una sola ubicació física a Configuració no cal triar-la; se n'assigna automàticament. */
 function archInit(piece){
   const pl = placesOf(piece);
   return { gPlaces: pl.g.slice(), pPlaces: pl.p.slice(), llocs: (piece.ubicacioFisica||[]).slice() };
-}
-function archHtml(pre, d, allowUnknown){
-  const gOpts = [['si','Sí'],['no','No']].concat(allowUnknown ? [['desconegut','No ho sé']] : []);
-  const pOpts = [['Completa','Sí, completes'],['Falten parts','No, en falten']].concat(allowUnknown ? [['Per revisar','No ho sé']] : []);
-  const where = (key, arr, q, show)=> `<div class="archwhere ${show?'':'hidden'}"><span class="archq">${q}</span>
-      <div class="chips">${Object.entries(PLACE_LABEL).map(([k,l])=>`<button type="button" class="chip ${arr.includes(k)?'on':''}" data-${key}="${k}">${l}</button>`).join('')}</div></div>`;
-  const multi = (STATE.catalogs.ubicacions||[]).length > 1;
-  return `
-    <div class="field archfield" id="${pre}_general">
-      <label>Partitura general <span class="req">*</span></label>
-      <div class="chips">${gOpts.map(([k,l])=>`<button type="button" class="chip ${d.general===k?'on':''}" data-g="${k}">${l}</button>`).join('')}</div>
-      ${where('gp', d.gPlaces, 'On és?', d.general && d.general!=='no')}
-      <div class="errtext">Indica si hi ha la partitura general i on és.</div>
-    </div>
-    <div class="field archfield" id="${pre}_parts">
-      <label>Parts de la banda <span class="req">*</span></label>
-      <div class="chips">${pOpts.map(([k,l])=>`<button type="button" class="chip ${d.estatParts===k?'on':''}" data-p="${k}">${l}</button>`).join('')}</div>
-      ${where('pp', d.pPlaces, 'On són?', !!d.estatParts && d.estatParts!=='Falten parts')}
-      ${missingHtml(pre+'_missing', d.missing, d.estatParts!=='Falten parts')}
-      <div class="errtext">Indica com estan les parts i on són.</div>
-    </div>
-    ${multi ? llocChipsHtml(pre+'_llocs', d.llocs, true) : ''}`;
-}
-function bindArch(root, pre, d, onChange){
-  const gBox = root.querySelector('#'+pre+'_general'), pBox = root.querySelector('#'+pre+'_parts');
-  const llocs = root.querySelector('#'+pre+'_llocs');
-  const sync = ()=>{
-    gBox.querySelector('.archwhere').classList.toggle('hidden', !d.general || d.general==='no');
-    pBox.querySelector('.archwhere').classList.toggle('hidden', !d.estatParts || d.estatParts==='Falten parts');
-    root.querySelector('#'+pre+'_missing').classList.toggle('hidden', d.estatParts!=='Falten parts');
-    if(llocs) llocs.classList.toggle('hidden', !archApply(d).enPaper);
-    onChange();
-  };
-  const single = (box, attr, key)=> box.querySelectorAll(`[data-${attr}]`).forEach(b=> b.addEventListener('click', ()=>{
-    d[key] = b.dataset[attr];
-    box.querySelectorAll(`[data-${attr}]`).forEach(x=> x.classList.toggle('on', x===b));
-    box.classList.remove('err'); sync();
-  }));
-  const multiPick = (box, attr, key)=> box.querySelectorAll(`[data-${attr}]`).forEach(b=> b.addEventListener('click', ()=>{
-    const v = b.dataset[attr];
-    d[key] = d[key].includes(v) ? d[key].filter(x=>x!==v) : [...d[key], v];
-    b.classList.toggle('on', d[key].includes(v));
-    box.classList.remove('err'); sync();
-  }));
-  single(gBox, 'g', 'general'); multiPick(gBox, 'gp', 'gPlaces');
-  single(pBox, 'p', 'estatParts'); multiPick(pBox, 'pp', 'pPlaces');
-  bindMissing(root.querySelector('#'+pre+'_missing'), d.missing, onChange);
-  if(llocs) bindLlocChips(llocs, d);
-  if(llocs) llocs.classList.toggle('hidden', !archApply(d).enPaper);
-}
-function archValidate(root, pre, d){
-  const gOk = !!d.general && (d.general==='no' || d.gPlaces.length>0);
-  const pOk = !!d.estatParts && (d.estatParts==='Falten parts' || d.pPlaces.length>0);
-  root.querySelector('#'+pre+'_general').classList.toggle('err', !gOk);
-  root.querySelector('#'+pre+'_parts').classList.toggle('err', !pOk);
-  return gOk && pOk;
 }
 /* camps d'ubicació que resulten del formulari */
 function archApply(d){
@@ -1723,259 +1471,360 @@ function archApply(d){
   };
 }
 
-/* partitura original (comprada): Sí / No; es pot deixar sense marcar */
 const ORIGINAL = {si:'Sí, comprada', no:'No'};
-function originalHtml(id, val){
-  return `<div class="field" id="${id}"><label>Partitura original <span class="opt">opcional</span></label>
-    <div class="chips">${Object.entries(ORIGINAL).map(([k,l])=>`<button type="button" class="chip ${val===(k==='si')?'on':''}" data-orig="${k}">${l}</button>`).join('')}</div></div>`;
-}
-function bindOriginal(box, draft){
-  box.querySelectorAll('[data-orig]').forEach(b=> b.addEventListener('click', ()=>{
-    const v = b.dataset.orig==='si';
-    draft.original = draft.original===v ? null : v;
-    box.querySelectorAll('[data-orig]').forEach(x=> x.classList.toggle('on', draft.original===(x.dataset.orig==='si')));
-  }));
-}
 function originalText(p){ return p.original===true ? 'Sí, comprada' : p.original===false ? 'No' : '—'; }
+
+/* ================= FORMULARIS (registrar i edita comparteixen motor) ================= */
+/* famílies de la plantilla per al desplegable «Quines falten?» (es dedueixen del nom de cada part de Configuració › Plantilla) */
+function groupParts(cat){
+  const R = [['Flautes',/flaut|piccolo/i],['Oboè i fagot',/obo[eè]|fagot/i],['Clarinets',/clarinet/i],['Saxos',/sax/i],
+             ['Metall',/trompa|trompeta|tromb|bombard|tuba|fiscorn|eufoni/i],['Percussió',/percus|bateria|timbal|lamin|làmin|caixa|bombo|xil|marimb/i]];
+  const out = R.map(([n])=>({name:n, items:[]})), altres = {name:'Altres', items:[]};
+  cat.forEach(x=>{ const i = R.findIndex(([n,re])=> re.test(x)); (i<0 ? altres : out[i]).items.push(x); });
+  return [...out, altres].filter(g=>g.items.length);
+}
+const sameSet = (a,b)=> a.length===b.length && a.every(x=>b.includes(x));
+function newDraft(piece){
+  const base = { nom:'', autor:'', arranjador:'', estil:'', estilNous:[], estilNew:'', original:null, projecteIds:[],
+    general:null, estatParts:null, gPlaces:[], pPlaces:[], uPlaces:[], same:true, llocs:[],
+    missing:{totes:false, sel:[], altres:'', touched:false}, instrExterns:[], extraNous:[], extraNew:'', comentaris:'',
+    revisats:new Set(), openGrp:null, adding:null, err:{} };
+  if(!piece) return base;
+  const a = archInit(piece);
+  const d = { ...base, nom:piece.title, autor:piece.composer||'', arranjador:piece.arranger||'', estil:piece.estil||'',
+    projecteIds:(piece.aparicions||[]).map(x=>x.projecteId).filter(Boolean),
+    general:piece.general||'desconegut', estatParts: piece.estatParts==='No és a Box' ? 'Per revisar' : (piece.estatParts||'Per revisar'),
+    gPlaces:a.gPlaces, pPlaces:a.pPlaces, llocs:a.llocs, missing:missingInit(piece), instrExterns:(piece.specials||[]).slice(),
+    comentaris:piece.obs||'', original: typeof piece.original==='boolean' ? piece.original : null };
+  const ag = d.general!=='no', ap = d.estatParts!=='Falten parts';
+  d.same = !(ag && ap) || sameSet(d.gPlaces, d.pPlaces);
+  d.uPlaces = (ag ? d.gPlaces : d.pPlaces).slice();
+  return d;
+}
+const applG = d=> !!d.general && d.general!=='no';
+const applP = d=> !!d.estatParts && d.estatParts!=='Falten parts';
+/* en mode «mateix lloc» la ubicació única s'aplica a la general i a les parts */
+function plc(d){ if(d.same){ d.gPlaces = d.uPlaces.slice(); d.pPlaces = d.uPlaces.slice(); } return d; }
+function afterAnswer(d){
+  if(!d.same && !(applG(d) && applP(d))){ d.uPlaces = (applG(d) ? d.gPlaces : d.pPlaces).slice(); d.same = true; }
+}
+function placeOfDraft(d){ return archApply(plc(d)); }
+
+/* ---- seccions (HTML) ---- */
+const band = (t, opt)=> `<div class="band">${t}${opt?` <span class="hn">${opt}</span>`:''}</div>`;
+const E = (d,k)=> d.err && d.err[k] ? ' err' : '';
+function chipsOf(items, sel, a, cls){ return items.map(x=>`<button type="button" class="chip ${sel(x)?'on '+(cls||''):''}" data-a="${a}" data-v="${esc(x)}">${esc(x)}</button>`).join(''); }
+
+function secObra(d){
+  const estils = [...STATE.catalogs.estils, ...d.estilNous.filter(x=>!STATE.catalogs.estils.includes(x))];
+  return `
+    <div class="field${E(d,'nom')}"><label class="fl">Títol</label><input class="inp2" data-in="nom" value="${esc(d.nom)}" placeholder="Per exemple: Harry Potter" autocomplete="off"><div class="errtext">Cal indicar el títol de la partitura.</div></div>
+    <div class="field${E(d,'autor')}"><label class="fl">Compositor</label><div id="cb_autor"></div><div class="errtext">Cal indicar el compositor.</div></div>
+    <label class="fl">Arranjador <i>si en té</i></label><div id="cb_arranjador"></div>
+    <div class="fl">Estil <i>opcional</i></div>
+    <div class="chips">${chipsOf(estils, x=>d.estil===x, 'estil')}<button type="button" class="chip add" data-a="estilAdd">+ Afegeix un estil</button></div>
+    ${d.adding==='estil' ? `<div class="addline"><input class="inp2" data-in="estilNew" value="${esc(d.estilNew)}" placeholder="Nom de l'estil" autocomplete="off"><button type="button" class="btn s" data-a="estilOk">Afegeix</button></div>` : ''}
+    <div class="fl">Partitura original <i>opcional</i></div>
+    <div class="chips">${Object.entries(ORIGINAL).map(([k,l])=>`<button type="button" class="chip ${d.original===(k==='si')?'on':''}" data-a="orig" data-v="${k}">${l}</button>`).join('')}</div>`;
+}
+function secParts(d){
+  const m = d.missing, cat = STATE.catalogs.parts||[];
+  const extras = [...STATE.catalogs.instrumentsExterns, ...d.extraNous.filter(x=>!STATE.catalogs.instrumentsExterns.includes(x))];
+  const three = (a, cur, opts, errKey)=> `<div class="field${E(d,errKey)}"><div class="three">${opts.map(([v,l,bd])=>`<button type="button" class="${cur===v?'on '+(bd?'bd':''):''}" data-a="${a}" data-v="${esc(v)}">${l}</button>`).join('')}</div><div class="errtext">Cal respondre aquesta pregunta.</div></div>`;
+  return `
+    <section class="sec first">${band('Partitura general (director)')}
+      ${three('gen', d.general, [['si','Sí'],['no','No',1],['desconegut','No ho sé']], 'gen')}
+    </section>
+    <section class="sec">${band('Parts dels instruments (músic)')}
+      ${three('par', d.estatParts, [['Completa','Completes'],['Falten parts','En falten',1],['Per revisar','No ho sé']], 'par')}
+      ${d.estatParts==='Falten parts' ? `
+        <div class="fl" style="margin-top:20px">Quines falten?</div>
+        <div class="chips"><button type="button" class="chip ${m.totes?'on bd':''}" data-a="totes">Totes les parts</button></div>
+        <div class="grp ${m.totes?'dis':''}" style="margin-top:6px">
+          ${groupParts(cat).map(g=>{
+            const on = g.items.filter(x=>m.sel.includes(x)), open = d.openGrp===g.name;
+            return `<button type="button" class="gr" data-a="grp" data-v="${esc(g.name)}" aria-expanded="${open}"><span>${esc(g.name)}</span><span class="sm ${on.length?'on':''}">${on.length?esc(on.join(', ')):'Cap'}</span><span class="ex">${open?'⌄':'›'}</span></button>
+              ${open?`<div class="chips s">${chipsOf(g.items, x=>m.sel.includes(x), 'miss', 'bd')}</div>`:''}`;
+          }).join('')}
+          <div class="fl" style="margin-top:16px">Altres veus <i>separades per comes</i></div>
+          <input class="inp2" data-in="altres" value="${esc(m.altres)}" placeholder="Per exemple: Clarinet mi bemoll" autocomplete="off" ${m.totes?'disabled':''}>
+        </div>` : ''}
+    </section>
+    <section class="sec">${band('Instrumentació extra','opcional')}
+      <div class="chips">${chipsOf(extras, x=>d.instrExterns.includes(x), 'extra')}<button type="button" class="chip add" data-a="extraAdd">+ Afegeix</button></div>
+      ${d.adding==='extra' ? `<div class="addline"><input class="inp2" data-in="extraNew" value="${esc(d.extraNew)}" placeholder="Per exemple: Cor, Piano" autocomplete="off"><button type="button" class="btn s" data-a="extraOk">Afegeix</button></div>` : ''}
+    </section>`;
+}
+function secUbic(d, first){
+  const ag = applG(d), ap = applP(d), cat = STATE.catalogs.ubicacions||[];
+  const tog = (w, arr)=> `<div class="three">${Object.entries(PLACE_LABEL).map(([k,l])=>`<button type="button" class="${arr.includes(k)?'on':''}" data-a="place" data-w="${w}" data-v="${k}">${l}</button>`).join('')}</div>`;
+  let body;
+  if(!ag && !ap) body = `<p class="hint" style="margin-top:0">Com que falten la general i les parts, no cal indicar cap ubicació.</p>`;
+  else if(d.same || !(ag && ap)) body = `<div class="field${E(d,'u')}">${tog('u', d.uPlaces)}<div class="errtext">Indica on es troba.</div></div><p class="hint">Pots marcar les dues.</p>${ag&&ap?'<button type="button" class="link" data-a="diff">Són en llocs diferents</button>':''}`;
+  else body = `<div class="field${E(d,'g')}"><div class="fl" style="margin-top:0">Partitura general (director)</div>${tog('g', d.gPlaces)}<div class="errtext">Indica on es troba la general.</div></div>
+      <div class="field${E(d,'p')}"><div class="fl">Parts dels instruments (músic)</div>${tog('p', d.pPlaces)}<div class="errtext">Indica on són les parts.</div></div>
+      <button type="button" class="link" data-a="diff" style="margin-top:8px">Són al mateix lloc</button>`;
+  const fis = (ag||ap) && placeOfDraft(d).enPaper;
+  const armari = !fis ? '' : cat.length>1
+    ? `<div class="fl">Quin armari? <i>opcional</i></div><div class="chips">${chipsOf(cat, x=>d.llocs.includes(x), 'lloc')}</div>`
+    : cat.length===1 ? `<p class="hint">Es guardarà a «${esc(cat[0])}».</p>` : '';
+  return `<section class="sec ${first?'first':''}">${band('Ubicació')}${body}${armari}</section>`;
+}
+function secProjectes(){ return `<section class="sec">${band('Projectes','opcional')}<div id="ms_projecte"></div></section>`; }
+function secComentaris(d){ return `<section class="sec">${band('Comentaris','opcional')}<textarea class="textarea" data-in="coment" placeholder="Notes, enllaços, detalls a tenir en compte…">${esc(d.comentaris)}</textarea></section>`; }
+function secResum(){ return `<section class="sec">${band('Resum')}<div class="sub" style="margin:0 0 12px" id="resumSub">Així es veurà l'obra un cop desada.</div><div id="resum"></div></section>`; }
+
+/* ---- motor: pinta, delega els clics i les entrades, i munta els desplegables ---- */
+function mountForm(root, d, secsFn, ctx){
+  const sc = ctx.scroller;
+  const getY = ()=> sc===window ? window.scrollY : sc.scrollTop;
+  const setY = y=>{ if(sc===window) window.scrollTo(0,y); else sc.scrollTop = y; };
+  function render(){
+    const y = getY();
+    root.innerHTML = secsFn(d);
+    mountCombos();
+    setY(y);
+    if(d.adding){ const i = root.querySelector(d.adding==='estil' ? '[data-in=estilNew]' : '[data-in=extraNew]'); if(i) i.focus({preventScroll:true}); }
+    ctx.onChange();
+  }
+  function mountCombos(){
+    const cb = (id, key, items, ph, ref)=>{
+      const box = root.querySelector('#'+id); if(!box) return;
+      makeCombobox(box, {items, value:d[key], placeholder:ph, onChange:v=>{
+        d[key] = v;
+        if(key==='autor' && v){ const f = box.closest('.field'); if(f) f.classList.remove('err'); }
+        if(ctx.onPerson) ctx.onPerson(key, v);
+        ctx.onChange();
+      }});
+    };
+    cb('cb_autor','autor',STATE.catalogs.autors,'Cerca o escriu un compositor');
+    cb('cb_arranjador','arranjador',STATE.catalogs.arranjadors,'Cerca o escriu un arranjador');
+    const ms = root.querySelector('#ms_projecte');
+    if(ms){
+      const lab = p=> p.name+(p.year?' ('+p.year+')':'');
+      const items = STATE.catalogs.projectes.slice().sort((a,b)=>(b.year||0)-(a.year||0)).map(lab);
+      const cur = d.projecteIds.map(pid=>{ const pp=STATE.catalogs.projectes.find(x=>x.id===pid); return pp?lab(pp):null; }).filter(Boolean);
+      makeMultiSelect(ms, {items, values:cur, placeholder:'Cerca un projecte', allowCreate:false, onChange:v=>{
+        d.projecteIds = v.map(l=>{ const f = STATE.catalogs.projectes.find(pp=> lab(pp)===l); return f ? f.id : null; }).filter(Boolean);
+      }});
+    }
+  }
+  function addNew(listKey, newKey, catalog, selectFn){
+    const raw = (d[newKey]||'').trim(); if(!raw) { d.adding = null; return; }
+    const found = [...catalog, ...d[listKey]].find(x=> norm(x)===norm(raw));
+    const val = found || raw;
+    if(!found) d[listKey].push(val);
+    selectFn(val); d[newKey] = ''; d.adding = null;
+  }
+  function act(a, v, w){
+    const m = d.missing;
+    switch(a){
+      case 'orig': d.original = d.original===(v==='si') ? null : (v==='si'); break;
+      case 'estil': d.estil = d.estil===v ? '' : v; break;
+      case 'estilAdd': d.adding = d.adding==='estil' ? null : 'estil'; break;
+      case 'estilOk': addNew('estilNous','estilNew',STATE.catalogs.estils, val=>{ d.estil = val; }); break;
+      case 'gen': d.general = v; d.err.gen = false; afterAnswer(d); break;
+      case 'par': d.estatParts = v; d.err.par = false; afterAnswer(d); break;
+      case 'totes': m.totes = !m.totes; m.touched = true; break;
+      case 'miss': m.sel = m.sel.includes(v) ? m.sel.filter(x=>x!==v) : [...m.sel, v]; m.touched = true; break;
+      case 'grp': d.openGrp = d.openGrp===v ? null : v; break;
+      case 'extra': d.instrExterns = d.instrExterns.includes(v) ? d.instrExterns.filter(x=>x!==v) : [...d.instrExterns, v]; break;
+      case 'extraAdd': d.adding = d.adding==='extra' ? null : 'extra'; break;
+      case 'extraOk': addNew('extraNous','extraNew',STATE.catalogs.instrumentsExterns, val=>{ if(!d.instrExterns.includes(val)) d.instrExterns.push(val); }); break;
+      case 'place': {
+        const k = w==='u' ? 'uPlaces' : w==='g' ? 'gPlaces' : 'pPlaces';
+        d[k] = d[k].includes(v) ? d[k].filter(x=>x!==v) : [...d[k], v];
+        d.err[w] = false; break; }
+      case 'diff':
+        if(d.same){ d.same = false; d.gPlaces = d.uPlaces.slice(); d.pPlaces = d.uPlaces.slice(); }
+        else { d.same = true; d.uPlaces = (applG(d) ? d.gPlaces : d.pPlaces).slice(); }
+        break;
+      case 'lloc': d.llocs = d.llocs.includes(v) ? d.llocs.filter(x=>x!==v) : [...d.llocs, v]; break;
+    }
+    render();
+  }
+  root.addEventListener('click', e=>{
+    const b = e.target.closest('[data-a]'); if(!b || !root.contains(b)) return;
+    act(b.dataset.a, b.dataset.v, b.dataset.w);
+  });
+  root.addEventListener('input', e=>{
+    const t = e.target, k = t.dataset && t.dataset.in; if(!k) return;
+    if(k==='nom'){ d.nom = t.value; t.closest('.field').classList.remove('err'); }
+    else if(k==='altres'){ d.missing.altres = t.value; d.missing.touched = true; }
+    else if(k==='coment') d.comentaris = t.value;
+    else if(k==='estilNew') d.estilNew = t.value;
+    else if(k==='extraNew') d.extraNew = t.value;
+    ctx.onChange();
+  });
+  root.addEventListener('keydown', e=>{
+    if(e.key!=='Enter') return;
+    const k = e.target.dataset && e.target.dataset.in;
+    if(k==='estilNew'){ e.preventDefault(); act('estilOk'); }
+    else if(k==='extraNew'){ e.preventDefault(); act('extraOk'); }
+  });
+  render();
+  return { render, scrollToError(){ const x = root.querySelector('.err'); if(x) x.scrollIntoView({behavior:'smooth', block:'center'}); } };
+}
+
+/* ---- validació ---- */
+function vObra(d){ d.err = {...d.err, nom:!d.nom.trim(), autor:!d.autor.trim()}; return !d.err.nom && !d.err.autor; }
+function vParts(d){ d.err = {...d.err, gen:!d.general, par:!d.estatParts}; return !d.err.gen && !d.err.par; }
+function vUbic(d){
+  plc(d);
+  const e = {u:false, g:false, p:false};
+  if(d.same){ e.u = (applG(d)||applP(d)) && !d.uPlaces.length; }
+  else { e.g = applG(d) && !d.gPlaces.length; e.p = applP(d) && !d.pPlaces.length; }
+  d.err = {...d.err, ...e};
+  return !e.u && !e.g && !e.p;
+}
+/* aplica els valors nous als catàlegs (estils, autors, instruments) abans de desar */
+function desaCatalegs(d){
+  const C = STATE.catalogs;
+  if(d.autor && !C.autors.includes(d.autor)) C.autors.push(d.autor);
+  if(d.arranjador && !C.arranjadors.includes(d.arranjador)) C.arranjadors.push(d.arranjador);
+  if(d.estil && !C.estils.includes(d.estil)) C.estils.push(d.estil);
+  d.instrExterns.forEach(i=>{ if(!C.instrumentsExterns.includes(i)) C.instrumentsExterns.push(i); });
+}
+/* resum: la mateixa targeta que es veurà a l'arxiu */
+function fillResum(d, base){
+  const box = document.getElementById('resum'); if(!box) return;
+  const tmp = JSON.parse(JSON.stringify({ ...(base||{}), title:d.nom.trim()||'Sense títol', composer:d.autor, arranger:d.arranjador, estil:d.estil,
+    general:d.general, estatParts:d.estatParts, specials:d.instrExterns, ...(missingFields(d)||{}), ...placeOfDraft(d),
+    ...(base ? {} : {autoriaConflicte:false, pendentAcceptacio: STATE.role!=='gestio'}) }));
+  if(base && d.revisats.size) marcaRevisada(tmp, [...d.revisats]);
+  box.innerHTML = obraCardHtml(tmp, {preview:true});
+  const sub = document.getElementById('resumSub');
+  if(sub && !base && STATE.role!=='gestio') sub.textContent = "Així es veurà l'obra. Un gestor haurà d'acceptar el registre.";
+}
 
 /* ================= EDITAR OBRA EXISTENT ================= */
 function openEditPiece(id, opts={}){
   const piece = STATE.pieces.find(x=>x.id===id);
   if(!piece) return;
-  const draft = {
-    nom: piece.title, autor: piece.composer||'', arranjador: piece.arranger||'', estil: piece.estil||'',
-    projecteIds: (piece.aparicions||[]).map(a=>a.projecteId).filter(Boolean),
-    general: piece.general||'desconegut', estatParts: piece.estatParts==='No és a Box' ? 'Per revisar' : (piece.estatParts||'Per revisar'),
-    ...archInit(piece),
-    missing: missingInit(piece), instrExterns: piece.specials||[],
-    comentaris: piece.obs||'', original: typeof piece.original==='boolean' ? piece.original : null,
-    revisats: new Set(),
-  };
+  const d = newDraft(piece);
   const revItems = revisioItems(piece);
-  const bg = document.createElement('div'); bg.className='sheet-bg';
-  bg.innerHTML = `<div class="sheet">
-    <div class="sheet-head"><div class="htxt"><h2 style="display:block">Edita l'obra</h2><div class="hsub">${esc(piece.title)}</div></div>
-      <button class="sheet-close" id="eClose"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+  const el = document.createElement('div'); el.className='page';
+  el.innerHTML = `<div class="pbody light">
+      <div class="ptop light"><button class="pill" id="eCancel">Cancel·la</button></div>
+      <h1 class="h1">Edita l'obra</h1><div class="sub">${esc(piece.title)}</div>
+      ${revItems.length ? `<div class="fr warn" style="margin-top:18px"><div class="ct">Cal revisar</div>
+        <p class="t2">Marca cada punt quan l'hagis comprovat o corregit. En desar, l'obra sortirà de «Cal revisar».</p>
+        ${revItems.map(it=>`<label class="revitem"><input type="checkbox" data-rev="${esc(it.key)}"><span>${esc(it.text)}</span></label>`).join('')}</div>` : ''}
+      <div id="eForm" style="margin-top:22px"></div>
+      ${STATE.role==='gestio' ? `<button class="btn bd w" id="eDelete" style="margin-top:28px">Elimina l'obra</button>` : ''}
     </div>
-    <div class="sheet-body">
-      ${revItems.length ? `<div class="note warn revbox" id="ef_rev"><b>Cal revisar</b>
-        <p class="revhint">Marca cada punt quan l'hagis comprovat o corregit. En desar, l'obra sortirà de «Cal revisar».</p>
-        ${revItems.map(it=>`<label class="revitem"><input type="checkbox" data-rev="${esc(it.key)}"><span>${esc(it.text)}</span></label>`).join('')}
-      </div>` : ''}
-      <div class="block" style="box-shadow:none;padding:0;margin-bottom:6px">
-        <div class="field" id="ef_nom"><label>Títol <span class="req">*</span></label><input class="input" id="ein_nom" value="${esc(draft.nom)}"><div class="errtext">Cal indicar el títol de la partitura.</div></div>
-        <div class="field" id="ef_autor"><label>Compositor <span class="req">*</span> <span class="opt">(ex. Giuseppe Verdi)</span></label><div id="ecb_autor"></div><div class="errtext">Cal indicar el compositor.</div></div>
-        <div class="field"><label>Arranjador <span class="opt">opcional (ex. G. Verdi)</span></label><div id="ecb_arranjador"></div></div>
-        <div class="field"><label>Estil <span class="opt">opcional</span></label><div id="ecb_estil"></div></div>
-        ${originalHtml('ef_original', draft.original)}
-        <div class="field"><label>Projectes <span class="opt">opcional — pot ser-hi en diversos</span></label><div id="ems_projecte"></div></div>
-      </div>
-      <h3 class="sec">Estat de l'arxiu</h3>
-      ${archHtml('ef', draft, true)}
-      <div class="field"><label>Instruments fora de la plantilla habitual <span class="opt">opcional</span></label><div id="ems_instr"></div></div>
-      <div class="note info" id="ef_preview" style="margin-top:10px"></div>
-
-      <h3 class="sec">Comentaris</h3>
-      <textarea class="textarea" id="ein_comentaris">${esc(draft.comentaris)}</textarea>
-
-      <button class="btn btn-danger-ghost delobra" id="eDelete">Elimina l'obra</button>
-      <div class="btnbar"><button class="btn primary" id="eSave" style="flex:1">Desa els canvis</button></div>
-    </div>
-  </div>`;
-  document.body.appendChild(bg); document.body.classList.add('locked');
-
-  function updatePreview(){
-    const tmp = JSON.parse(JSON.stringify({...piece, general:draft.general, estatParts:draft.estatParts, ...(missingFields(draft)||{}),
-      ...archApply(draft), composer:draft.autor, arranger:draft.arranjador}));
-    marcaRevisada(tmp, [...draft.revisats]);
-    const st = obraState(tmp);
-    bg.querySelector('#ef_preview').innerHTML = `<b>Estat resultant:</b> ${esc(stateText(st))}${needsReview(tmp)?' · Cal revisar':''}`;
-  }
-
-  // en corregir l'autoria, es marca sol el punt corresponent (es pot desmarcar)
-  function autoRev(keys){
-    keys.forEach(k=>{ const cb = bg.querySelector(`[data-rev="${k}"]`); if(cb && !cb.checked){ cb.checked = true; draft.revisats.add(k); } });
-  }
-  bg.querySelectorAll('[data-rev]').forEach(cb=> cb.addEventListener('change', ()=>{
-    if(cb.checked) draft.revisats.add(cb.dataset.rev); else draft.revisats.delete(cb.dataset.rev);
-    updatePreview();
+    <div class="sticky-foot"><div class="foot-in"><button class="btn o back" id="eCancel2">Cancel·la</button><button class="btn" id="eSave">Desa els canvis</button></div></div>`;
+  document.body.appendChild(el); document.body.classList.add('locked');
+  const secs = d=> band('Obra') + secObra(d) + secParts(d) + secUbic(d) + secProjectes() + secComentaris(d) + secResum();
+  const ctx = {
+    scroller: el,
+    onChange: ()=> fillResum(d, piece),
+    onPerson: (key, v)=>{
+      const keys = key==='autor' ? (v!==(piece.composer||'') ? ['autoria'] : []) : (v!==(piece.arranger||'') ? ['arranjador','autoria'] : []);
+      keys.forEach(k=>{ const cb = el.querySelector(`[data-rev="${k}"]`); if(cb && !cb.checked){ cb.checked = true; d.revisats.add(k); } });
+    },
+  };
+  const form = mountForm(el.querySelector('#eForm'), d, secs, ctx);
+  el.querySelectorAll('[data-rev]').forEach(cb=> cb.addEventListener('change', ()=>{
+    if(cb.checked) d.revisats.add(cb.dataset.rev); else d.revisats.delete(cb.dataset.rev);
+    fillResum(d, piece);
   }));
-  makeCombobox(bg.querySelector('#ecb_autor'), {items:STATE.catalogs.autors, value:draft.autor, placeholder:'Cerca o afegeix un autor', onChange:v=>{draft.autor=v; if(v!==(piece.composer||'')) autoRev(['autoria']); updatePreview();}});
-  makeCombobox(bg.querySelector('#ecb_arranjador'), {items:STATE.catalogs.arranjadors, value:draft.arranjador, placeholder:'Cerca o afegeix un arranjador', onChange:v=>{draft.arranjador=v; if(v!==(piece.arranger||'')) autoRev(['arranjador','autoria']); updatePreview();}});
-  makeCombobox(bg.querySelector('#ecb_estil'), {items:STATE.catalogs.estils, value:draft.estil, placeholder:'Cerca o afegeix un estil', onChange:v=>draft.estil=v});
-  bindOriginal(bg.querySelector('#ef_original'), draft);
-  const projLabelOf = pp=> pp.name+(pp.year?' ('+pp.year+')':'');
-  const projItems = STATE.catalogs.projectes.slice().sort((a,b)=>(b.year||0)-(a.year||0)).map(projLabelOf);
-  const curProjLabels = draft.projecteIds.map(pid=>{ const pp=STATE.catalogs.projectes.find(x=>x.id===pid); return pp?projLabelOf(pp):null; }).filter(Boolean);
-  makeMultiSelect(bg.querySelector('#ems_projecte'), {items:projItems, values:curProjLabels, placeholder:'Cerca un projecte', allowCreate:false, onChange:v=>{
-    draft.projecteIds = v.map(label=>{ const found = STATE.catalogs.projectes.find(pp=> projLabelOf(pp)===label); return found? found.id : null; }).filter(Boolean);
-  }});
-  bindArch(bg, 'ef', draft, updatePreview);
-  makeMultiSelect(bg.querySelector('#ems_instr'), {items:STATE.catalogs.instrumentsExterns, values:draft.instrExterns.slice(), placeholder:'p. ex. Cor, Piano', onChange:v=>draft.instrExterns=v});
-  bg.querySelector('#ein_nom').addEventListener('input', e=>{ draft.nom=e.target.value; bg.querySelector('#ef_nom').classList.remove('err'); });
-  bg.querySelector('#ein_comentaris').addEventListener('input', e=>draft.comentaris=e.target.value);
-  updatePreview();
-
-  function close(){ document.body.removeChild(bg); document.body.classList.remove('locked'); }
-  bg.querySelector('#eClose').addEventListener('click', ()=>{ close(); if(opts.back) openDetail(piece.id); });
-  bg.querySelector('#eDelete').addEventListener('click', ()=>{
+  function close(){ el.remove(); unlockBody(); if(opts.back) openDetail(piece.id); }
+  el.querySelector('#eCancel').addEventListener('click', close);
+  el.querySelector('#eCancel2').addEventListener('click', close);
+  const del = el.querySelector('#eDelete');
+  if(del) del.addEventListener('click', ()=>{
     if(STATE.role!=='gestio') return;
     if(!confirm(`Segur que vols eliminar «${piece.title}» de l'arxiu?\n\nDesapareixerà per a tothom.`)) return;
     STATE.pieces = STATE.pieces.filter(x=> x.id!==piece.id);
-    persist(); close(); refreshViews(); showSavePill(`«${piece.title}» eliminada`);
+    persist(); el.remove(); unlockBody(); refreshViews(); showSavePill(`«${piece.title}» eliminada`);
   });
-
-  bg.querySelector('#eSave').addEventListener('click', ()=>{
-    let ok = true;
-    if(!draft.nom.trim()){ bg.querySelector('#ef_nom').classList.add('err'); ok=false; }
-    if(!draft.autor.trim()){ bg.querySelector('#ef_autor').classList.add('err'); ok=false; }
-    if(!archValidate(bg, 'ef', draft)) ok=false;
-    if(!ok){ const e = bg.querySelector('.err'); if(e) e.scrollIntoView({behavior:'smooth', block:'center'}); return; }
-    if(draft.autor && !STATE.catalogs.autors.includes(draft.autor)) STATE.catalogs.autors.push(draft.autor);
-    if(draft.arranjador && !STATE.catalogs.arranjadors.includes(draft.arranjador)) STATE.catalogs.arranjadors.push(draft.arranjador);
-    if(draft.estil && !STATE.catalogs.estils.includes(draft.estil)) STATE.catalogs.estils.push(draft.estil);
-    draft.instrExterns.forEach(i=>{ if(!STATE.catalogs.instrumentsExterns.includes(i)) STATE.catalogs.instrumentsExterns.push(i); });
-
-    const general = draft.general, estatParts = draft.estatParts;
-
+  el.querySelector('#eSave').addEventListener('click', ()=>{
+    const ok1 = vObra(d), ok2 = vParts(d), ok3 = vUbic(d);
+    if(!(ok1 && ok2 && ok3)){ form.render(); form.scrollToError(); return; }
+    desaCatalegs(d);
+    const general = d.general, estatParts = d.estatParts;
     const oldByPid = {}; (piece.aparicions||[]).forEach(a=>{ if(a.projecteId) oldByPid[a.projecteId]=a; });
-    const newAparicions = draft.projecteIds.map(pid=>{
+    const newAparicions = d.projecteIds.map(pid=>{
       const pp = STATE.catalogs.projectes.find(x=>x.id===pid);
-      const old = oldByPid[pid];
-      return old || { projecteId:pid, projecte:pp?pp.name:'', any:pp?pp.year:null, seccio:'', fitxers:0, estatParts };
+      return oldByPid[pid] || { projecteId:pid, projecte:pp?pp.name:'', any:pp?pp.year:null, seccio:'', fitxers:0, estatParts };
     });
-
     Object.assign(piece, {
-      title: draft.nom.trim(), composer: draft.autor.trim(), arranger: draft.arranjador.trim(),
-      obs: draft.comentaris.trim(), aparicions: newAparicions, original: draft.original,
-      estil: draft.estil.trim(), general, estatParts,
-      specials: draft.instrExterns, ...(missingFields(draft)||{}),
-      ...archApply(draft),
+      title: d.nom.trim(), composer: d.autor.trim(), arranger: d.arranjador.trim(),
+      obs: d.comentaris.trim(), aparicions: newAparicions, original: d.original,
+      estil: d.estil.trim(), general, estatParts,
+      specials: d.instrExterns, ...(missingFields(d)||{}),
+      ...placeOfDraft(d),
       nomesFisicPendent: !!piece.nomesFisicPendent && estatParts==='Per revisar',
     });
-    if(draft.revisats.size) marcaRevisada(piece, [...draft.revisats]);
+    if(d.revisats.size) marcaRevisada(piece, [...d.revisats]);
     persist(); refreshViews(); close();
-    if(opts.back) openDetail(piece.id);
   });
 }
 
-/* ================= REGISTRAR ================= */
+/* ================= REGISTRAR (3 passos) ================= */
+const REG = {d:null, step:1};
 function renderRegistrar(){
+  REG.d = newDraft(); REG.step = 1;
+  regRender();
+}
+function regRender(){
+  const d = REG.d, n = REG.step;
   const root = document.getElementById('registrarForm');
-  const draft = { nom:'', autor:'', arranjador:'', estil:'', original:null, projecteIds:[], general:null, estatParts:null, gPlaces:[], pPlaces:[], llocs:[], missing:{totes:false, sel:[], altres:'', touched:false}, instrExterns:[], comentaris:'' };
-
-  root.innerHTML = `
-    <div class="block">
-      <h3>Informació de l'obra</h3>
-      <div class="field" id="f_nom"><label>Títol <span class="req">*</span></label><input class="input" id="in_nom" placeholder="p. ex. Harry Potter"><div class="errtext">Cal indicar el títol de la partitura.</div></div>
-      <div class="field" id="f_autor"><label>Compositor <span class="req">*</span> <span class="opt">(ex. Giuseppe Verdi)</span></label><div id="cb_autor"></div><div class="errtext">Cal indicar el compositor.</div></div>
-      <div class="field"><label>Arranjador <span class="opt">opcional (ex. G. Verdi)</span></label><div id="cb_arranjador"></div></div>
-      <div class="field"><label>Estil <span class="opt">opcional</span></label><div id="cb_estil"></div></div>
-      ${originalHtml('f_original', null)}
-    </div>
-
-    <div class="block">
-      <h3>Projectes</h3>
-      <div class="field"><label>Projectes <span class="opt">opcional — pot ser-hi en diversos, o deixa-ho en blanc si és desconegut</span></label><div id="ms_projecte"></div></div>
-    </div>
-
-    <div class="block">
-      <h3>Estat de l'arxiu</h3>
-      ${archHtml('f', draft, false)}
-      <div class="field"><label>Instruments fora de la plantilla habitual <span class="opt">opcional</span></label><div id="ms_instr"></div></div>
-      <div class="note info hidden" id="f_preview" style="margin-top:10px"></div>
-    </div>
-
-    <div class="block">
-      <h3>Comentaris</h3>
-      <textarea class="textarea" id="in_comentaris" placeholder="Notes, enllaços, detalls a tenir en compte…"></textarea>
-    </div>
-
-    <div class="btnbar">
-      <button class="btn" id="regCancel">Neteja</button>
-      <button class="btn primary" id="regSave">Desa l'obra</button>
-    </div>
-  `;
-
-  function updatePreview(){
-    const box = document.getElementById('f_preview');
-    box.classList.toggle('hidden', !draft.general || !draft.estatParts);
-    if(!draft.general || !draft.estatParts) return;
-    const tmp = {general:draft.general, estatParts:draft.estatParts, ...(missingFields(draft)||{}), ...archApply(draft),
-      composer:draft.autor, arranger:draft.arranjador, autoriaConflicte:false,
-      pendentAcceptacio: STATE.role!=='gestio'};
-    const st = obraState(tmp);
-    document.getElementById('f_preview').innerHTML = `<b>Estat resultant:</b> ${esc(stateText(st))}`;
-  }
-
-  makeCombobox(document.getElementById('cb_autor'), {items:STATE.catalogs.autors, placeholder:'Cerca o afegeix un compositor', onChange:v=>{draft.autor=v; updatePreview();}});
-  makeCombobox(document.getElementById('cb_arranjador'), {items:STATE.catalogs.arranjadors, placeholder:'Cerca o afegeix un arranjador', onChange:v=>{draft.arranjador=v; updatePreview();}});
-  makeCombobox(document.getElementById('cb_estil'), {items:STATE.catalogs.estils, placeholder:'Cerca o afegeix un estil', onChange:v=>draft.estil=v});
-  bindOriginal(document.getElementById('f_original'), draft);
-
-  const projLabelOf = p=> p.name+(p.year?' ('+p.year+')':'');
-  const projItems = STATE.catalogs.projectes.slice().sort((a,b)=>(b.year||0)-(a.year||0)).map(projLabelOf);
-  makeMultiSelect(document.getElementById('ms_projecte'), {items:projItems, values:[], placeholder:'Cerca un projecte', allowCreate:false, onChange:v=>{
-    draft.projecteIds = v.map(label=>{ const found = STATE.catalogs.projectes.find(p=> projLabelOf(p)===label); return found? found.id : null; }).filter(Boolean);
-  }});
-
-  bindArch(root, 'f', draft, updatePreview);
-  makeMultiSelect(document.getElementById('ms_instr'), {items:STATE.catalogs.instrumentsExterns, values:[], placeholder:'p. ex. Cor, Piano', onChange:v=>draft.instrExterns=v});
-
-  document.getElementById('in_nom').addEventListener('input', e=>{ draft.nom=e.target.value; document.getElementById('f_nom').classList.remove('err'); });
-  document.getElementById('in_comentaris').addEventListener('input', e=>draft.comentaris=e.target.value);
-  updatePreview();
-
-  document.getElementById('regCancel').addEventListener('click', ()=> renderRegistrar());
-
-  document.getElementById('regSave').addEventListener('click', ()=>{
-    let ok = true;
-    if(!draft.nom.trim()){ document.getElementById('f_nom').classList.add('err'); ok=false; }
-    if(!draft.autor.trim()){ document.getElementById('f_autor').classList.add('err'); ok=false; }
-    if(!archValidate(root, 'f', draft)) ok=false;
-    if(!ok){ const e = root.querySelector('.err'); if(e) e.scrollIntoView({behavior:'smooth', block:'center'}); return; }
-
-    if(draft.autor && !STATE.catalogs.autors.includes(draft.autor)) STATE.catalogs.autors.push(draft.autor);
-    if(draft.arranjador && !STATE.catalogs.arranjadors.includes(draft.arranjador)) STATE.catalogs.arranjadors.push(draft.arranjador);
-    if(draft.estil && !STATE.catalogs.estils.includes(draft.estil)) STATE.catalogs.estils.push(draft.estil);
-    draft.instrExterns.forEach(i=>{ if(!STATE.catalogs.instrumentsExterns.includes(i)) STATE.catalogs.instrumentsExterns.push(i); });
-
-    const general = draft.general, estatParts = draft.estatParts;
-    const aparicions = draft.projecteIds.map(pid=>{
-      const pp = STATE.catalogs.projectes.find(x=>x.id===pid);
-      return { projecteId:pid, projecte:pp?pp.name:'', any:pp?pp.year:null, seccio:'', fitxers:0, estatParts };
-    });
-
-    const piece = {
-      id: uid('o'),
-      title: draft.nom.trim(),
-      composer: draft.autor.trim(),
-      arranger: draft.arranjador.trim(),
-      obs: draft.comentaris.trim(),
-      original: draft.original,
-      aparicions: aparicions,
-      estil: draft.estil.trim(),
-      fileCount: 0,
-      general: general,
-      estatParts: estatParts,
-      partsDetectades: [],
-      specials: draft.instrExterns,
-      partsNoDetectades: [], faltenInventari: [], totesFaltenParts: false,
-      ...(missingFields(draft)||{}),
-      ...archApply(draft),
-      autoriaConflicte: false,
-      fontsPaper: false, origenManual: true,
-      pendentAcceptacio: STATE.role!=='gestio',
-      registradaPer: STATE.user ? STATE.user.name : '', dataRegistre: new Date().toLocaleDateString('ca-ES', {day:'numeric',month:'long',year:'numeric'}),
-    };
-    STATE.pieces.push(piece);
-    persist();
-    setScreen('consultar');
-    STATE.filters.q = piece.title;
-    document.getElementById('searchInput').value = piece.title;
-    renderList();
+  const titles = ['Quina obra és?','Quines parts tenim?','On es troba?'];
+  const subs = ['Completa tots els apartats que puguis.', d.nom.trim(), ''];
+  root.innerHTML = `<div class="ctl"><button class="pill" id="regCancel">Cancel·la</button></div>
+    <div class="steps">${[1,2,3].map(i=>`${i>1?'<i></i>':''}<b class="${i===n?'on':i<n?'done':''}">${i}</b>`).join('')}</div>
+    <h1 class="h1" style="margin-top:22px">${titles[n-1]}</h1>${subs[n-1]?`<div class="sub">${esc(subs[n-1])}</div>`:''}
+    <div id="regBody" style="padding-bottom:110px;margin-top:${n===1?22:0}px"></div>
+    <div class="foot"><div class="foot-in">${n>1?'<button class="btn o back" id="regBack">Enrere</button>':''}<button class="btn" id="regNext">${n===3?"Desa l'obra":'Continua'}</button></div></div>`;
+  const secs = n===1 ? (d=> secObra(d))
+    : n===2 ? (d=> secParts(d))
+    : (d=> secUbic(d, true) + secProjectes() + secComentaris(d) + secResum());
+  const form = mountForm(document.getElementById('regBody'), d, secs, { scroller: window, onChange: ()=> { if(n===3) fillResum(d, null); } });
+  const go = k=>{ REG.step = k; regRender(); window.scrollTo(0,0); };
+  document.getElementById('regCancel').addEventListener('click', ()=>{
+    const touched = d.nom.trim() || d.autor.trim() || n>1;
+    if(touched && !confirm("Vols descartar el que has escrit?")) return;
+    REG.d = null; setScreen('consultar');
+  });
+  const back = document.getElementById('regBack'); if(back) back.addEventListener('click', ()=> go(n-1));
+  document.getElementById('regNext').addEventListener('click', ()=>{
+    const ok = n===1 ? vObra(d) : n===2 ? vParts(d) : vUbic(d);
+    if(!ok){ form.render(); form.scrollToError(); return; }
+    if(n<3) return go(n+1);
+    regSave(d);
   });
 }
+function regSave(d){
+  desaCatalegs(d);
+  const general = d.general, estatParts = d.estatParts;
+  const aparicions = d.projecteIds.map(pid=>{
+    const pp = STATE.catalogs.projectes.find(x=>x.id===pid);
+    return { projecteId:pid, projecte:pp?pp.name:'', any:pp?pp.year:null, seccio:'', fitxers:0, estatParts };
+  });
+  const piece = {
+    id: uid('o'),
+    title: d.nom.trim(), composer: d.autor.trim(), arranger: d.arranjador.trim(),
+    obs: d.comentaris.trim(), original: d.original, aparicions,
+    estil: d.estil.trim(), fileCount: 0, general, estatParts,
+    partsDetectades: [], specials: d.instrExterns,
+    partsNoDetectades: [], faltenInventari: [], totesFaltenParts: false,
+    ...(missingFields(d)||{}),
+    ...placeOfDraft(d),
+    autoriaConflicte: false, fontsPaper: false, origenManual: true,
+    pendentAcceptacio: STATE.role!=='gestio',
+    registradaPer: STATE.user ? STATE.user.name : '', dataRegistre: new Date().toLocaleDateString('ca-ES', {day:'numeric',month:'long',year:'numeric'}),
+  };
+  STATE.pieces.push(piece);
+  persist();
+  REG.d = null;
+  setScreen('consultar');
+  STATE.filters.q = piece.title;
+  document.getElementById('searchInput').value = piece.title;
+  renderList();
+}
+
 
 /* ================= CONFIGURACIÓ ================= */
 /* Configuració: cada llista és una targeta amb cercador. Per afegir-ne una, n'hi ha prou amb una línia a CFG_GROUPS. */
@@ -2110,7 +1959,7 @@ async function restoreBackup(file){
     </div>
   </div>`;
   document.body.appendChild(bg); document.body.classList.add('locked');
-  function close(){ bg.remove(); document.body.classList.remove('locked'); }
+  function close(){ bg.remove(); unlockBody(); }
   bg.querySelector('#rsClose').addEventListener('click', close);
   bg.querySelector('#rsGo').addEventListener('click', async ()=>{
     const go = bg.querySelector('#rsGo');
@@ -2225,7 +2074,7 @@ function editCatalogValue(listKey, cur, done){
   document.body.appendChild(bg); document.body.classList.add('locked');
   const input = bg.querySelector('#cv_val');
   setTimeout(()=>{ input.focus(); input.select(); }, 50);
-  function close(){ document.body.removeChild(bg); document.body.classList.remove('locked'); }
+  function close(){ document.body.removeChild(bg); unlockBody(); }
   bg.querySelector('#cvClose').addEventListener('click', close);
   bg.querySelector('#cvSave').addEventListener('click', ()=>{
     const val = input.value.trim();
@@ -2308,7 +2157,7 @@ function editProjecte(id, done){
     </div>
   </div>`;
   document.body.appendChild(bg); document.body.classList.add('locked');
-  function close(){ document.body.removeChild(bg); document.body.classList.remove('locked'); }
+  function close(){ document.body.removeChild(bg); unlockBody(); }
   bg.querySelector('#pClose').addEventListener('click', close);
   bg.querySelector('#pSave').addEventListener('click', ()=>{
     proj.name = bg.querySelector('#p_name').value.trim() || 'Sense nom';
@@ -2324,49 +2173,51 @@ function editProjecte(id, done){
 /* ================= AJUDA ================= */
 function openHelp(){
   const gestio = STATE.role==='gestio';
-  const tag = (cls, t)=> `<span class="statusline ${cls}"><span class="dot"></span>${t}</span>`;
+  const tag = (cls, t)=> `<span class="st ${cls}" style="display:inline-block;margin:6px 12px 0 0;font:600 13px/18px var(--sf)">${t}</span>`;
   const bg = document.createElement('div'); bg.className='sheet-bg';
   bg.innerHTML = `<div class="sheet">
-    <div class="sheet-head"><div class="htxt"><h2 style="display:block">Com funciona l'arxiu</h2></div>
+    <div class="sheet-head"><div class="htxt"><h2>Com funciona l'arxiu</h2></div>
       <button class="sheet-close" id="hClose" aria-label="Tanca"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
     </div>
     <div class="sheet-body">
       <p class="help-intro">L'arxiu recull totes les partitures de la banda: què tenim de cada obra, on és i si està completa per poder-la tocar.</p>
 
       <h3 class="help-h">Què vol dir cada color</h3>
-      <div class="help-row"><span class="swatch ok"></span><div><b>Verd — La podem tocar</b>Hi ha la partitura general del director i totes les parts de la banda.
-        <div class="tagrow">${tag('ok','Completa')}</div></div></div>
+      <div class="help-row"><span class="swatch ok"></span><div><b>Verd — La podem tocar</b>Hi ha la partitura general del director i totes les parts dels instruments.
+        <div>${tag('ok','Completa')}</div></div></div>
       <div class="help-row"><span class="swatch bad"></span><div><b>Vermell — Falta alguna cosa</b>Sabem que no tenim la partitura general, o que falten parts d'alguns instruments. Si en sabem quines, surten al costat.
-        <div class="tagrow">${tag('bad','Falta general')}${tag('bad','Falten parts')}${tag('bad','Falta general i parts')}</div></div></div>
+        <div>${tag('bad','Falta la general')}${tag('bad','Falten parts')}${tag('bad','Falta la general i parts')}</div></div></div>
       <div class="help-row"><span class="swatch warn"></span><div><b>Groc — Cal comprovar-ho</b>Encara no sabem si hi és tot: algú ha d'anar a l'arxiu a mirar-ho. «Cal revisar» vol dir que hi ha alguna dada per corregir.
-        <div class="tagrow">${tag('warn','Sense verificar')}${tag('warn','Parts sense verificar')}${tag('warn','General sense verificar')}<span class="minitag warn">Cal revisar</span></div></div></div>
-      <div class="help-row"><span>🎨</span><div><b>Si en surten dos</b>El vermell sempre va primer. Per exemple, «Falta general» i «Parts sense verificar» vol dir que no hi ha la general i que les parts encara s'han de comprovar.</div></div>
+        <div>${tag('warn','Per verificar')}${tag('warn','Parts sense verificar')}${tag('warn','General sense verificar')}${tag('warn','Cal revisar')}</div></div></div>
+      <div class="help-row"><span class="swatch"></span><div><b>Si en surten dos</b>El vermell sempre va primer. Per exemple, «Falta la general · Parts sense verificar» vol dir que no hi ha la general i que les parts encara s'han de comprovar.</div></div>
 
       <h3 class="help-h">On es troben les partitures</h3>
-      <div class="help-row"><span>☁️</span><div><b>Al Box</b>Hi ha una còpia digital. És el primer lloc on buscar-la.</div></div>
-      <div class="help-row"><span>🗄️</span><div><b>En físic</b>Hi ha una còpia en paper a l'arxiu (Armari 0P2). Quan només és en paper, la targeta ho indica a sota: «Només en físic».</div></div>
+      <div class="help-row"><span class="swatch"></span><div><b>Al Box</b>Hi ha una còpia digital. És el primer lloc on buscar-la.</div></div>
+      <div class="help-row"><span class="swatch"></span><div><b>En físic</b>Hi ha una còpia en paper a l'arxiu. Quan només és en paper, la targeta ho indica a sota, amb l'armari.</div></div>
 
       <h3 class="help-h">Com consultar-ho</h3>
-      <div class="help-row"><span>🔎</span><div><b>Cercador</b>Escriu qualsevol dada: títol, autor, projecte, any, instrument… Pots escriure diverses paraules, com «nadal 2023».</div></div>
-      <div class="help-row"><span>☰</span><div><b>Dues vistes</b>La vista ampliada mostra totes les etiquetes. La compacta mostra una línia per obra amb una marca de color a l'esquerra. En totes dues, l'índex de lletres de la dreta et porta directament a una lletra.</div></div>
-      <div class="help-row"><span>🎼</span><div><b>Projectes</b>Cada concert o actuació amb el seu repertori. Des de la fitxa d'una obra pots anar als projectes on s'ha tocat.</div></div>
+      <div class="help-row"><span class="swatch"></span><div><b>Cercador</b>Escriu qualsevol dada: títol, autor, projecte, any, instrument… Pots escriure diverses paraules, com «nadal 2023».</div></div>
+      <div class="help-row"><span class="swatch"></span><div><b>Dues vistes</b>Les fitxes mostren cada obra amb el seu estat. La llista n'és la versió compacta, amb una fila per obra i el color de l'estat al marc. En totes dues, l'índex de lletres de la dreta et porta directament a una lletra.</div></div>
+      <div class="help-row"><span class="swatch"></span><div><b>Projectes</b>Cada concert o actuació amb el seu repertori. Des de la fitxa d'una obra pots anar als projectes on s'ha tocat.</div></div>
       ${gestio ? `
       <h3 class="help-h">Amb el rol d'edició</h3>
-      <div class="help-row"><span>📋</span><div><b>Per revisar</b>La feina pendent agrupada: registres dels músics per acceptar, obres a revisar i obres per comprovar. Les obres on falten parts o la general es troben amb els filtres de la biblioteca.</div></div>
-      <div class="help-row"><span>✏️</span><div><b>Editar</b>Obre una obra o un projecte i toca «Edita». Des de «Per revisar», les obres s'obren directament per editar.</div></div>
-      <div class="help-row"><span>⚙️</span><div><b>Configuració</b>Les llistes que fan servir els formularis: ubicacions, compositors, plantilla de la banda… Si hi canvies un nom, es canvia a totes les obres.</div></div>`
+      <div class="help-row"><span class="swatch"></span><div><b>Per revisar</b>La feina pendent agrupada: registres dels músics per acceptar, obres a revisar i obres per comprovar. Les obres on falten parts o la general es troben amb els filtres.</div></div>
+      <div class="help-row"><span class="swatch"></span><div><b>Editar</b>Obre una obra o un projecte i toca el llapis. Des de «Per revisar», les obres s'obren directament per editar.</div></div>
+      <div class="help-row"><span class="swatch"></span><div><b>Configuració</b>Les llistes que fan servir els formularis: ubicacions, compositors, plantilla de la banda… Si hi canvies un nom, es canvia a totes les obres.</div></div>`
       : `
-      <div class="help-row"><span>➕</span><div><b>Registrar</b>Si trobes una obra que no hi és, registra-la. La Junta la revisarà i l'aprovarà.</div></div>`}
-      <div class="btnbar"><button class="btn primary" id="hOk">Entesos</button></div>
+      <div class="help-row"><span class="swatch"></span><div><b>Registrar</b>Si trobes una obra que no hi és, registra-la amb el botó +. La Junta la revisarà i l'aprovarà.</div></div>`}
+      ${STATE.user ? `<p class="hint" style="margin-top:22px">Sessió iniciada com a <b>${esc(STATE.user.name)}</b>. Per sortir, toca la icona de la capçalera.</p>` : ''}
+      <div class="btnbar"><button class="btn" id="hOk" style="flex:1">Entesos</button></div>
     </div>
   </div>`;
   document.body.appendChild(bg); document.body.classList.add('locked');
-  const close = ()=>{ document.body.removeChild(bg); document.body.classList.remove('locked'); };
+  const close = ()=>{ bg.remove(); unlockBody(); };
   bg.querySelector('#hClose').addEventListener('click', close);
   bg.querySelector('#hOk').addEventListener('click', close);
   bg.addEventListener('click', e=>{ if(e.target===bg) close(); });
 }
 document.getElementById('helpBtn').addEventListener('click', openHelp);
+
 
 /* ================= INIT ================= */
 document.querySelectorAll('[data-view]').forEach(b=> b.classList.toggle('on', b.dataset.view===STATE.view));
