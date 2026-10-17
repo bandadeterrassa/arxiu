@@ -99,7 +99,7 @@ body[data-screen=registrar] .fbar{display:none}
 .fr .tt,.tt{font:700 19px/24px var(--sf);letter-spacing:-.4px;overflow-wrap:anywhere}
 .fr .who{font:400 15px/20px var(--sf);color:var(--ink-2)}
 .fr .st{font:600 13px/18px var(--sf);margin-top:5px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.st.ok{color:var(--ink-3)} .st.warn{color:var(--warn-t)} .st.bad{color:var(--bad)}
+.st.ok{color:var(--ok)} .st.warn{color:var(--warn-t)} .st.bad{color:var(--bad)}
 .fr .loc,.loc{font:400 13px/18px var(--sf);color:var(--ink-3);margin-top:2px}
 .flag{font:700 13px/1 var(--sf);color:var(--warn-t);background:var(--warn-bg);border-radius:12px;height:24px;padding:0 10px;display:inline-grid;place-items:center;margin-left:auto}
 .fr.cmp{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;margin-bottom:8px}
@@ -373,6 +373,51 @@ label.rw .rl{color:var(--ink)}
 .alert b{font:800 15px/20px var(--sf);color:var(--warn-t)}.alert p{margin:4px 0 0;font:400 15px/21px var(--sf);color:var(--ink-2)}.alert .btn{margin-top:12px;background:#fff}
 .lnk{display:block;margin:26px auto 0;border:0;background:transparent;font:700 16px/22px var(--sf);padding:10px}.lnk.bad{color:var(--bad)}
 .sheet .revitem{border-top:1px solid var(--rule)}
+
+/* ---------- escriptori (≥900px): barra lateral i contingut ample. El mòbil no es toca. ---------- */
+@media (min-width:900px){
+  :root{--sb:272px}
+  body{padding-left:var(--sb)}
+  body.auth{padding-left:0}
+  .top{position:fixed;left:0;top:0;bottom:0;width:var(--sb);border-radius:0;padding:30px 20px;overflow-y:auto;z-index:40}
+  body[data-screen=config] .top{top:0;padding-bottom:30px}
+  body[data-screen=registrar] .top{display:block}
+  .top-brand{height:auto;flex-direction:column;align-items:flex-start;gap:18px;max-width:none;margin:0}
+  .brand b{font-size:19px;line-height:22px}
+  .fbar{position:fixed;left:0;top:176px;bottom:auto;transform:none;width:var(--sb);height:auto;border-radius:0;background:transparent;box-shadow:none;flex-direction:column;padding:0 20px;gap:6px;z-index:41}
+  body[data-screen=registrar] .fbar{display:flex}
+  .fbar button{width:100%;height:48px;display:flex;align-items:center;justify-content:flex-start;gap:14px;padding:0 16px;border-radius:14px;color:#C9D5E4;font:700 16px/1 var(--sf);cursor:pointer}
+  .fbar button::after{content:attr(aria-label)}
+  .fbar button:hover{background:rgba(255,255,255,.1)}
+  .fbar button.on{background:#fff;color:var(--navy)}
+  .fbar .ic{width:22px;height:22px}
+  .pt{max-width:none;margin:214px 0 0;height:auto;border-radius:0;background:transparent;display:flex;flex-direction:column;padding:0;gap:6px;border-top:1px solid rgba(255,255,255,.16);padding-top:18px}
+  .pt button{height:42px;text-align:left;padding:0 16px;border-radius:12px;cursor:pointer}
+  .pt button:hover{background:rgba(255,255,255,.1)}
+  .pt button.on{background:rgba(255,255,255,.18);color:#fff}
+  .qm{cursor:pointer}
+  main{max-width:1120px;padding:40px 56px 64px}
+  body[data-screen=registrar] main#mainRegistrar{padding-top:40px;max-width:760px}
+  main#mainConfig{max-width:880px}
+  #subBiblioteca .search{max-width:680px}
+  #list{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px;padding-right:44px}
+  #list > .letter{grid-column:1/-1;margin:22px 4px 2px}
+  #list .fr{margin-bottom:0}
+  .fr[data-id]:hover,.fr[data-pid]:hover,.fr[data-oid]:hover{box-shadow:0 4px 14px rgba(14,35,56,.14)}
+  .azindex{right:16px}
+  #subProjectes{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;align-items:start}
+  #subProjectes > :not(.fr){grid-column:1/-1}
+  #subProjectes .fr{margin-bottom:0}
+  .taskbody .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px}
+  .taskbody .list .fr{margin-bottom:0}
+  .page{left:var(--sb)}
+  .phead-in,.pbody,.sticky-foot .foot-in{max-width:760px}
+  .foot{left:var(--sb)}
+  .foot-in{max-width:760px}
+  .sheet-bg{align-items:center}
+  .sheet{margin-bottom:0;max-width:560px;max-height:88vh;border-radius:28px}
+  .savepill{left:calc(50% + var(--sb)/2);bottom:28px}
+}
 </style>
 </head>
 <body data-screen="consultar">
@@ -953,8 +998,9 @@ function setScreen(s){
   document.getElementById('navConsultar').classList.toggle('on', s==='consultar');
   document.getElementById('navRegistrar').classList.toggle('on', s==='registrar');
   document.getElementById('navConfig').classList.toggle('on', s==='config');
-  document.getElementById('topTitle').textContent = s==='config' ? 'Configuració' : 'Banda de Terrassa';
-  document.getElementById('topSub').textContent = s==='config' ? 'Banda de Terrassa · Arxiu' : 'Arxiu';
+  const desk = window.matchMedia('(min-width:900px)').matches;   // a l'escriptori, la barra lateral conserva el nom de l'app
+  document.getElementById('topTitle').textContent = s==='config' && !desk ? 'Configuració' : 'Banda de Terrassa';
+  document.getElementById('topSub').textContent = s==='config' && !desk ? 'Banda de Terrassa · Arxiu' : 'Arxiu';
   window.scrollTo(0,0);
   if(s==='registrar') renderRegistrar();
   if(s==='config') renderConfig();
@@ -1785,7 +1831,7 @@ function openEditPiece(id, opts={}){
         ${grp('Obra', [row('nom','Títol',t1,c1), row('autor','Compositor',t2,c2), row('arr','Arranjador',d.arranjador||'—'), row('estil','Estil',d.estil||'—'), row('orig','Partitura original', d.original===true?'Sí, comprada':d.original===false?'No':'—')])}
         ${grp('Partitures', [row('gen','Partitura general (director)',gv,gc), row('par','Parts dels instruments (músic)',pv,pc), ...(needArmari() ? [row('armari','Armari', d.llocs.join(', ') || (showErr?'Cal indicar-ho':'Sense indicar'), '')] : [])])}
         ${grp('Altres', [row('extra','Instrumentació extra', d.instrExterns.join(', ')||'—'), row('proj','Projectes', d.projecteIds.length ? String(d.projecteIds.length) : '—'), row('coment','Comentaris', d.comentaris.trim() ? d.comentaris.trim().slice(0,22)+(d.comentaris.trim().length>22?'…':'') : '—')])}
-        ${STATE.role==='gestio' ? `<button type="button" class="lnk bad" id="eDelete">Elimina l'obra</button>` : ''}
+        ${STATE.role==='gestio' ? `<button type="button" class="btn bd w" id="eDelete" style="margin-top:28px">Elimina l'obra</button>` : ''}
       </div>
       <div class="sticky-foot"><div class="foot-in"><button class="btn o back" id="eCancel">Cancel·la</button><button class="btn" id="eSave">Desa els canvis</button></div></div>`;
     el.scrollTop = y;
