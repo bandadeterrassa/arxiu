@@ -346,6 +346,33 @@ body.auth > .top, body.auth > main, body.auth > .fbar, body.auth #azindex{displa
 .lbody .btn{width:100%;margin-top:8px}
 
 @media (prefers-reduced-motion:reduce){ *,*::before,*::after{animation:none!important;transition:none!important} }
+
+/* ---------- fitxa i editor: llistes de files (v3) ---------- */
+.gt{font:700 13px/18px var(--sf);color:var(--ink-2);margin:26px 4px 8px}
+.gt.dis,.g2.dis{opacity:.4;pointer-events:none}
+.g2{background:#fff;border-radius:16px;box-shadow:var(--shadow-sm);overflow:hidden}
+.sheet .g2{background:var(--bg);box-shadow:none}
+.rw{display:flex;align-items:center;gap:12px;min-height:56px;padding:12px 16px;border:0;border-top:1px solid var(--rule);background:transparent;width:100%;text-align:left;font:400 15px/20px var(--sf);color:var(--ink)}
+.rw:first-child{border-top:0}
+button.rw:active{background:var(--band)}
+.rl{flex:1;color:var(--ink-2);min-width:0}
+.rv{font-weight:600;text-align:right;max-width:58%;overflow-wrap:anywhere}
+.rv.bad{color:var(--bad)}.rv.warn{color:var(--warn-t)}.rv.sel{color:var(--navy)}.rv.mut{color:var(--ink-3);font-weight:400}
+.rv div + div{margin-top:2px}
+.chv{width:16px;height:16px;fill:none;stroke:var(--ink-3);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex:none;margin-left:-4px}
+.ck{width:22px;height:22px;fill:none;stroke:var(--navy);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.rw.rad .rl{color:var(--ink);font-weight:600;font-size:17px}
+.rw.nt{display:block}.rw.nt p{margin:4px 0 0;color:var(--ink);font:400 15px/21px var(--sf);overflow-wrap:anywhere}
+label.rw .rl{color:var(--ink)}
+.stat{display:flex;gap:12px;align-items:flex-start;margin:4px 4px 6px}
+.stat i{width:12px;height:12px;border-radius:6px;margin-top:8px;flex:none;background:var(--c,var(--line))}
+.stat.ok{--c:var(--ok)}.stat.bad{--c:var(--bad)}.stat.warn{--c:var(--warn)}
+.stat b{display:block;font:800 22px/28px var(--sf);letter-spacing:-.4px}
+.stat span{display:block;font:400 15px/20px var(--sf);color:var(--ink-2);margin-top:2px}
+.alert{background:var(--warn-bg);border-radius:16px;padding:14px 16px;margin-top:18px}
+.alert b{font:800 15px/20px var(--sf);color:var(--warn-t)}.alert p{margin:4px 0 0;font:400 15px/21px var(--sf);color:var(--ink-2)}.alert .btn{margin-top:12px;background:#fff}
+.lnk{display:block;margin:26px auto 0;border:0;background:transparent;font:700 16px/22px var(--sf);padding:10px}.lnk.bad{color:var(--bad)}
+.sheet .revitem{border-top:1px solid var(--rule)}
 </style>
 </head>
 <body data-screen="consultar">
@@ -1011,7 +1038,7 @@ function openProjecteSheet(pid){
     const nq = norm(q);
     const results = nq.length>=2 ? STATE.pieces.filter(p=> !obres.includes(p) && searchText(p).includes(nq)).sort((a,b)=>a.title.localeCompare(b.title,'ca')).slice(0,12) : [];
     el.innerHTML = `<div class="pbody light">
-      <div class="ptop light">${editing ? '<button class="pill" id="pjCancel">Cancel·la</button>' : `<button class="ib" id="pjClose" aria-label="Enrere">${I.back}</button>`}</div>
+      ${editing ? '' : `<div class="ptop light"><button class="ib" id="pjClose" aria-label="Enrere">${I.back}</button></div>`}
       <div style="display:flex;align-items:center;gap:12px"><h1 class="h1" style="flex:1;min-width:0;overflow-wrap:anywhere">${esc(pr.name)}</h1>${editing?`<button class="ib" id="pjData" aria-label="Edita el nom, l'any o l'enllaç">${I.edit}</button>`:''}</div>
       <div class="sub">${pr.year||'Sense any'}${editing?' · Estàs editant el repertori':''}</div>
       ${!editing && pr.link?`<a class="btn s" style="margin-top:16px" href="${esc(pr.link)}" target="_blank" rel="noopener">Obre la carpeta a Box</a>`:''}
@@ -1290,7 +1317,7 @@ function openFilters(){
 document.getElementById('openFilters').addEventListener('click', openFilters);
 
 
-/* ---------- fitxa de l'obra ---------- */
+/* ---------- fitxa de l'obra: estat a dalt i files agrupades ---------- */
 function openDetail(id){
   const p = STATE.pieces.find(x=>x.id===id);
   if(!p) return;
@@ -1299,9 +1326,17 @@ function openDetail(id){
   const aparicions = (p.aparicions||[]).slice().sort((a,b)=>(b.any||0)-(a.any||0));
   const canEdit = STATE.role==='gestio';
   const gl = FACETA.general[st.G], pl = FACETA.parts[st.P];
-  const partsTxt = st.P==='falta' ? 'Falten' + (st.detail && st.detail!=='totes' ? ' · '+st.detail : '') : pl.label;
+  const partsTxt = st.P==='falta' ? 'Falten' + (st.detail && st.detail!=='totes' ? ' '+st.detail : st.detail==='totes' ? ' totes' : '') : pl.label;
   const who = [p.composer, p.arranger?('Arr. '+p.arranger):'', p.estil].filter(Boolean).join(' · ');
-  const card = (cls, t, b)=> `<div class="fr ${cls}"><div class="ct">${t}</div>${b}</div>`;
+  const sub = st.detail && st.detail!=='totes' ? st.detail : st.extra;
+  const rw = (l, v, cls, chev, attrs)=> `<div class="rw" ${attrs||''}><span class="rl">${l}</span><span class="rv ${cls||''}">${v}</span>${chev?'<svg class="chv" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>':''}</div>`;
+  const nt = (l, txt)=> `<div class="rw nt"><div><span class="rl">${l}</span><p>${txt}</p></div></div>`;
+  const grp = (t, rows)=> rows.length ? `<div class="gt">${t}</div><div class="g2">${rows.join('')}</div>` : '';
+  const notes = [];
+  if(p.obs) notes.push(nt('Comentaris', esc(p.obs)));
+  if(n.partitura.length) notes.push(nt('Sobre la partitura', n.partitura.map(esc).join('<br>')));
+  if(n.compte.length) notes.push(nt('A tenir en compte', n.compte.map(esc).join('<br>')));
+  if(p.revisada || deteccioIA(p)) notes.push(nt('Revisió', [deteccioIA(p)?'Fitxa elaborada amb IA.':'', p.revisada?`Revisada per ${esc(p.revisada.per||'—')} el ${esc(p.revisada.data||'')}.`:''].filter(Boolean).join(' ')));
 
   const el = document.createElement('div'); el.className='page';
   el.innerHTML = `<div class="phead"><div class="phead-in">
@@ -1310,20 +1345,12 @@ function openDetail(id){
       ${who?`<div class="pwho">${esc(who)}</div>`:''}
     </div></div>
     <div class="pbody">
-      ${n.revisar.length ? `<div class="fr warn"><div class="ct">Cal revisar</div>${n.revisar.map(r=>`<p class="t2">${esc(r)}</p>`).join('')}${canEdit?'<button class="btn o s" id="dRevisada">Marca com a revisada</button>':''}</div>` : ''}
-      ${card(st.cls, 'Estat', `<div class="kv">
-        <div class="i"><span class="k">Partitura general (director)</span><span class="v ${gl.cls==='ok'?'':gl.cls}">${esc(gl.label)}</span></div>
-        <div class="i"><span class="k">Parts dels instruments (músic)</span><span class="v ${pl.cls==='ok'?'':pl.cls}">${esc(partsTxt)}</span></div>
-        <div class="i"><span class="k">Ubicació</span><span class="v">${placeLines(p)}</span></div>
-        ${p.specials&&p.specials.length ? `<div class="i"><span class="k">Instrumentació extra</span><span class="v">${esc(p.specials.join(', '))}</span></div>` : ''}
-        <div class="i"><span class="k">Partitura original</span><span class="v">${esc(originalText(p))}</span></div>
-        ${p.de ? `<div class="i"><span class="k">De</span><span class="v">${esc(p.de)}</span></div>` : ''}
-      </div>`)}
-      ${aparicions.length ? card('nv', 'Projectes', `<div class="kv">${aparicions.map(a=>{ const pr=projById(a.projecteId); return `<div class="i" ${pr?`data-goproj="${esc(pr.id)}" role="button" tabindex="0" style="cursor:pointer"`:''}><span class="v">${esc(pr?pr.name:a.projecte)}</span><span style="color:var(--ink-2)">${(pr?pr.year:a.any)||'Sense any'}</span></div>`; }).join('')}</div>`) : ''}
-      ${n.partitura.length ? card('nv', 'Sobre la partitura', n.partitura.map(r=>`<p class="t2">${esc(r)}</p>`).join('')) : ''}
-      ${n.compte.length ? card('nv', 'A tenir en compte', n.compte.map(r=>`<p class="t2">${esc(r)}</p>`).join('')) : ''}
-      ${p.obs ? card('nv', 'Comentaris', `<p class="t2" style="overflow-wrap:anywhere">${esc(p.obs)}</p>`) : ''}
-      ${p.revisada || deteccioIA(p) ? card('nv', 'Revisió', `${deteccioIA(p)?'<p class="t2">Fitxa elaborada amb IA.</p>':''}${p.revisada?`<p class="t2">Revisada per ${esc(p.revisada.per||'—')} el ${esc(p.revisada.data||'')}.</p>`:''}`) : ''}
+      <div class="stat ${st.cls}" style="margin-top:2px"><i></i><div><b>${esc(st.label)}</b>${sub?`<span>${esc(sub)}</span>`:''}</div></div>
+      ${n.revisar.length ? `<div class="alert"><b>Cal revisar</b>${n.revisar.map(r=>`<p>${esc(r)}</p>`).join('')}${canEdit?'<button class="btn o s" id="dRevisada">Marca com a revisada</button>':''}</div>` : ''}
+      ${grp('Partitures', [rw('Partitura general (director)', esc(gl.label==='Sí'?'Sí':st.G==='falta'?'No la tenim':gl.label), gl.cls==='ok'?'':gl.cls), rw('Parts dels instruments (músic)', esc(partsTxt), pl.cls==='ok'?'':pl.cls), rw('Ubicació', placeLines(p))])}
+      ${grp('Detalls', [ ...(p.specials&&p.specials.length ? [rw('Instrumentació extra', esc(p.specials.join(', ')))] : []), rw('Partitura original', esc(originalText(p))), ...(p.de ? [rw('De', esc(p.de))] : []) ])}
+      ${grp('Projectes', aparicions.map(a=>{ const pr=projById(a.projecteId); return rw(esc(pr?pr.name:a.projecte), (pr?pr.year:a.any)||'Sense any', '', !!pr, pr?`data-goproj="${esc(pr.id)}" role="button" tabindex="0" style="cursor:pointer"`:''); }))}
+      ${grp('Notes', notes)}
     </div>
     ${canEdit && p.pendentAcceptacio ? `<div class="sticky-foot"><div class="foot-in"><button class="btn bd" id="dReject">Elimina</button><button class="btn" id="dAccept">Accepta el registre</button></div></div>` : ''}`;
   document.body.appendChild(el); document.body.classList.add('locked');
@@ -1697,56 +1724,221 @@ function fillResum(d, base){
   if(sub && !base && STATE.role!=='gestio') sub.textContent = "Així es veurà l'obra. Un gestor haurà d'acceptar el registre.";
 }
 
-/* ================= EDITAR OBRA EXISTENT ================= */
+
+/* ================= EDITAR OBRA: llista de files; cada fila s'obre en una fulla amb una sola pregunta ================= */
 function openEditPiece(id, opts={}){
   const piece = STATE.pieces.find(x=>x.id===id);
   if(!piece) return;
   const d = newDraft(piece);
   const revItems = revisioItems(piece);
-  const el = document.createElement('div'); el.className='page';
-  el.innerHTML = `<div class="pbody light">
-      <div class="ptop light"><button class="pill" id="eCancel">Cancel·la</button></div>
-      <h1 class="h1">Edita l'obra</h1><div class="sub">${esc(piece.title)}</div>
-      ${revItems.length ? `<div class="fr warn" style="margin-top:18px"><div class="ct">Cal revisar</div>
-        <p class="t2">Marca cada punt quan l'hagis comprovat o corregit. En desar, l'obra sortirà de «Cal revisar».</p>
-        ${revItems.map(it=>`<label class="revitem"><input type="checkbox" data-rev="${esc(it.key)}"><span>${esc(it.text)}</span></label>`).join('')}</div>` : ''}
-      <div id="eForm" style="margin-top:22px"></div>
-      ${STATE.role==='gestio' ? `<button class="btn bd w" id="eDelete" style="margin-top:28px">Elimina l'obra</button>` : ''}
-    </div>
-    <div class="sticky-foot"><div class="foot-in"><button class="btn o back" id="eCancel2">Cancel·la</button><button class="btn" id="eSave">Desa els canvis</button></div></div>`;
+  const C = STATE.catalogs;
+  let showErr = false;
+  const el = document.createElement('div'); el.className = 'page';
   document.body.appendChild(el); document.body.classList.add('locked');
-  const secs = d=> band('Obra') + secObra(d) + secParts(d) + secUbic(d) + secProjectes() + secComentaris(d) + secResum();
-  const ctx = {
-    scroller: el,
-    onChange: ()=> fillResum(d, piece),
-    onPerson: (key, v)=>{
-      const keys = key==='autor' ? (v!==(piece.composer||'') ? ['autoria'] : []) : (v!==(piece.arranger||'') ? ['arranjador','autoria'] : []);
-      keys.forEach(k=>{ const cb = el.querySelector(`[data-rev="${k}"]`); if(cb && !cb.checked){ cb.checked = true; d.revisats.add(k); } });
-    },
+  const projLab = p=> p.name+(p.year?' ('+p.year+')':'');
+
+  /* ---- ubicació: en mode «mateix lloc» la general i les parts comparteixen la llista uPlaces ---- */
+  const gKey = ()=> d.same ? 'uPlaces' : 'gPlaces';
+  const pKey = ()=> (d.same || !applG(d)) ? 'uPlaces' : 'pPlaces';
+  const togglePlace = (w, v)=>{ const k = w==='g' ? gKey() : pKey(); d[k] = d[k].includes(v) ? d[k].filter(x=>x!==v) : [...d[k], v]; };
+  const setSame = on=>{
+    if(on){ d.uPlaces = (applG(d) ? d.gPlaces : d.pPlaces).slice(); d.same = true; }
+    else { d.same = false; d.gPlaces = d.uPlaces.slice(); d.pPlaces = d.uPlaces.slice(); }
   };
-  const form = mountForm(el.querySelector('#eForm'), d, secs, ctx);
-  el.querySelectorAll('[data-rev]').forEach(cb=> cb.addEventListener('change', ()=>{
-    if(cb.checked) d.revisats.add(cb.dataset.rev); else d.revisats.delete(cb.dataset.rev);
-    fillResum(d, piece);
-  }));
+  const needsLoc = ()=> applG(d) || applP(d);
+  const pendRev = ()=> revItems.filter(it=> !d.revisats.has(it.key)).length;
+  const needArmari = ()=> needsLoc() && placeOfDraft(d).enPaper && (C.ubicacions||[]).length>1;
+
+  /* ---- text de cada fila ---- */
+  const where = arr=> arr.length ? ' · '+placesText(arr) : '';
+  function gVal(){
+    if(!d.general) return ['Cal indicar-ho','bad'];
+    if(d.general==='no') return ['No','bad'];
+    const arr = d[gKey()];
+    if(showErr && !arr.length) return ['Cal indicar on és','bad'];
+    return [(d.general==='si'?'Sí':'No ho sé') + where(arr), d.general==='si'?'':'warn'];
+  }
+  function pVal(){
+    if(!d.estatParts) return ['Cal indicar-ho','bad'];
+    if(d.estatParts==='Falten parts'){ const m = d.missing, l = missingList(m); return [m.totes ? 'Falten totes' : l.length ? 'Falten '+l.join(', ') : 'Falten', 'bad']; }
+    const arr = d[pKey()];
+    if(showErr && !arr.length) return ['Cal indicar on són','bad'];
+    return [(d.estatParts==='Completa'?'Completes':'No ho sé') + where(arr), d.estatParts==='Completa'?'':'warn'];
+  }
+  const row = (key, label, val, cls)=> `<button type="button" class="rw" data-row="${key}"><span class="rl">${label}</span><span class="rv ${cls||''}">${esc(val)}</span><svg class="chv" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>`;
+  const grp = (t, rows)=> `<div class="gt">${t}</div><div class="g2">${rows.join('')}</div>`;
+
+  function renderMain(){
+    const y = el.scrollTop;
+    const tmp = JSON.parse(JSON.stringify({...piece, title:d.nom.trim()||piece.title, composer:d.autor, arranger:d.arranjador, estil:d.estil, general:d.general, estatParts:d.estatParts,
+      specials:d.instrExterns, ...(missingFields(d)||{}), ...placeOfDraft(d)}));
+    marcaRevisada(tmp, [...d.revisats]);
+    const st = obraState(tmp);
+    const sub = st.detail && st.detail!=='totes' ? st.detail : st.extra;
+    const [gv, gc] = gVal(), [pv, pc] = pVal();
+    const need = (v,k)=> showErr && !v.trim() ? ['Cal indicar-ho','bad'] : [v||'—',''];
+    const [t1,c1] = need(d.nom,'nom'), [t2,c2] = need(d.autor,'autor');
+    el.innerHTML = `<div class="phead"><div class="phead-in"><div class="ptitle" style="margin-top:6px"><h1>Edita l'obra</h1></div><div class="pwho">${esc(piece.title)}</div></div></div>
+      <div class="pbody">
+        <div class="stat ${st.cls}"><i></i><div><b>${esc(st.label)}</b>${sub?`<span>${esc(sub)}</span>`:''}</div></div>
+        ${revItems.length ? `<div class="g2" style="margin-top:14px">${row('rev','<b style="color:var(--warn-t)">Cal revisar</b>', pendRev() ? pendRev()+(pendRev()===1?' punt':' punts') : 'Revisat', pendRev()?'warn':'')}</div>` : ''}
+        ${grp('Obra', [row('nom','Títol',t1,c1), row('autor','Compositor',t2,c2), row('arr','Arranjador',d.arranjador||'—'), row('estil','Estil',d.estil||'—'), row('orig','Partitura original', d.original===true?'Sí, comprada':d.original===false?'No':'—')])}
+        ${grp('Partitures', [row('gen','Partitura general (director)',gv,gc), row('par','Parts dels instruments (músic)',pv,pc), ...(needArmari() ? [row('armari','Armari', d.llocs.join(', ') || (showErr?'Cal indicar-ho':'Sense indicar'), '')] : [])])}
+        ${grp('Altres', [row('extra','Instrumentació extra', d.instrExterns.join(', ')||'—'), row('proj','Projectes', d.projecteIds.length ? String(d.projecteIds.length) : '—'), row('coment','Comentaris', d.comentaris.trim() ? d.comentaris.trim().slice(0,22)+(d.comentaris.trim().length>22?'…':'') : '—')])}
+        ${STATE.role==='gestio' ? `<button type="button" class="lnk bad" id="eDelete">Elimina l'obra</button>` : ''}
+      </div>
+      <div class="sticky-foot"><div class="foot-in"><button class="btn o back" id="eCancel">Cancel·la</button><button class="btn" id="eSave">Desa els canvis</button></div></div>`;
+    el.scrollTop = y;
+    el.querySelectorAll('[data-row]').forEach(b=> b.addEventListener('click', ()=> openSheet(b.dataset.row)));
+    el.querySelector('#eCancel').addEventListener('click', close);
+    el.querySelector('#eSave').addEventListener('click', save);
+    const del = el.querySelector('#eDelete');
+    if(del) del.addEventListener('click', ()=>{
+      if(STATE.role!=='gestio') return;
+      if(!confirm(`Segur que vols eliminar «${piece.title}» de l'arxiu?\n\nDesapareixerà per a tothom.`)) return;
+      STATE.pieces = STATE.pieces.filter(x=> x.id!==piece.id);
+      persist(); el.remove(); unlockBody(); refreshViews(); showSavePill(`«${piece.title}» eliminada`);
+    });
+  }
   function close(){ el.remove(); unlockBody(); if(opts.back) openDetail(piece.id); }
-  el.querySelector('#eCancel').addEventListener('click', close);
-  el.querySelector('#eCancel2').addEventListener('click', close);
-  const del = el.querySelector('#eDelete');
-  if(del) del.addEventListener('click', ()=>{
-    if(STATE.role!=='gestio') return;
-    if(!confirm(`Segur que vols eliminar «${piece.title}» de l'arxiu?\n\nDesapareixerà per a tothom.`)) return;
-    STATE.pieces = STATE.pieces.filter(x=> x.id!==piece.id);
-    persist(); el.remove(); unlockBody(); refreshViews(); showSavePill(`«${piece.title}» eliminada`);
-  });
-  el.querySelector('#eSave').addEventListener('click', ()=>{
-    const ok1 = vObra(d), ok2 = vParts(d), ok3 = vUbic(d);
-    if(!(ok1 && ok2 && ok3)){ form.render(); form.scrollToError(); return; }
+
+  /* ---- fulles: una pregunta cada una ---- */
+  const radio = (act, items, cur)=> `<div class="g2">${items.map(([v,l])=>`<button type="button" class="rw rad" data-s="${act}" data-v="${esc(v)}"><span class="rl">${l}</span>${cur===v?'<svg class="ck" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>':''}</button>`).join('')}</div>`;
+  const toggles = (w, arr)=> `<div class="three" style="margin-top:6px">${Object.entries(PLACE_LABEL).map(([k,l])=>`<button type="button" class="${arr.includes(k)?'on':''}" data-s="place" data-w="${w}" data-v="${k}">${l}</button>`).join('')}</div>`;
+  const chipsH = (items, sel, act)=> `<div class="chips">${items.map(x=>`<button type="button" class="chip ${sel(x)?'on':''}" data-s="${act}" data-v="${esc(x)}">${esc(x)}</button>`).join('')}</div>`;
+  const switchRow = (label, on, key)=> `<label class="rw"><span class="rl">${label}</span><span class="switch"><input type="checkbox" data-sw="${key}" ${on?'checked':''}><span></span></span></label>`;
+  const groupsParts = ()=> groupParts(C.parts||[]);
+
+  const SHEETS = {
+    nom:  {t:'Títol', body:()=> `<input class="inp2" data-in="nom" value="${esc(d.nom)}" autocomplete="off">`},
+    autor:{t:'Compositor', sub:'Per exemple: Giuseppe Verdi', body:()=> `<div id="cbx"></div>`, mount:r=> makeCombobox(r.querySelector('#cbx'), {items:C.autors, value:d.autor, placeholder:'Cerca o escriu un compositor', onChange:v=>{ d.autor=v; if(v!==(piece.composer||'')) d.revisats.add('autoria'); }})},
+    arr:  {t:'Arranjador', sub:'Si en té', body:()=> `<div id="cbx"></div>`, mount:r=> makeCombobox(r.querySelector('#cbx'), {items:C.arranjadors, value:d.arranjador, placeholder:'Cerca o escriu un arranjador', onChange:v=>{ d.arranjador=v; if(v!==(piece.arranger||'')){ d.revisats.add('arranjador'); d.revisats.add('autoria'); } }})},
+    estil:{t:'Estil', body:()=>{
+      const l = [...C.estils, ...d.estilNous.filter(x=>!C.estils.includes(x))];
+      return chipsH(l, x=>d.estil===x, 'estil') .replace(/<\/div>$/, `<button type="button" class="chip add" data-s="estilAdd">+ Afegeix un estil</button></div>`)
+        + (d.adding==='estil' ? `<div class="addline"><input class="inp2" data-in="estilNew" value="${esc(d.estilNew)}" placeholder="Nom de l'estil" autocomplete="off"><button type="button" class="btn s" data-s="estilOk">Afegeix</button></div>` : ''); }},
+    orig: {t:'Partitura original', sub:'Opcional', body:()=> radio('orig', [['si','Sí, comprada'],['no','No']], d.original===true?'si':d.original===false?'no':'')},
+    gen:  {t:'Partitura general (director)', sub:'Tenim la partitura del director?', body:()=> radio('gen', [['si','Sí'],['no','No'],['desconegut','No ho sé']], d.general)
+      + (applG(d) ? `<div class="gt" style="margin-top:20px">On és?</div>${toggles('g', d[gKey()])}` : '')},
+    par:  {t:'Parts dels instruments (músic)', sub:'Tenim totes les parts?', body:()=> radio('par', [['Completa','Completes'],['Falten parts','En falten'],['Per revisar','No ho sé']], d.estatParts)
+      + (d.estatParts==='Falten parts' ? `<div class="g2" style="margin-top:14px"><button type="button" class="rw" data-s="goto" data-v="falten"><span class="rl">Quines falten?</span><span class="rv sel">${esc(d.missing.totes?'Totes':missingList(d.missing).join(', ')||'Cap')}</span><svg class="chv" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div>` : '')
+      + (applP(d) ? `<div class="gt" style="margin-top:20px">On són les que tenim?</div>`
+          + (applG(d) ? `<div class="g2">${switchRow('Al mateix lloc que la general', d.same, 'same')}</div>` : '')
+          + ((!applG(d) || !d.same) ? toggles('p', d[pKey()]) : '') : '')},
+    falten:{t:'Quines falten?', sub:'Parts dels instruments', parent:'par', body:()=> `<div class="g2">${switchRow('Totes les parts', d.missing.totes, 'totes')}</div>
+      <div class="g2 ${d.missing.totes?'dis':''}" style="margin-top:14px">${groupsParts().map(g=>{ const on = g.items.filter(x=>d.missing.sel.includes(x));
+        return `<button type="button" class="rw" data-s="goto" data-v="fam:${esc(g.name)}"><span class="rl">${esc(g.name)}</span><span class="rv ${on.length?'sel':'mut'}">${esc(on.length?on.join(', '):'Cap')}</span><svg class="chv" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>`; }).join('')}</div>
+      <div class="gt ${d.missing.totes?'dis':''}" style="margin-top:18px">Altres veus <span style="font-weight:400">separades per comes</span></div>
+      <input class="inp2" data-in="altres" value="${esc(d.missing.altres)}" placeholder="Per exemple: Clarinet mi bemoll" autocomplete="off" ${d.missing.totes?'disabled':''}>`},
+    armari:{t:'Armari', sub:'On és a l\'arxiu físic? Pots marcar-ne més d\'un.', body:()=> chipsH(C.ubicacions||[], x=>d.llocs.includes(x), 'lloc')},
+    extra:{t:'Instrumentació extra', sub:'Opcional', body:()=>{
+      const l = [...C.instrumentsExterns, ...d.extraNous.filter(x=>!C.instrumentsExterns.includes(x))];
+      return chipsH(l, x=>d.instrExterns.includes(x), 'extra').replace(/<\/div>$/, `<button type="button" class="chip add" data-s="extraAdd">+ Afegeix</button></div>`)
+        + (d.adding==='extra' ? `<div class="addline"><input class="inp2" data-in="extraNew" value="${esc(d.extraNew)}" placeholder="Per exemple: Cor, Piano" autocomplete="off"><button type="button" class="btn s" data-s="extraOk">Afegeix</button></div>` : ''); }},
+    proj: {t:'Projectes', sub:'Opcional. Pot ser-hi en diversos.', body:()=> `<div id="cbx"></div>`, mount:r=>{
+      const items = C.projectes.slice().sort((a,b)=>(b.year||0)-(a.year||0)).map(projLab);
+      const cur = d.projecteIds.map(pid=>{ const pp = C.projectes.find(x=>x.id===pid); return pp?projLab(pp):null; }).filter(Boolean);
+      makeMultiSelect(r.querySelector('#cbx'), {items, values:cur, placeholder:'Cerca un projecte', allowCreate:false, onChange:v=>{
+        d.projecteIds = v.map(l=>{ const f = C.projectes.find(pp=> projLab(pp)===l); return f ? f.id : null; }).filter(Boolean); }}); }},
+    coment:{t:'Comentaris', sub:'Opcional', body:()=> `<textarea class="textarea" data-in="coment" placeholder="Notes, enllaços, detalls a tenir en compte…">${esc(d.comentaris)}</textarea>`},
+    rev:  {t:'Cal revisar', sub:'Marca cada punt quan l\'hagis comprovat o corregit. En desar, l\'obra sortirà de «Cal revisar».', body:()=> revItems.map(it=>`<label class="revitem"><input type="checkbox" data-rev="${esc(it.key)}" ${d.revisats.has(it.key)?'checked':''}><span>${esc(it.text)}</span></label>`).join('')},
+  };
+  function openSheet(first){
+    const bg = document.createElement('div'); bg.className = 'sheet-bg';
+    bg.innerHTML = `<div class="sheet"><div class="sheet-head"><div class="htxt" id="shT"></div><button class="sheet-close" id="shX" aria-label="Tanca"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>
+      <div class="sheet-body" id="shB"></div><div class="btnbar"><button class="btn" id="shOk" style="flex:1">Fet</button></div></div>`;
+    document.body.appendChild(bg);
+    let view = first;
+    const body = bg.querySelector('#shB');
+    function paint(){
+      const S = view.startsWith('fam:') ? null : SHEETS[view];
+      if(S){
+        bg.querySelector('#shT').innerHTML = `<div style="display:flex;gap:12px;align-items:center">${S.parent?'<button type="button" class="ib" id="shBack" aria-label="Enrere" style="flex:none">'+I.back+'</button>':''}<div style="min-width:0"><h2 style="font-size:24px;line-height:28px">${esc(S.t)}</h2>${S.sub?`<div class="hsub">${esc(S.sub)}</div>`:''}</div></div>`;
+        body.innerHTML = S.body();
+        if(S.mount) S.mount(body);
+      } else {
+        const g = groupsParts().find(x=> 'fam:'+x.name===view);
+        bg.querySelector('#shT').innerHTML = `<div style="display:flex;gap:12px;align-items:center"><button type="button" class="ib" id="shBack" aria-label="Enrere" style="flex:none">${I.back}</button><div><h2 style="font-size:24px;line-height:28px">${esc(g?g.name:'')}</h2><div class="hsub">Marca les que falten</div></div></div>`;
+        body.innerHTML = `<div class="g2">${(g?g.items:[]).map(x=>`<button type="button" class="rw rad" data-s="miss" data-v="${esc(x)}"><span class="rl">${esc(x)}</span>${d.missing.sel.includes(x)?'<svg class="ck" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>':''}</button>`).join('')}</div>`;
+      }
+      const back = bg.querySelector('#shBack');
+      if(back) back.addEventListener('click', ()=>{ view = view.startsWith('fam:') ? 'falten' : SHEETS[view].parent; paint(); });
+      const inp = body.querySelector('input.inp2, textarea');
+      if(inp && !('ontouchstart' in window)) inp.focus();
+      const ad = body.querySelector('[data-in=estilNew],[data-in=extraNew]'); if(ad) ad.focus();
+    }
+    const done = ()=>{ bg.remove(); renderMain(); };
+    function after(){ afterAnswer(d); paint(); renderMain(); bg.style.visibility = ''; }
+    const A = {
+      estil:(v)=>{ d.estil = d.estil===v ? '' : v; },
+      estilAdd:()=>{ d.adding = d.adding==='estil' ? null : 'estil'; },
+      estilOk:()=>{ addNew('estilNous','estilNew',C.estils, val=>{ d.estil = val; }); },
+      orig:(v)=>{ const b = v==='si'; d.original = d.original===b ? null : b; },
+      gen:(v)=>{ d.general = v; },
+      par:(v)=>{ d.estatParts = v; },
+      place:(v,w)=>{ togglePlace(w, v); },
+      goto:(v)=>{ view = v; },
+      miss:(v)=>{ const m = d.missing; m.sel = m.sel.includes(v) ? m.sel.filter(x=>x!==v) : [...m.sel, v]; m.touched = true; },
+      lloc:(v)=>{ d.llocs = d.llocs.includes(v) ? d.llocs.filter(x=>x!==v) : [...d.llocs, v]; },
+      extra:(v)=>{ d.instrExterns = d.instrExterns.includes(v) ? d.instrExterns.filter(x=>x!==v) : [...d.instrExterns, v]; },
+      extraAdd:()=>{ d.adding = d.adding==='extra' ? null : 'extra'; },
+      extraOk:()=>{ addNew('extraNous','extraNew',C.instrumentsExterns, val=>{ if(!d.instrExterns.includes(val)) d.instrExterns.push(val); }); },
+    };
+    function addNew(listKey, newKey, catalog, pick){
+      const raw = (d[newKey]||'').trim(); d.adding = null; if(!raw) return;
+      const found = [...catalog, ...d[listKey]].find(x=> norm(x)===norm(raw));
+      if(!found) d[listKey].push(raw);
+      pick(found || raw); d[newKey] = '';
+    }
+    bg.addEventListener('click', e=>{
+      if(e.target===bg){ done(); return; }
+      const b = e.target.closest('[data-s]'); if(!b || !bg.contains(b)) return;
+      A[b.dataset.s](b.dataset.v, b.dataset.w); after();
+    });
+    bg.addEventListener('change', e=>{
+      const sw = e.target.dataset && e.target.dataset.sw, rv = e.target.dataset && e.target.dataset.rev;
+      if(sw==='same') setSame(e.target.checked);
+      else if(sw==='totes'){ d.missing.totes = e.target.checked; d.missing.touched = true; }
+      else if(rv){ if(e.target.checked) d.revisats.add(rv); else d.revisats.delete(rv); renderMain(); return; }
+      else return;
+      after();
+    });
+    bg.addEventListener('input', e=>{
+      const k = e.target.dataset && e.target.dataset.in; if(!k) return;
+      if(k==='nom') d.nom = e.target.value;
+      else if(k==='altres'){ d.missing.altres = e.target.value; d.missing.touched = true; }
+      else if(k==='coment') d.comentaris = e.target.value;
+      else if(k==='estilNew') d.estilNew = e.target.value;
+      else if(k==='extraNew') d.extraNew = e.target.value;
+    });
+    bg.addEventListener('keydown', e=>{
+      if(e.key!=='Enter') return;
+      const k = e.target.dataset && e.target.dataset.in;
+      if(k==='estilNew'){ e.preventDefault(); A.estilOk(); after(); }
+      else if(k==='extraNew'){ e.preventDefault(); A.extraOk(); after(); }
+      else if(k==='nom'){ e.preventDefault(); done(); }
+    });
+    bg.querySelector('#shX').addEventListener('click', done);
+    bg.querySelector('#shOk').addEventListener('click', done);
+    paint();
+  }
+
+  function save(){
+    d.err = {};
+    const okNom = !!d.nom.trim(), okAut = !!d.autor.trim();
+    const okLoc = vUbic(d);
+    const okArm = true;
+    if(!(okNom && okAut && okLoc)){
+      showErr = true; renderMain();
+      const bad = [...el.querySelectorAll('.rv.bad')].find(x=> /Cal indicar/.test(x.textContent));
+      if(bad) bad.closest('.rw').scrollIntoView({behavior:'smooth', block:'center'});
+      return;
+    }
     desaCatalegs(d);
     const general = d.general, estatParts = d.estatParts;
     const oldByPid = {}; (piece.aparicions||[]).forEach(a=>{ if(a.projecteId) oldByPid[a.projecteId]=a; });
     const newAparicions = d.projecteIds.map(pid=>{
-      const pp = STATE.catalogs.projectes.find(x=>x.id===pid);
+      const pp = C.projectes.find(x=>x.id===pid);
       return oldByPid[pid] || { projecteId:pid, projecte:pp?pp.name:'', any:pp?pp.year:null, seccio:'', fitxers:0, estatParts };
     });
     Object.assign(piece, {
@@ -1759,8 +1951,10 @@ function openEditPiece(id, opts={}){
     });
     if(d.revisats.size) marcaRevisada(piece, [...d.revisats]);
     persist(); refreshViews(); close();
-  });
+  }
+  renderMain();
 }
+
 
 /* ================= REGISTRAR (3 passos) ================= */
 const REG = {d:null, step:1};
