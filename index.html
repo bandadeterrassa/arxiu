@@ -426,6 +426,9 @@ html{overscroll-behavior-y:none}
   body::before{content:"";position:fixed;left:0;right:0;top:0;height:calc(var(--safe-t) + 60px);background:var(--navy);z-index:-1;pointer-events:none}
   body.auth::before{display:none}
 }
+/* l'estirada elàstica de la fitxa (iOS) no deixa veure fons clar sobre la capçalera: el blau s'allarga cap amunt */
+.phead{position:relative}
+.phead::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:600px;background:var(--navy);pointer-events:none}
 </style>
 </head>
 <body data-screen="consultar">
@@ -1399,7 +1402,7 @@ function openDetail(id){
       <div class="stat ${st.cls}" style="margin-top:2px"><i></i><div><b>${esc(st.label)}</b>${sub?`<span>${esc(sub)}</span>`:''}</div></div>
       ${n.revisar.length ? `<div class="alert"><b>Cal revisar</b>${n.revisar.map(r=>`<p>${esc(r)}</p>`).join('')}${canEdit?'<button class="btn o s" id="dRevisada">Marca com a revisada</button>':''}</div>` : ''}
       ${grp('Partitures', [rw('Partitura general (director)', esc(gl.label==='Sí'?'Sí':st.G==='falta'?'No la tenim':gl.label), gl.cls==='ok'?'':gl.cls), rw('Parts dels instruments (músic)', esc(partsTxt), pl.cls==='ok'?'':pl.cls), rw('Ubicació', placeLines(p))])}
-      ${grp('Detalls', [ ...(p.specials&&p.specials.length ? [rw('Instrumentació extra', esc(p.specials.join(', ')))] : []), rw('Partitura original', esc(originalText(p))), ...(p.de ? [rw('De', esc(p.de))] : []) ])}
+      ${grp('Detalls', [ ...(p.specials&&p.specials.length ? [rw('Instrumentació extra', esc(p.specials.join(', ')))] : []), ...(p.original===true ? [rw('Partitura original', esc(originalText(p)))] : []), ...(p.de ? [rw('De', esc(p.de))] : []) ])}
       ${grp('Projectes', aparicions.map(a=>{ const pr=projById(a.projecteId); return rw(esc(pr?pr.name:a.projecte), (pr?pr.year:a.any)||'Sense any', '', !!pr, pr?`data-goproj="${esc(pr.id)}" role="button" tabindex="0" style="cursor:pointer"`:''); }))}
       ${grp('Notes', notes)}
     </div>
