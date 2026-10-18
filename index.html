@@ -47,12 +47,10 @@ h1,h2,h3,p,ul{margin:0}
 .pt button{border:0;background:transparent;border-radius:20px;font:700 15px/1 var(--sf);color:#C9D5E4;transition:background .2s var(--ease-out),color .2s}
 .pt button.on{background:#fff;color:var(--navy)}
 body[data-screen=config] .pt, body[data-screen=registrar] .pt{display:none}
-body[data-screen=config] .top{top:0;padding-bottom:22px}
-body[data-screen=registrar] .top{display:none}
+body[data-screen=config] .top, body[data-screen=registrar] .top{top:0;padding-bottom:22px}
 
 main{max-width:680px;margin:0 auto;padding:18px 20px calc(var(--safe-b) + 120px);animation:fadeUp .35s var(--ease-out)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-body[data-screen=registrar] main#mainRegistrar{padding-top:calc(var(--safe-t) + 16px)}
 
 /* ---------- barra inferior flotant ---------- */
 .fbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--safe-b) + 14px);height:64px;border-radius:32px;background:#fff;box-shadow:var(--shadow-lg);display:flex;padding:6px;gap:4px;z-index:30}
@@ -198,7 +196,8 @@ h3.sec:first-child{margin-top:4px}
 .foot{position:fixed;left:0;right:0;bottom:0;z-index:25;padding:14px 20px calc(var(--safe-b) + 18px);background:linear-gradient(to bottom,rgba(248,250,252,0),var(--bg) 22px);display:flex;gap:10px}
 .foot .btn{flex:1}
 .foot .back{flex:0 0 112px}
-.foot-in{max-width:680px;margin:0 auto;width:100%;display:flex;gap:10px}
+.foot-in{max-width:680px;margin:0 auto;width:100%;display:flex;flex-wrap:wrap;gap:10px}
+.foot-in .btn.cx{flex:1 1 100%}
 .foot-in .btn{flex:1} .foot-in .back{flex:0 0 112px}
 .ctl{display:flex;justify-content:space-between;align-items:center}
 
@@ -375,23 +374,23 @@ label.rw .rl{color:var(--ink)}
 .sheet .revitem{border-top:1px solid var(--rule)}
 
 /* ---------- escriptori (≥900px): barra lateral i contingut ample. El mòbil no es toca. ---------- */
-@media (min-width:900px){
-  :root{--sb:272px}
+@media (min-width:768px) and (min-height:600px){
+  :root{--sb:236px}
   body{padding-left:var(--sb)}
   body.auth{padding-left:0}
   .top{position:fixed;left:0;top:0;bottom:0;width:var(--sb);border-radius:0;padding:30px 20px;overflow-y:auto;z-index:40}
-  body[data-screen=config] .top{top:0;padding-bottom:30px}
-  body[data-screen=registrar] .top{display:block}
+  body[data-screen=config] .top, body[data-screen=registrar] .top{top:0;padding-bottom:30px}
   .top-brand{height:auto;flex-direction:column;align-items:flex-start;gap:18px;max-width:none;margin:0}
   .brand b{font-size:19px;line-height:22px}
-  .fbar{position:fixed;left:0;top:176px;bottom:auto;transform:none;width:var(--sb);height:auto;border-radius:0;background:transparent;box-shadow:none;flex-direction:column;padding:0 20px;gap:6px;z-index:41}
+  .fbar{position:fixed;left:0;top:340px;bottom:auto;transform:none;width:var(--sb);height:auto;border-radius:0;background:transparent;box-shadow:none;flex-direction:column;padding:0 20px;gap:6px;z-index:41}
   body[data-screen=registrar] .fbar{display:flex}
+  body[data-screen=config] .fbar,body[data-screen=registrar] .fbar{top:156px}
   .fbar button{width:100%;height:48px;display:flex;align-items:center;justify-content:flex-start;gap:14px;padding:0 16px;border-radius:14px;color:#C9D5E4;font:700 16px/1 var(--sf);cursor:pointer}
   .fbar button::after{content:attr(aria-label)}
   .fbar button:hover{background:rgba(255,255,255,.1)}
   .fbar button.on{background:#fff;color:var(--navy)}
   .fbar .ic{width:22px;height:22px}
-  .pt{max-width:none;margin:214px 0 0;height:auto;border-radius:0;background:transparent;display:flex;flex-direction:column;padding:0;gap:6px;border-top:1px solid rgba(255,255,255,.16);padding-top:18px}
+  .pt{max-width:none;margin:28px 0 0;height:auto;border-radius:0;background:transparent;display:flex;flex-direction:column;padding:0 0 18px;gap:6px;border-bottom:1px solid rgba(255,255,255,.16)}
   .pt button{height:42px;text-align:left;padding:0 16px;border-radius:12px;cursor:pointer}
   .pt button:hover{background:rgba(255,255,255,.1)}
   .pt button.on{background:rgba(255,255,255,.18);color:#fff}
@@ -417,6 +416,15 @@ label.rw .rl{color:var(--ink)}
   .sheet-bg{align-items:center}
   .sheet{margin-bottom:0;max-width:560px;max-height:88vh;border-radius:28px}
   .savepill{left:calc(50% + var(--sb)/2);bottom:28px}
+}
+@media (min-width:1000px) and (min-height:600px){:root{--sb:272px}}
+@media (min-width:768px) and (max-width:999px) and (min-height:600px){.brand b{font-size:16.5px}.top{padding-left:16px;padding-right:12px}}
+/* iOS: en estirar la pàgina cap avall (rebot elàstic) no es veu un buit clar sobre la capçalera */
+html{overscroll-behavior-y:none}
+@media (max-width:767px), (max-height:599px){
+  body:not(.auth){background:transparent}
+  body::before{content:"";position:fixed;left:0;right:0;top:0;height:calc(var(--safe-t) + 60px);background:var(--navy);z-index:-1;pointer-events:none}
+  body.auth::before{display:none}
 }
 </style>
 </head>
@@ -920,11 +928,11 @@ function bindEyes(el){
     i.type = on ? 'text' : 'password'; b.setAttribute('aria-pressed', on);
   }));
 }
-const ERR_ENTRAR = {credencials:'Usuari o contrasenya incorrectes', desactivat:'Aquest usuari està desactivat',
+const ERR_ENTRAR = {credencials:'Usuari o contrasenya incorrectes', desactivat:'Aquest usuari està desactivat', massa_intents:'Massa intents fallits. Espera uns minuts i torna-ho a provar.',
   curta:'La contrasenya nova ha de tenir almenys 4 caràcters', igual:'La contrasenya nova ha de ser diferent de l\'actual'};
 async function entrar(body){
   try{ return {ok: await servidor('/functions/v1/entrar', body)}; }
-  catch(e){ return {err: ERR_ENTRAR[e.codi] || 'No s\'ha pogut connectar. Comprova la connexió i torna-ho a provar.'}; }
+  catch(e){ return {err: ERR_ENTRAR[e.codi] || (e.codi==='XARXA' ? 'No s\'ha pogut connectar amb el servidor. Pot ser la xarxa (alguns wifis d\'empresa o centres bloquegen l\'accés) o una extensió del navegador: prova una altra xarxa o una finestra privada.' : 'El servidor ha respost amb un error ('+e.codi+'). Torna-ho a provar d\'aquí a una estona.')}; }
 }
 function showLogin(err){
   const el = authScreen();
@@ -998,9 +1006,6 @@ function setScreen(s){
   document.getElementById('navConsultar').classList.toggle('on', s==='consultar');
   document.getElementById('navRegistrar').classList.toggle('on', s==='registrar');
   document.getElementById('navConfig').classList.toggle('on', s==='config');
-  const desk = window.matchMedia('(min-width:900px)').matches;   // a l'escriptori, la barra lateral conserva el nom de l'app
-  document.getElementById('topTitle').textContent = s==='config' && !desk ? 'Configuració' : 'Banda de Terrassa';
-  document.getElementById('topSub').textContent = s==='config' && !desk ? 'Banda de Terrassa · Arxiu' : 'Arxiu';
   window.scrollTo(0,0);
   if(s==='registrar') renderRegistrar();
   if(s==='config') renderConfig();
@@ -2013,11 +2018,10 @@ function regRender(){
   const root = document.getElementById('registrarForm');
   const titles = ['Quina obra és?','Quines parts tenim?','On es troba?'];
   const subs = ['Completa tots els apartats que puguis.', d.nom.trim(), ''];
-  root.innerHTML = `<div class="ctl"><button class="pill" id="regCancel">Cancel·la</button></div>
-    <div class="steps">${[1,2,3].map(i=>`${i>1?'<i></i>':''}<b class="${i===n?'on':i<n?'done':''}">${i}</b>`).join('')}</div>
+  root.innerHTML = `<div class="steps">${[1,2,3].map(i=>`${i>1?'<i></i>':''}<b class="${i===n?'on':i<n?'done':''}">${i}</b>`).join('')}</div>
     <h1 class="h1" style="margin-top:22px">${titles[n-1]}</h1>${subs[n-1]?`<div class="sub">${esc(subs[n-1])}</div>`:''}
-    <div id="regBody" style="padding-bottom:110px;margin-top:${n===1?22:0}px"></div>
-    <div class="foot"><div class="foot-in">${n>1?'<button class="btn o back" id="regBack">Enrere</button>':''}<button class="btn" id="regNext">${n===3?"Desa l'obra":'Continua'}</button></div></div>`;
+    <div id="regBody" style="padding-bottom:170px;margin-top:${n===1?22:0}px"></div>
+    <div class="foot"><div class="foot-in">${n>1?'<button class="btn o back" id="regBack">Enrere</button>':''}<button class="btn" id="regNext">${n===3?"Desa l'obra":'Continua'}</button><button type="button" class="btn o cx" id="regCancel">Cancel·la</button></div></div>`;
   const secs = n===1 ? (d=> secObra(d))
     : n===2 ? (d=> secParts(d))
     : (d=> secUbic(d, true) + secProjectes() + secComentaris(d) + secResum());
