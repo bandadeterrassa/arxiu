@@ -429,6 +429,36 @@ html{overscroll-behavior-y:none}
 /* l'estirada elàstica de la fitxa (iOS) no deixa veure fons clar sobre la capçalera: el blau s'allarga cap amunt */
 .phead{position:relative}
 .phead::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:600px;background:var(--navy);pointer-events:none}
+/* iPhone (pantalla completa): en baixar per la fitxa, la franja de la barra d'estat es manté blava i el contingut no hi llisca per sota */
+.page.pnav::before{content:"";position:sticky;top:0;display:block;height:var(--safe-t);margin-bottom:calc(var(--safe-t)*-1);background:var(--navy);z-index:6}
+/* ---------- entrada: mateix disseny que l'app d'assistència ---------- */
+body.auth{background:#EDF0F4}
+#loginScreen{position:fixed;inset:0;overflow-y:auto;background:#EDF0F4;z-index:55}
+.lgn{min-height:100%;max-width:440px;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:18px;padding:calc(var(--safe-t) + 60px) 24px 24px}
+.lgn-logo{width:96px;height:96px;object-fit:contain;background:transparent;filter:drop-shadow(0 10px 18px rgba(15,34,54,.2));flex:none}
+.lgn-h1{font:700 26px/1.12 var(--sf);letter-spacing:-.02em;margin:0;color:var(--ink)}
+.lgn-sub{margin:4px 0 0;font-size:14px;color:var(--ink-2)}
+.lgn-form{display:grid;gap:12px;width:min(100%,340px);text-align:left}
+.lgn-field{display:grid;gap:6px}
+.lgn-field>span{font-size:12.5px;font-weight:600;color:var(--ink-2)}
+.lgn-inp{width:100%;min-height:44px;border-radius:10px;border:1px solid #CBD3DD;background:#fff;padding:0 12px;font:inherit;font-size:16px;outline:none;color:var(--ink)}
+.lgn-inp:focus{outline:2px solid var(--navy);outline-offset:0;border-color:transparent}
+.lgn-pw{position:relative}.lgn-pw .lgn-inp,.lgn-pw .input{padding-right:48px}
+.lgn-eye{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:34px;height:34px;display:grid;place-items:center;color:var(--ink-2);border:0;background:transparent}
+.lgn-eye svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.lgn-eye .slash{display:none}.lgn-eye[aria-pressed="true"] .slash{display:block}
+.lgn-toggle{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:36px;font-size:13.5px;cursor:pointer}
+.lsw{position:relative;display:inline-block;width:48px;height:28px;flex:none}
+.lsw input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer;z-index:1}
+.lsw>span{position:absolute;inset:0;border-radius:16px;background:#D5DBE3;transition:background .15s;pointer-events:none}
+.lsw>span::after{content:"";position:absolute;left:2px;top:2px;width:24px;height:24px;border-radius:50%;background:#fff;transition:transform .15s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.lsw input:checked+span{background:var(--navy)}.lsw input:checked+span::after{transform:translateX(20px)}
+.lgn-btn{width:100%;min-height:42px;border-radius:999px;border:0;background:var(--navy);color:#fff;font:600 15px var(--sf);box-shadow:0 1px 2px rgba(0,0,0,.06),0 6px 16px rgba(16,42,67,.28)}
+.lgn-btn:disabled{opacity:.6}
+.lgn-err{background:#F9DCDB;color:#A3231F;border-radius:10px;padding:8px 12px;font-size:13px;font-weight:600;line-height:1.35}
+.lgn-foot{font-size:12.5px;color:var(--ink-2);max-width:34ch;margin:0;line-height:1.45}
+.pw-sheet .sheet .lgn-field>span{font:700 13px/18px var(--sf);color:var(--ink)}
+.pw-sheet .sheet .field{margin-bottom:14px}
 </style>
 </head>
 <body data-screen="consultar">
@@ -916,14 +946,16 @@ function authScreen(){
   if(!el){ el = document.createElement('div'); el.id = 'loginScreen'; document.body.appendChild(el); }
   return el;
 }
-const AUTH_HEAD = `<div class="lhead"><div class="logo-big"><img src="logo.png" alt=""></div><h1 class="login-h1">Banda de Terrassa</h1><p class="lsub">Arxiu de partitures</p></div>`;
+/* ---------- entrada i canvi de contrasenya: mateix disseny que l'app d'assistència (nom i logotip de l'Arxiu) ---------- */
+const AUTH_BRAND = `<img class="lgn-logo" src="logo.png" alt="">
+    <div><h1 class="lgn-h1">Banda de Terrassa</h1><p class="lgn-sub">Arxiu</p></div>`;
 function showLoading(){
-  authScreen().innerHTML = `<div class="login">${AUTH_HEAD}<div class="lbody"><p class="lmuted">Carregant l'arxiu…</p></div></div>`;
+  authScreen().innerHTML = `<div class="lgn">${AUTH_BRAND.replace('<p class="lgn-sub">Arxiu</p>','<p class="lgn-sub">Carregant l\'arxiu…</p>')}</div>`;
 }
 const ICO_EYE = '<svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/><path class="slash" d="M4 4l16 16"/></svg>';
-function passFieldHtml(id, label, ac){
-  return `<label class="lfield"><span>${label}</span><div class="pass-wrap"><input class="inp" id="${id}" type="password" placeholder="••••" autocomplete="${ac}">
-    <button type="button" class="pass-toggle" data-eye="${id}" aria-label="Mostra la contrasenya" aria-pressed="false">${ICO_EYE}</button></div></label>`;
+function passFieldHtml(id, label, ac, cls){
+  return `<label class="lgn-field"><span>${label}</span><div class="lgn-pw"><input class="${cls||'lgn-inp'}" id="${id}" type="password" placeholder="••••" autocomplete="${ac}">
+    <button type="button" class="lgn-eye" data-eye="${id}" aria-label="Mostra la contrasenya" aria-pressed="false">${ICO_EYE}</button></div></label>`;
 }
 function bindEyes(el){
   el.querySelectorAll('[data-eye]').forEach(b=> b.addEventListener('click', ()=>{
@@ -937,17 +969,19 @@ async function entrar(body){
   try{ return {ok: await servidor('/functions/v1/entrar', body)}; }
   catch(e){ return {err: ERR_ENTRAR[e.codi] || (e.codi==='XARXA' ? 'No s\'ha pogut connectar amb el servidor. Pot ser la xarxa (alguns wifis d\'empresa o centres bloquegen l\'accés) o una extensió del navegador: prova una altra xarxa o una finestra privada.' : 'El servidor ha respost amb un error ('+e.codi+'). Torna-ho a provar d\'aquí a una estona.')}; }
 }
+
 function showLogin(err){
+  document.querySelectorAll('.sheet-bg.pw-sheet').forEach(x=> x.remove());
   const el = authScreen();
-  el.innerHTML = `<div class="login">${AUTH_HEAD}<div class="lbody">
-    <form id="loginf" autocomplete="on">
-      ${err ? `<div class="err">${esc(err)}</div>` : ''}
-      <label class="lfield"><span>Usuari</span><input class="inp" id="lg-user" placeholder="nom.cognom" autocapitalize="none" autocorrect="off" autocomplete="username"></label>
+  el.innerHTML = `<div class="lgn">${AUTH_BRAND}
+    <form id="loginf" class="lgn-form" autocomplete="on">
+      ${err ? `<div class="lgn-err" role="alert">${esc(err)}</div>` : ''}
+      <label class="lgn-field"><span>Usuari</span><input class="lgn-inp" id="lg-user" placeholder="nom.cognom" autocapitalize="none" autocorrect="off" autocomplete="username"></label>
       ${passFieldHtml('lg-pass','Contrasenya','current-password')}
-      <label class="toggle-row"><span>Mantenir la sessió iniciada</span><span class="switch"><input type="checkbox" id="lg-keep" checked><span></span></span></label>
-      <button class="btn primary" type="submit" style="width:100%">Entra</button>
+      <label class="lgn-toggle"><span>Mantenir la sessió iniciada</span><span class="lsw"><input type="checkbox" id="lg-keep" checked><span></span></span></label>
+      <button class="lgn-btn" type="submit">Entra</button>
     </form>
-    <p class="login-foot">Si no recordes les credencials,<br>parla amb la junta.</p></div></div>`;
+    <p class="lgn-foot">Si no recordes les credencials,<br>parla amb la Junta</p></div>`;
   bindEyes(el);
   el.querySelector('#loginf').addEventListener('submit', async e=>{
     e.preventDefault();
@@ -963,29 +997,34 @@ function showLogin(err){
   });
   setTimeout(()=>{ const i = el.querySelector('#lg-user'); if(i && !('ontouchstart' in window)) i.focus(); }, 50);
 }
-/* primer accés: cal triar una contrasenya nova (val també per a l'app d'assistència) */
+/* primer accés: full «Estableix una contrasenya nova» sobre la pantalla d'entrada (val també per a l'app d'assistència) */
 function showFirstPassword(c, err){
-  const el = authScreen();
-  el.innerHTML = `<div class="login">${AUTH_HEAD}<div class="lbody">
-    <form id="pwf" autocomplete="off">
-      <div class="help-intro" style="margin:0">Hola${c.nom?', '+esc(c.nom.split(' ')[0]):''}! És el teu primer accés. Tria una contrasenya nova per continuar. També la faràs servir a l'app d'assistència.</div>
-      ${err ? `<div class="err">${esc(err)}</div>` : ''}
-      ${passFieldHtml('pw-new','Contrasenya nova','new-password')}
-      ${passFieldHtml('pw-new2','Repeteix la contrasenya nova','new-password')}
-      <button class="btn primary" type="submit" style="width:100%">Desa i entra</button>
-      <button class="btn ghost" type="button" id="pw-back" style="width:100%">Torna enrere</button>
-    </form></div></div>`;
-  bindEyes(el);
-  el.querySelector('#pw-back').addEventListener('click', ()=> showLogin());
-  el.querySelector('#pwf').addEventListener('submit', async e=>{
+  document.querySelectorAll('.sheet-bg.pw-sheet').forEach(x=> x.remove());
+  if(!document.querySelector('#loginScreen .lgn')) showLogin();
+  const bg = document.createElement('div'); bg.className = 'sheet-bg pw-sheet';
+  bg.innerHTML = `<div class="sheet">
+    <div class="sheet-head"><div class="htxt"><h2>Estableix una contrasenya nova</h2></div></div>
+    <form id="pwf" autocomplete="off"><div class="sheet-body">
+      <p class="hint" style="margin:0 0 14px">Hola${c.nom?', '+esc(c.nom.split(' ')[0]):''}! És el teu primer accés. Per seguretat, estableix una contrasenya nova abans de continuar. També la faràs servir a l'app d'assistència.</p>
+      ${err ? `<div class="lgn-err" role="alert" style="margin-bottom:14px">${esc(err)}</div>` : ''}
+      <div class="field">${passFieldHtml('pw-new','Contrasenya nova','new-password','input')}</div>
+      <div class="field">${passFieldHtml('pw-new2','Repeteix la contrasenya nova','new-password','input')}</div>
+    </div>
+    <div class="btnbar"><button class="btn o" type="button" id="pw-back" style="flex:1">Torna enrere</button><button class="btn" type="submit" style="flex:1">Desa</button></div></form></div>`;
+  document.body.appendChild(bg);
+  bindEyes(bg);
+  setTimeout(()=>{ const i = bg.querySelector('#pw-new'); if(i && !('ontouchstart' in window)) i.focus(); }, 80);
+  bg.querySelector('#pw-back').addEventListener('click', ()=> showLogin());
+  bg.querySelector('#pwf').addEventListener('submit', async e=>{
     e.preventDefault();
-    const nova = el.querySelector('#pw-new').value, nova2 = el.querySelector('#pw-new2').value;
+    const nova = bg.querySelector('#pw-new').value, nova2 = bg.querySelector('#pw-new2').value;
     if(!nova || nova.length < 4){ showFirstPassword(c, ERR_ENTRAR.curta); return; }
     if(nova !== nova2){ showFirstPassword(c, 'Les contrasenyes noves no coincideixen'); return; }
     if(nova === c.contrasenya){ showFirstPassword(c, ERR_ENTRAR.igual); return; }
     const btn = e.target.querySelector('button[type=submit]'); btn.disabled = true; btn.textContent = 'Desant…';
     const r = await entrar({usuari: c.usuari, contrasenya: c.contrasenya, nova, mantenir: c.mantenir});
     if(r.err){ showFirstPassword(c, r.err); return; }
+    bg.remove();
     const ses = {token: r.ok.token, caduca: r.ok.caduca};
     saveSession(ses, c.mantenir); startSession(ses);
   });
@@ -1392,7 +1431,7 @@ function openDetail(id){
   if(n.compte.length) notes.push(nt('A tenir en compte', n.compte.map(esc).join('<br>')));
   if(p.revisada || deteccioIA(p)) notes.push(nt('Revisió', [deteccioIA(p)?'Fitxa elaborada amb IA.':'', p.revisada?`Revisada per ${esc(p.revisada.per||'—')} el ${esc(p.revisada.data||'')}.`:''].filter(Boolean).join(' ')));
 
-  const el = document.createElement('div'); el.className='page';
+  const el = document.createElement('div'); el.className='page pnav';
   el.innerHTML = `<div class="phead"><div class="phead-in">
       <div class="ptop"><button class="qm" id="dClose" aria-label="Enrere">${I.back}</button>${canEdit?`<button class="qm" id="dEdit" aria-label="Edita">${I.edit}</button>`:'<span></span>'}</div>
       <div class="ptitle"><h1>${esc(p.title)}</h1>${deteccioIA(p)?'<span class="ia d" aria-label="Elaborada amb IA">IA</span>':''}</div>
@@ -1787,7 +1826,7 @@ function openEditPiece(id, opts={}){
   const revItems = revisioItems(piece);
   const C = STATE.catalogs;
   let showErr = false;
-  const el = document.createElement('div'); el.className = 'page';
+  const el = document.createElement('div'); el.className = 'page pnav';
   document.body.appendChild(el); document.body.classList.add('locked');
   const projLab = p=> p.name+(p.year?' ('+p.year+')':'');
 
